@@ -26,8 +26,8 @@ Unlike traditional service marketplaces that enforce intermediary fees or handle
 
 ```mermaid
 flowchart LR
-    Client[React.js Single Page App\n(Port 3000)] <-->|REST API / JWT| API[ASP.NET Core Web API\n.NET 8.0 - Port 5000]
-    API <-->|Entity Framework Core| DB[(PostgreSQL Database\nkajbazar_db - Port 5432)]
+    Client["React.js Single Page App (Port 3000)"] <-->|REST API / JWT| API["ASP.NET Core Web API .NET 8.0 (Port 5000)"]
+    API <-->|Entity Framework Core| DB[("PostgreSQL Database kajbazar_db (Port 5432)")]
 ```
 
 ### Technology Breakdown
