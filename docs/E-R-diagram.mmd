@@ -1,0 +1,121 @@
+erDiagram
+    USERS ||--o{ USER_ROLES : "assigned"
+    ROLES ||--o{ USER_ROLES : "belongs"
+    USERS ||--o| SERVICE_PROVIDER_PROFILES : "has"
+    DISTRICTS ||--o{ UPAZILAS : "contains"
+    DISTRICTS ||--o{ SERVICE_PROVIDER_PROFILES : "located_in"
+    UPAZILAS ||--o{ SERVICE_PROVIDER_PROFILES : "located_in"
+    SERVICE_PROVIDER_PROFILES ||--o{ WORKER_CATEGORIES : "provides"
+    CATEGORIES ||--o{ WORKER_CATEGORIES : "classified_as"
+    USERS ||--o{ REVIEWS : "writes"
+    SERVICE_PROVIDER_PROFILES ||--o{ REVIEWS : "receives"
+    USERS ||--o{ COMMUNITY_RECOMMENDATIONS : "submits"
+    CATEGORIES ||--o{ COMMUNITY_RECOMMENDATIONS : "recommends_for"
+    DISTRICTS ||--o{ COMMUNITY_RECOMMENDATIONS : "location_district"
+    UPAZILAS ||--o{ COMMUNITY_RECOMMENDATIONS : "location_upazila"
+    USERS ||--o{ REPORTS : "files"
+    USERS ||--o{ ADMIN_AUDIT_LOGS : "performs"
+
+    USERS {
+        uuid user_id PK
+        string full_name
+        string email UK
+        string phone_number UK
+        string password_hash
+        boolean is_active
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    ROLES {
+        int role_id PK
+        string role_name UK
+        timestamp created_at
+    }
+
+    USER_ROLES {
+        uuid user_id PK,FK
+        int role_id PK,FK
+    }
+
+    DISTRICTS {
+        int district_id PK
+        string district_name UK
+    }
+
+    UPAZILAS {
+        int upazila_id PK
+        int district_id FK
+        string upazila_name
+    }
+
+    CATEGORIES {
+        int category_id PK
+        string category_name UK
+        string description
+        string icon_url
+        boolean is_active
+    }
+
+    SERVICE_PROVIDER_PROFILES {
+        uuid profile_id PK
+        uuid user_id FK
+        int district_id FK
+        int upazila_id FK
+        string bio
+        int experience_years
+        numeric hourly_rate
+        string verification_status
+        timestamp verified_at
+        numeric average_rating
+        int total_reviews
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    WORKER_CATEGORIES {
+        uuid profile_id PK,FK
+        int category_id PK,FK
+    }
+
+    REVIEWS {
+        uuid review_id PK
+        uuid consumer_id FK
+        uuid worker_profile_id FK
+        int rating
+        string comment
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    COMMUNITY_RECOMMENDATIONS {
+        uuid recommendation_id PK
+        uuid recommended_by_user_id FK
+        string worker_name
+        string phone_number
+        int category_id FK
+        int district_id FK
+        int upazila_id FK
+        string notes
+        string status
+        uuid reviewed_by_admin_id FK
+        timestamp created_at
+    }
+
+    REPORTS {
+        uuid report_id PK
+        uuid reported_by_user_id FK
+        uuid target_user_id FK
+        string reason
+        string status
+        timestamp created_at
+    }
+
+    ADMIN_AUDIT_LOGS {
+        uuid log_id PK
+        uuid admin_user_id FK
+        string action
+        string entity_name
+        uuid entity_id
+        timestamp timestamp
+    }
