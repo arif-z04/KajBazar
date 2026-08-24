@@ -1,0 +1,7 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/KajBazar.API/KajBazar.API.csproj" />
+    <Project Path="src/KajBazar.Core/KajBazar.Core.csproj" />
+    <Project Path="src/KajBazar.Infrastructure/KajBazar.Infrastructure.csproj" />
+  </Folder>
+</Solution>
