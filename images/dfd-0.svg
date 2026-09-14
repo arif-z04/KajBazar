@@ -1,0 +1,293 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2100 1320" width="100%" height="100%" style="background:#ffffff; font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+  <defs>
+    <!-- Arrow Markers -->
+    <marker id="arr-c-in" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 1 2 L 8 5 L 1 8 z" fill="#0284c7" />
+    </marker>
+    <marker id="arr-c-out" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 1 2 L 8 5 L 1 8 z" fill="#0369a1" />
+    </marker>
+
+    <marker id="arr-sp-in" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 1 2 L 8 5 L 1 8 z" fill="#ea580c" />
+    </marker>
+    <marker id="arr-sp-out" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 1 2 L 8 5 L 1 8 z" fill="#c2410c" />
+    </marker>
+
+    <marker id="arr-adm-in" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 1 2 L 8 5 L 1 8 z" fill="#7c3aed" />
+    </marker>
+    <marker id="arr-adm-out" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 1 2 L 8 5 L 1 8 z" fill="#6d28d9" />
+    </marker>
+
+    <!-- Drop Shadows -->
+    <filter id="soft-shadow" x="-8%" y="-8%" width="116%" height="120%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#0f172a" flood-opacity="0.08"/>
+    </filter>
+    <filter id="hub-shadow" x="-15%" y="-15%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="6" stdDeviation="10" flood-color="#059669" flood-opacity="0.14"/>
+    </filter>
+  </defs>
+
+  <style>
+    .flow-line { fill: none; stroke-width: 1.8; }
+    .label-box { rx: 4; ry: 4; stroke-width: 1.2; }
+    .flow-text { font-size: 11px; font-weight: 600; dominant-baseline: middle; }
+    .flow-num { font-weight: 800; }
+  </style>
+
+  <!-- Background Grid -->
+  <g opacity="0.45" stroke="#f1f5f9" stroke-width="1">
+    <pattern id="grid" width="30" height="30" patternUnits="userSpaceOnUse">
+      <path d="M 30 0 L 0 0 0 30" fill="none" />
+    </pattern>
+    <rect width="100%" height="100%" fill="url(#grid)" />
+  </g>
+
+  <!-- Header -->
+  <g transform="translate(60, 42)">
+    <text fill="#0f172a" font-size="24" font-weight="800" letter-spacing="-0.3">KajBazar Context Diagram (Level 0 DFD)</text>
+    <text fill="#64748b" font-size="13.5" font-weight="500" y="25">Community Service Directory — Straight Trajectory Architecture</text>
+  </g>
+
+  <!-- ======================================================================== -->
+  <!-- 1. STRAIGHT TRAJECTORIES (Direct Line Connections to Boundaries)        -->
+  <!-- ======================================================================== -->
+
+  <!-- Consumer Flows (Left Side: X=320 to X=885) -->
+  <g id="trajectories-consumer">
+    <!-- Flow 1 (In) -->
+    <line x1="320" y1="365" x2="885" y2="365" class="flow-line" stroke="#0284c7" marker-end="url(#arr-c-in)" />
+    <!-- Flow 2 (In) -->
+    <line x1="320" y1="410" x2="885" y2="410" class="flow-line" stroke="#0284c7" marker-end="url(#arr-c-in)" />
+    <!-- Flow 3 (In) -->
+    <line x1="320" y1="455" x2="885" y2="455" class="flow-line" stroke="#0284c7" marker-end="url(#arr-c-in)" />
+    <!-- Flow 4 (In) -->
+    <line x1="320" y1="500" x2="885" y2="500" class="flow-line" stroke="#0284c7" marker-end="url(#arr-c-in)" />
+    <!-- Flow 5 (Out) -->
+    <line x1="885" y1="545" x2="320" y2="545" class="flow-line" stroke="#0369a1" stroke-dasharray="5 3.5" marker-end="url(#arr-c-out)" />
+    <!-- Flow 6 (Out) -->
+    <line x1="885" y1="590" x2="320" y2="590" class="flow-line" stroke="#0369a1" stroke-dasharray="5 3.5" marker-end="url(#arr-c-out)" />
+    <!-- Flow 7 (Out) -->
+    <line x1="885" y1="635" x2="320" y2="635" class="flow-line" stroke="#0369a1" stroke-dasharray="5 3.5" marker-end="url(#arr-c-out)" />
+  </g>
+
+  <!-- Service Provider Flows (Right Side: X=1215 to X=1780) -->
+  <g id="trajectories-provider">
+    <!-- Flow 8 (In) -->
+    <line x1="1780" y1="385" x2="1215" y2="385" class="flow-line" stroke="#ea580c" marker-end="url(#arr-sp-in)" />
+    <!-- Flow 9 (In) -->
+    <line x1="1780" y1="430" x2="1215" y2="430" class="flow-line" stroke="#ea580c" marker-end="url(#arr-sp-in)" />
+    <!-- Flow 10 (In) -->
+    <line x1="1780" y1="475" x2="1215" y2="475" class="flow-line" stroke="#ea580c" marker-end="url(#arr-sp-in)" />
+    <!-- Flow 11 (Out) -->
+    <line x1="1215" y1="520" x2="1780" y2="520" class="flow-line" stroke="#c2410c" stroke-dasharray="5 3.5" marker-end="url(#arr-sp-out)" />
+    <!-- Flow 12 (Out) -->
+    <line x1="1215" y1="565" x2="1780" y2="565" class="flow-line" stroke="#c2410c" stroke-dasharray="5 3.5" marker-end="url(#arr-sp-out)" />
+    <!-- Flow 13 (Out) -->
+    <line x1="1215" y1="610" x2="1780" y2="610" class="flow-line" stroke="#c2410c" stroke-dasharray="5 3.5" marker-end="url(#arr-sp-out)" />
+  </g>
+
+  <!-- Administrator Flows (Bottom Side: Y=715 to Y=1150) -->
+  <g id="trajectories-admin">
+    <!-- Flow 14 (In) -->
+    <line x1="885" y1="1150" x2="885" y2="715" class="flow-line" stroke="#7c3aed" marker-end="url(#arr-adm-in)" />
+    <!-- Flow 15 (In) -->
+    <line x1="940" y1="1150" x2="940" y2="715" class="flow-line" stroke="#7c3aed" marker-end="url(#arr-adm-in)" />
+    <!-- Flow 16 (In) -->
+    <line x1="995" y1="1150" x2="995" y2="715" class="flow-line" stroke="#7c3aed" marker-end="url(#arr-adm-in)" />
+    <!-- Flow 17 (In) -->
+    <line x1="1050" y1="1150" x2="1050" y2="715" class="flow-line" stroke="#7c3aed" marker-end="url(#arr-adm-in)" />
+    <!-- Flow 18 (Out) -->
+    <line x1="1105" y1="715" x2="1105" y2="1150" class="flow-line" stroke="#6d28d9" stroke-dasharray="5 3.5" marker-end="url(#arr-adm-out)" />
+    <!-- Flow 19 (Out) -->
+    <line x1="1160" y1="715" x2="1160" y2="1150" class="flow-line" stroke="#6d28d9" stroke-dasharray="5 3.5" marker-end="url(#arr-adm-out)" />
+    <!-- Flow 20 (Out) -->
+    <line x1="1215" y1="715" x2="1215" y2="1150" class="flow-line" stroke="#6d28d9" stroke-dasharray="5 3.5" marker-end="url(#arr-adm-out)" />
+  </g>
+
+  <!-- ======================================================================== -->
+  <!-- 2. LABELS (Positioned ON Straight Paths with Opaque Backing)             -->
+  <!-- ======================================================================== -->
+
+  <!-- Consumer Flow Labels -->
+  <g id="labels-consumer">
+    <!-- Flow 1 -->
+    <rect x="470" y="353" width="235" height="24" class="label-box" fill="#ffffff" stroke="#bae6fd" />
+    <text x="480" y="366" class="flow-text" fill="#0369a1"><tspan class="flow-num" fill="#0284c7">1.</tspan> Registration / Login Credentials</text>
+
+    <!-- Flow 2 -->
+    <rect x="450" y="398" width="275" height="24" class="label-box" fill="#ffffff" stroke="#bae6fd" />
+    <text x="460" y="411" class="flow-text" fill="#0369a1"><tspan class="flow-num" fill="#0284c7">2.</tspan> Search Filters (Category, District, Upazila)</text>
+
+    <!-- Flow 3 -->
+    <rect x="475" y="443" width="225" height="24" class="label-box" fill="#ffffff" stroke="#bae6fd" />
+    <text x="485" y="456" class="flow-text" fill="#0369a1"><tspan class="flow-num" fill="#0284c7">3.</tspan> Worker Review &amp; Star Rating (1-5)</text>
+
+    <!-- Flow 4 -->
+    <rect x="480" y="488" width="215" height="24" class="label-box" fill="#ffffff" stroke="#bae6fd" />
+    <text x="490" y="501" class="flow-text" fill="#0369a1"><tspan class="flow-num" fill="#0284c7">4.</tspan> Offline Worker Recommendation</text>
+
+    <!-- Flow 5 -->
+    <rect x="445" y="533" width="285" height="24" class="label-box" fill="#f0f9ff" stroke="#7dd3fc" />
+    <text x="455" y="546" class="flow-text" fill="#0369a1"><tspan class="flow-num" fill="#0284c7">5.</tspan> Search Results &amp; Verified Worker Profiles</text>
+
+    <!-- Flow 6 -->
+    <rect x="455" y="578" width="265" height="24" class="label-box" fill="#f0f9ff" stroke="#7dd3fc" />
+    <text x="465" y="591" class="flow-text" fill="#0369a1"><tspan class="flow-num" fill="#0284c7">6.</tspan> Direct Phone Contact Number (tel:01xxx)</text>
+
+    <!-- Flow 7 -->
+    <rect x="460" y="623" width="255" height="24" class="label-box" fill="#f0f9ff" stroke="#7dd3fc" />
+    <text x="470" y="636" class="flow-text" fill="#0369a1"><tspan class="flow-num" fill="#0284c7">7.</tspan> Authentication JWT Token &amp; Profile Info</text>
+  </g>
+
+  <!-- Service Provider Flow Labels -->
+  <g id="labels-provider">
+    <!-- Flow 8 -->
+    <rect x="1370" y="373" width="255" height="24" class="label-box" fill="#ffffff" stroke="#fed7aa" />
+    <text x="1380" y="386" class="flow-text" fill="#c2410c"><tspan class="flow-num" fill="#ea580c">8.</tspan> Profile Registration &amp; Experience Bio</text>
+
+    <!-- Flow 9 -->
+    <rect x="1355" y="418" width="285" height="24" class="label-box" fill="#ffffff" stroke="#fed7aa" />
+    <text x="1365" y="431" class="flow-text" fill="#c2410c"><tspan class="flow-num" fill="#ea580c">9.</tspan> Service Categories Selection &amp; Hourly Rate</text>
+
+    <!-- Flow 10 -->
+    <rect x="1385" y="463" width="225" height="24" class="label-box" fill="#ffffff" stroke="#fed7aa" />
+    <text x="1395" y="476" class="flow-text" fill="#c2410c"><tspan class="flow-num" fill="#ea580c">10.</tspan> Location Details (District, Upazila)</text>
+
+    <!-- Flow 11 -->
+    <rect x="1360" y="508" width="275" height="24" class="label-box" fill="#fff7ed" stroke="#fdba74" />
+    <text x="1370" y="521" class="flow-text" fill="#c2410c"><tspan class="flow-num" fill="#ea580c">11.</tspan> Verification Status (Pending/Verified/Rejected)</text>
+
+    <!-- Flow 12 -->
+    <rect x="1365" y="553" width="265" height="24" class="label-box" fill="#fff7ed" stroke="#fdba74" />
+    <text x="1375" y="566" class="flow-text" fill="#c2410c"><tspan class="flow-num" fill="#ea580c">12.</tspan> Customer Reviews &amp; Average Rating Feed</text>
+
+    <!-- Flow 13 -->
+    <rect x="1375" y="598" width="245" height="24" class="label-box" fill="#fff7ed" stroke="#fdba74" />
+    <text x="1385" y="611" class="flow-text" fill="#c2410c"><tspan class="flow-num" fill="#ea580c">13.</tspan> Direct Call Inquiries from Consumers</text>
+  </g>
+
+  <!-- Administrator Flow Labels (Rotated -90° onto Vertical Straight Trajectories) -->
+  <g id="labels-admin">
+    <!-- Flow 14 -->
+    <g transform="translate(885, 930) rotate(-90)">
+      <rect x="-135" y="-12" width="270" height="24" class="label-box" fill="#ffffff" stroke="#ddd6fe" />
+      <text x="0" y="1" class="flow-text" text-anchor="middle" fill="#6d28d9"><tspan class="flow-num" fill="#7c3aed">14.</tspan> Admin Credentials &amp; Authentication</text>
+    </g>
+
+    <!-- Flow 15 -->
+    <g transform="translate(940, 930) rotate(-90)">
+      <rect x="-150" y="-12" width="300" height="24" class="label-box" fill="#ffffff" stroke="#ddd6fe" />
+      <text x="0" y="1" class="flow-text" text-anchor="middle" fill="#6d28d9"><tspan class="flow-num" fill="#7c3aed">15.</tspan> Worker Verification Decision (Approve/Reject)</text>
+    </g>
+
+    <!-- Flow 16 -->
+    <g transform="translate(995, 930) rotate(-90)">
+      <rect x="-140" y="-12" width="280" height="24" class="label-box" fill="#ffffff" stroke="#ddd6fe" />
+      <text x="0" y="1" class="flow-text" text-anchor="middle" fill="#6d28d9"><tspan class="flow-num" fill="#7c3aed">16.</tspan> Offline Recommendation Moderation</text>
+    </g>
+
+    <!-- Flow 17 -->
+    <g transform="translate(1050, 930) rotate(-90)">
+      <rect x="-140" y="-12" width="280" height="24" class="label-box" fill="#ffffff" stroke="#ddd6fe" />
+      <text x="0" y="1" class="flow-text" text-anchor="middle" fill="#6d28d9"><tspan class="flow-num" fill="#7c3aed">17.</tspan> Category Management (Add New Category)</text>
+    </g>
+
+    <!-- Flow 18 -->
+    <g transform="translate(1105, 930) rotate(-90)">
+      <rect x="-135" y="-12" width="270" height="24" class="label-box" fill="#faf5ff" stroke="#c4b5fd" />
+      <text x="0" y="1" class="flow-text" text-anchor="middle" fill="#6d28d9"><tspan class="flow-num" fill="#7c3aed">18.</tspan> System Dashboard Metrics &amp; Stats</text>
+    </g>
+
+    <!-- Flow 19 -->
+    <g transform="translate(1160, 930) rotate(-90)">
+      <rect x="-145" y="-12" width="290" height="24" class="label-box" fill="#faf5ff" stroke="#c4b5fd" />
+      <text x="0" y="1" class="flow-text" text-anchor="middle" fill="#6d28d9"><tspan class="flow-num" fill="#7c3aed">19.</tspan> Pending Verification &amp; Referral Queues</text>
+    </g>
+
+    <!-- Flow 20 -->
+    <g transform="translate(1215, 930) rotate(-90)">
+      <rect x="-145" y="-12" width="290" height="24" class="label-box" fill="#faf5ff" stroke="#c4b5fd" />
+      <text x="0" y="1" class="flow-text" text-anchor="middle" fill="#6d28d9"><tspan class="flow-num" fill="#7c3aed">20.</tspan> Administrative Action Audit Trail Logs</text>
+    </g>
+  </g>
+
+  <!-- ======================================================================== -->
+  <!-- 3. CENTRAL PROCESS (0.0 KajBazar Platform)                                -->
+  <!-- ======================================================================== -->
+  <g id="center-process">
+    <!-- Process Boundary (Rounded Container with Crisp Straight Connection Facets) -->
+    <rect x="885" y="285" width="330" height="430" rx="36" fill="#ffffff" stroke="#059669" stroke-width="3" filter="url(#hub-shadow)" />
+    <rect x="895" y="295" width="310" height="410" rx="28" fill="none" stroke="#10b981" stroke-width="1.2" stroke-dasharray="6 4" opacity="0.6" />
+
+    <g text-anchor="middle">
+      <rect x="985" y="325" width="130" height="28" rx="14" fill="#ecfdf5" stroke="#10b981" stroke-width="1.2"/>
+      <text x="1050" y="344" font-size="13" font-weight="800" fill="#047857" letter-spacing="1">PROCESS 0.0</text>
+
+      <text x="1050" y="420" font-size="24" font-weight="800" fill="#065f46" letter-spacing="-0.3">KajBazar Platform</text>
+      <text x="1050" y="450" font-size="14" fill="#047857" font-weight="600">(Core Directory System)</text>
+
+      <line x1="945" y1="485" x2="1155" y2="485" stroke="#a7f3d0" stroke-width="1.5" />
+
+      <text x="1050" y="525" font-size="12.5" fill="#334155" font-weight="600">Community Directory Service</text>
+      <text x="1050" y="550" font-size="12" fill="#64748b" font-weight="500">Service Matching &amp; Verification Hub</text>
+      <text x="1050" y="575" font-size="12" fill="#64748b" font-weight="500">Ratings, Referrals &amp; Moderation</text>
+      <text x="1050" y="600" font-size="12" fill="#64748b" font-weight="500">Administrative Governance</text>
+    </g>
+  </g>
+
+  <!-- ======================================================================== -->
+  <!-- 4. EXTERNAL ENTITIES (Anchors for Straight Paths)                        -->
+  <!-- ======================================================================== -->
+
+  <!-- Entity: Consumer -->
+  <g id="entity-consumer" filter="url(#soft-shadow)">
+    <rect x="60" y="315" width="260" height="370" rx="12" fill="#ffffff" stroke="#0284c7" stroke-width="2.5" />
+    <path d="M 60 327 Q 60 315 72 315 L 308 315 Q 320 315 320 327 L 320 355 L 60 355 Z" fill="#0284c7" />
+    <text x="190" y="340" text-anchor="middle" fill="#ffffff" font-size="11.5" font-weight="800" letter-spacing="1">EXTERNAL ENTITY</text>
+    <text x="190" y="485" text-anchor="middle" fill="#0f172a" font-size="22" font-weight="800">Consumer</text>
+    <text x="190" y="515" text-anchor="middle" fill="#64748b" font-size="12" font-weight="500">Service Seekers, Clients &amp;</text>
+    <text x="190" y="535" text-anchor="middle" fill="#64748b" font-size="12" font-weight="500">Community Members</text>
+  </g>
+
+  <!-- Entity: Service Provider -->
+  <g id="entity-provider" filter="url(#soft-shadow)">
+    <rect x="1780" y="335" width="260" height="330" rx="12" fill="#ffffff" stroke="#ea580c" stroke-width="2.5" />
+    <path d="M 1780 347 Q 1780 335 1792 335 L 2028 335 Q 2040 335 2040 347 L 2040 375 L 1780 375 Z" fill="#ea580c" />
+    <text x="1910" y="360" text-anchor="middle" fill="#ffffff" font-size="11.5" font-weight="800" letter-spacing="1">EXTERNAL ENTITY</text>
+    <text x="1910" y="485" text-anchor="middle" fill="#0f172a" font-size="22" font-weight="800">Service Provider</text>
+    <text x="1910" y="515" text-anchor="middle" fill="#64748b" font-size="12" font-weight="500">Technicians, Electricians,</text>
+    <text x="1910" y="535" text-anchor="middle" fill="#64748b" font-size="12" font-weight="500">Artisans &amp; Skilled Labor</text>
+  </g>
+
+  <!-- Entity: Administrator -->
+  <g id="entity-admin" filter="url(#soft-shadow)">
+    <rect x="835" y="1150" width="430" height="120" rx="12" fill="#ffffff" stroke="#7c3aed" stroke-width="2.5" />
+    <path d="M 835 1162 Q 835 1150 847 1150 L 1253 1150 Q 1265 1150 1265 1162 L 1265 1188 L 835 1188 Z" fill="#7c3aed" />
+    <text x="1050" y="1174" text-anchor="middle" fill="#ffffff" font-size="11.5" font-weight="800" letter-spacing="1">EXTERNAL ENTITY</text>
+    <text x="1050" y="1225" text-anchor="middle" fill="#0f172a" font-size="22" font-weight="800">Administrator</text>
+    <text x="1050" y="1250" text-anchor="middle" fill="#64748b" font-size="12" font-weight="500">Governance, Provider Verification &amp; Moderation</text>
+  </g>
+
+  <!-- ======================================================================== -->
+  <!-- 5. NOTATION GUIDE / LEGEND                                               -->
+  <!-- ======================================================================== -->
+  <g transform="translate(1800, 1130)" filter="url(#soft-shadow)">
+    <rect width="240" height="135" rx="8" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5" />
+    <text x="18" y="26" fill="#0f172a" font-size="12" font-weight="800" letter-spacing="0.5">NOTATION GUIDE</text>
+    
+    <line x1="18" y1="52" x2="55" y2="52" stroke="#475569" stroke-width="2" />
+    <circle cx="55" cy="52" r="3" fill="#475569" />
+    <text x="68" y="56" fill="#334155" font-size="11.5" font-weight="600">Input Data Flow</text>
+
+    <line x1="18" y1="84" x2="55" y2="84" stroke="#475569" stroke-width="2" stroke-dasharray="4 2" />
+    <circle cx="55" cy="84" r="3" fill="#475569" />
+    <text x="68" y="88" fill="#334155" font-size="11.5" font-weight="600">Output Response Flow</text>
+
+    <rect x="20" y="108" width="24" height="16" rx="4" fill="#ecfdf5" stroke="#059669" stroke-width="1.5"/>
+    <text x="54" y="120" fill="#334155" font-size="11.5" font-weight="600">DFD Process 0.0</text>
+  </g>
+</svg>
