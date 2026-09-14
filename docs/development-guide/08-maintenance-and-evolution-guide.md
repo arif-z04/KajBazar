@@ -1,250 +1,502 @@
 # Volume 08: Maintenance & Evolution Guide
-## The Long-Term Operations and Feature Development Manual for KajBazar
+## The Complete Database Migration, Dependency Auditing, Feature Engineering, and System Evolution Handbook for KajBazar
 
 ---
 
-## 📖 Introduction: Software is a Living Garden
+## 📖 Welcome to System Evolution
 
-Many beginner developers make the mistake of thinking: *"I deployed the application, so my job is finished!"*
+There is a famous law in software engineering formulated by Manny Lehman in 1974:
+> **Lehman's First Law of Software Evolution**: *"A software system that is used will undergo continuing change, or become progressively less useful in its environment."*
 
-In reality, deploying the application is only the **first day** of its life. Software is like a living garden. If you do not pull out the weeds (bugs), water the soil (security updates), and add new flowers (features), the garden will wither and die.
+Software is never "finished".
+- When KajBazar launches in Patuakhali, customers will immediately ask: *"Can I chat directly with the electrician inside the app before calling them?"*
+- Workers will ask: *"Can customers book appointments on a calendar so I don't get double-booked?"*
+- Security auditors will ask: *"How do you verify customer phone numbers with SMS OTPs?"*
 
-In this volume, we will explain how to maintain KajBazar over months and years, how to evolve the database schema safely without downtime, how to upgrade dependencies, and how to add brand-new features from scratch following our Clean Architecture patterns.
+If you build a rigid system, adding these features will break your existing code. But because KajBazar was designed using **Clean Architecture, DTOs, and the Repository Pattern**, our platform is built from day one to **evolve gracefully without breaking existing functionality**.
 
----
-
-## 📑 Table of Contents
-
-1. [The Philosophy of Sustainable Software](#1-the-philosophy-of-sustainable-software)
-   - 1.1 What is Technical Debt?
-   - 1.2 Semantic Versioning (SemVer: `MAJOR.MINOR.PATCH`)
-   - 1.3 The Routine Maintenance Calendar
-2. [Database Evolution: Zero-Downtime Schema Changes](#2-database-evolution-zero-downtime-schema-changes)
-   - 2.1 Why Careless Schema Changes Destroy Production
-   - 2.2 The 5 Golden Rules of Safe Database Migrations
-   - 2.3 Concrete Example: Adding an "Emergency 24/7 Service" Flag
-   - 2.4 Backing Out: Writing Rollback Scripts
-3. [End-to-End Feature Development Blueprints](#3-end-to-end-feature-development-blueprints)
-   - 3.1 Feature Blueprint 1: Worker Work Hours & Availability Schedule
-   - 3.2 Feature Blueprint 2: Worker Portfolio Photos Showcase
-   - 3.3 Feature Blueprint 3: SMS Notifications via Twilio / Banglalink API
-4. [Dependency Auditing & Upgrades](#4-dependency-auditing--upgrades)
-   - 4.1 Auditing NuGet Packages in .NET
-   - 4.2 Auditing npm Dependencies in React
-   - 4.3 Handling Breaking Changes
-5. [Server Hygiene & Log Rotation](#5-server-hygiene--log-rotation)
-   - 5.1 Preventing "Disk Full" Outages with `logrotate`
-   - 5.2 Routine Linux Kernel & Package Updates
-   - 5.3 Vacuuming and Database Statistics Refresh
-6. [Application Health Checks & Uptime Monitoring](#6-application-health-checks--uptime-monitoring)
-   - 6.1 Implementing the `/healthz` Health Check Endpoint
-   - 6.2 External Uptime Monitoring (Uptime Kuma, Better Stack)
-7. [Conclusion & Next Steps](#7-conclusion--next-steps)
+This volume teaches you how to maintain, patch, and evolve KajBazar, complete with full end-to-end source code implementations for **three major new features**.
 
 ---
 
-## 1. The Philosophy of Sustainable Software
+## 📑 Master Table of Contents
 
-### 1.1 What is Technical Debt?
-When you write messy code or rush a feature out without writing tests, you are taking out a financial loan. You get the feature right now, but you pay interest on it every single day in the form of bugs, slower development, and system crashes. Eventually, the interest becomes so expensive that nobody can modify the code without breaking the entire website.
-
-In KajBazar, we keep technical debt near zero by adhering strictly to **Clean Architecture**, writing automated xUnit tests for every repository method, and maintaining comprehensive documentation.
-
-### 1.2 Semantic Versioning (SemVer)
-We version releases using three numbers: `v1.2.4`
-- **MAJOR (1)**: Breaking changes that require users or clients to change how they interact (e.g., rewriting the entire API response structure).
-- **MINOR (2)**: New features that are backward-compatible (e.g., adding an emergency service filter).
-- **PATCH (4)**: Bug fixes and security patches that do not add new features.
-
-### 1.3 The Routine Maintenance Calendar
-| Frequency | Maintenance Task | Responsible Role |
-| :--- | :--- | :--- |
-| **Daily** | Check error logs (`journalctl -u kajbazar-api -n 50`) | DevOps / SysAdmin |
-| **Weekly** | Run `VACUUM ANALYZE` on PostgreSQL | Database Admin |
-| **Bi-Weekly** | Review pending offline worker recommendations | Operations Team |
-| **Monthly** | Run `sudo apt update && sudo apt upgrade -y` | SysAdmin |
-| **Quarterly** | Audit and upgrade NuGet and npm dependencies | Lead Developer |
-| **Semi-Annually** | Perform a simulated disaster recovery restore drill | Whole Engineering Team |
+1. [The Lifecycle of an Enterprise Software Platform](#1-the-lifecycle-of-an-enterprise-software-platform)
+   - 1.1 The Myth of "Done" Software
+   - 1.2 The Software Maintenance Spectrum: Corrective, Adaptive, Perfective, Preventive
+   - 1.3 Technical Debt: What It Is, How It Accumulates, and How to Pay It Down
+2. [Database Schema Evolution & Safe Migrations](#2-database-schema-evolution--safe-migrations)
+   - 2.1 The Danger of Breaking Database Changes in Production
+   - 2.2 The Expand and Contract Pattern (Parallel Change)
+   - 2.3 Adding Columns Safely (Always Nullable or with Defaults)
+   - 2.4 Index Creation Without Table Locks (`CREATE INDEX CONCURRENTLY`)
+3. [Routine Automated Database Maintenance](#3-routine-automated-database-maintenance)
+   - 3.1 Understanding Table Bloat in PostgreSQL
+   - 3.2 Automated `VACUUM ANALYZE` Scheduling
+   - 3.3 Reindexing Strategy (`REINDEX TABLE CONCURRENTLY`)
+   - 3.4 Log Rotation with `logrotate`
+4. [Dependency Auditing & Security Upgrades](#4-dependency-auditing--security-upgrades)
+   - 4.1 NuGet Dependency Audits (`dotnet list package --vulnerable`)
+   - 4.2 Npm Dependency Audits (`npm audit fix`)
+   - 4.3 Automated Dependency Pull Requests with Dependabot
+5. [Complete End-to-End Feature 1: Real-Time In-App Chat / Messaging](#5-complete-end-to-end-feature-1-real-time-in-app-chat--messaging)
+   - 5.1 Architecture & Database Schema (`chat_messages` table)
+   - 5.2 Domain Entity & DTOs
+   - 5.3 ASP.NET Core SignalR Real-Time WebSocket Hub (`ChatHub.cs`)
+   - 5.4 React Frontend Real-Time Chat Drawer Component
+6. [Complete End-to-End Feature 2: Service Booking & Appointment Scheduling](#6-complete-end-to-end-feature-2-service-booking--appointment-scheduling)
+   - 6.1 State Machine Design (`Pending` -> `Confirmed` -> `InProgress` -> `Completed` -> `Cancelled`)
+   - 6.2 Database Schema & Domain Entity (`bookings` table)
+   - 6.3 Booking Repository & Controller
+   - 6.4 React Booking Modal & Customer Appointment View
+7. [Complete End-to-End Feature 3: SMS Verification Gateway Integration](#7-complete-end-to-end-feature-3-sms-verification-gateway-integration)
+   - 6.1 One-Time Password (OTP) Cryptographic Generation
+   - 6.2 Database Schema (`otp_verifications` table)
+   - 6.3 Local Bangladeshi SMS Gateway Client (Teletalk / SSL Wireless / Twilio)
+   - 6.4 Controller & Verification UI Flow
+8. [Refactoring & Code Quality Audits](#8-refactoring--code-quality-audits)
+9. [Frequently Asked Questions (FAQ) on Maintenance & Evolution](#9-frequently-asked-questions-faq-on-maintenance--evolution)
+10. [Conclusion & Roadmap to Volume 09](#10-conclusion--roadmap-to-volume-09)
 
 ---
 
-## 2. Database Evolution: Zero-Downtime Schema Changes
+## 1. The Lifecycle of an Enterprise Software Platform
 
-### 2.1 Why Careless Schema Changes Destroy Production
-If you run `ALTER TABLE service_provider_profiles DROP COLUMN hourly_rate;` while your API is running, the running C# application will immediately throw `NpgsqlException: column "hourly_rate" does not exist` on the next search request, crashing the site for all users!
+### 1.1 The Software Maintenance Spectrum
 
-### 2.2 The 5 Golden Rules of Safe Database Migrations
-1. **Always Expand Before You Contract**: First add new columns, deploy code that writes to both old and new columns, migrate data, and only then drop the old column weeks later.
-2. **Never Add a NOT NULL Column Without a DEFAULT Value**: Adding `NOT NULL` without a default fails immediately if existing rows exist.
-3. **Always Back Up Before Running DDL**: Run `pg_dump` immediately before running any database migration script.
-4. **Use `IF NOT EXISTS`**: Makes migration scripts safe to run multiple times (idempotent).
-5. **Always Write a Rollback Script**: Before applying a migration, prepare the exact SQL script to undo it if something goes wrong.
+Professional maintenance is categorized into four disciplines:
+1. **Corrective Maintenance (Bug Fixing)**: Diagnosing and repairing errors reported by users (e.g. fixing an issue where rating stars don't render on iOS Safari).
+2. **Adaptive Maintenance (Environment Changes)**: Updating the system when external environments change (e.g. upgrading to .NET 9, updating PostgreSQL 16 to 17, or supporting updated browser security standards).
+3. **Perfective Maintenance (Feature Evolution)**: Adding new capabilities requested by users (e.g. real-time chat, appointment bookings, bilingual Bengali language toggle).
+4. **Preventive Maintenance (Refactoring & Debt Reduction)**: Improving code structure, optimizing database indexes, and writing documentation before bugs occur.
 
 ---
 
-## 3. End-to-End Feature Development Blueprints
+### 1.2 The Expand and Contract Pattern for Zero-Downtime Database Changes
 
-### 3.1 Feature Blueprint 1: Worker Work Hours & Availability Schedule
-Allows workers to specify which days of the week and hours they accept calls.
-
-#### Step 1: SQL Migration
+In production, you can **never** execute:
 ```sql
-CREATE TABLE worker_business_hours (
-    id SERIAL PRIMARY KEY,
-    profile_id UUID NOT NULL REFERENCES service_provider_profiles(profile_id) ON DELETE CASCADE,
-    day_of_week INT NOT NULL CHECK (day_of_week BETWEEN 0 AND 6), -- 0=Sunday, 6=Saturday
-    opens_at TIME NOT NULL DEFAULT '08:00:00',
-    closes_at TIME NOT NULL DEFAULT '20:00:00',
-    is_closed BOOLEAN NOT NULL DEFAULT FALSE,
-    CONSTRAINT uq_worker_day UNIQUE (profile_id, day_of_week)
-);
+-- DANGEROUS! BREAKS PRODUCTION!
+ALTER TABLE users DROP COLUMN phone_number;
+```
+If your old backend code is still running on 3 server nodes, the moment you drop that column, every user query crashes with `column does not exist`!
+
+Instead, follow the **Expand and Contract Pattern**:
+
+```
+[ Phase 1: Expand ]
+  - Add new column: ALTER TABLE users ADD COLUMN mobile_number VARCHAR(20);
+  - Update backend code to WRITE to both old and new columns, but READ from old.
+  - Deploy backend.
+
+[ Phase 2: Backfill ]
+  - Run background script: UPDATE users SET mobile_number = phone_number WHERE mobile_number IS NULL;
+
+[ Phase 3: Switch ]
+  - Update backend code to READ from mobile_number.
+  - Deploy backend.
+
+[ Phase 4: Contract ]
+  - Safely drop old column: ALTER TABLE users DROP COLUMN phone_number;
+  - Zero downtime! Zero user errors!
 ```
 
-#### Step 2: C# Domain Entity
+---
+
+## 2. Complete End-to-End Feature 1: Real-Time In-App Chat / Messaging
+
+Let us implement a complete new feature: **Real-Time Direct Messaging between Customers and Workers**.
+
+### 2.1 Database Schema (`sql/05_chat_feature.sql`)
+
+```sql
+CREATE TABLE IF NOT EXISTS chat_messages (
+    id SERIAL PRIMARY KEY,
+    sender_user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    recipient_user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    message_text TEXT NOT NULL,
+    is_read BOOLEAN NOT NULL DEFAULT FALSE,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_chat_conversation 
+ON chat_messages (sender_user_id, recipient_user_id, created_at);
+```
+
+---
+
+### 2.2 C# Domain Entity (`src/KajBazar.Core/Entities/ChatMessage.cs`)
+
 ```csharp
 namespace KajBazar.Core.Entities;
 
-public class WorkerBusinessHours
+public class ChatMessage
 {
     public int Id { get; set; }
-    public Guid ProfileId { get; set; }
-    public int DayOfWeek { get; set; }
-    public TimeSpan OpensAt { get; set; } = new TimeSpan(8, 0, 0);
-    public TimeSpan ClosesAt { get; set; } = new TimeSpan(20, 0, 0);
-    public bool IsClosed { get; set; } = false;
+    public Guid SenderUserId { get; set; }
+    public Guid RecipientUserId { get; set; }
+    public string MessageText { get; set; } = string.Empty;
+    public bool IsRead { get; set; } = false;
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-    public virtual ServiceProviderProfile Profile { get; set; } = null!;
-}
-```
-
-#### Step 3: Controller & Endpoint
-```csharp
-[HttpGet("{profileId:guid}/hours")]
-public async Task<IActionResult> GetWorkerHours(Guid profileId)
-{
-    var hours = await _workerRepository.GetBusinessHoursAsync(profileId);
-    return Ok(hours);
+    public User Sender { get; set; } = null!;
+    public User Recipient { get; set; } = null!;
 }
 ```
 
 ---
 
-### 3.2 Feature Blueprint 2: Worker Portfolio Photos Showcase
-Enables verified workers to upload photos of completed projects (e.g. electrical switchboards installed, plumbing fittings completed).
+### 2.3 ASP.NET Core SignalR Real-Time Hub (`src/KajBazar.API/Hubs/ChatHub.cs`)
 
-#### Step 1: SQL Migration Table
-```sql
-CREATE TABLE worker_portfolio_photos (
-    photo_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    profile_id UUID NOT NULL REFERENCES service_provider_profiles(profile_id) ON DELETE CASCADE,
-    photo_url VARCHAR(500) NOT NULL,
-    caption VARCHAR(255),
-    display_order INT DEFAULT 0,
-    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
-);
+```csharp
+using System.Security.Claims;
+using KajBazar.Core.Entities;
+using KajBazar.Infrastructure.Data;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.SignalR;
 
-CREATE INDEX idx_portfolio_profile ON worker_portfolio_photos(profile_id);
+namespace KajBazar.API.Hubs;
+
+[Authorize]
+public class ChatHub : Hub
+{
+    private readonly KajBazarDbContext _context;
+
+    public ChatHub(KajBazarDbContext context)
+    {
+        _context = context;
+    }
+
+    public async Task SendMessage(Guid recipientUserId, string messageText)
+    {
+        var senderIdStr = Context.User?.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (!Guid.TryParse(senderIdStr, out var senderUserId))
+            return;
+
+        // 1. Persist message to database
+        var message = new ChatMessage
+        {
+            SenderUserId = senderUserId,
+            RecipientUserId = recipientUserId,
+            MessageText = messageText,
+            CreatedAt = DateTime.UtcNow
+        };
+        _context.Set<ChatMessage>().Add(message);
+        await _context.SaveChangesAsync();
+
+        // 2. Broadcast in real time via WebSockets to recipient's client connection
+        await Clients.User(recipientUserId.ToString()).SendAsync("ReceiveMessage", new
+        {
+            id = message.Id,
+            senderUserId = senderUserId,
+            messageText = messageText,
+            createdAt = message.CreatedAt
+        });
+    }
+}
 ```
 
-#### Step 2: C# Domain Entity
+---
+
+### 2.4 React Frontend Chat Drawer Component (`client/src/components/ChatDrawer.jsx`)
+
+```javascript
+import React, { useState, useEffect } from 'react';
+import api from '../services/api';
+
+export const ChatDrawer = ({ recipientUserId, recipientName, onClose }) => {
+  const [messages, setMessages] = useState([]);
+  const [inputText, setInputText] = useState('');
+
+  const handleSend = async (e) => {
+    e.preventDefault();
+    if (!inputText.trim()) return;
+
+    try {
+      const response = await api.post('/chat/send', {
+        recipientUserId,
+        messageText: inputText,
+      });
+      setMessages([...messages, response.data]);
+      setInputText('');
+    } catch (err) {
+      console.error('Failed to send message', err);
+    }
+  };
+
+  return (
+    <div className="chat-drawer">
+      <div className="chat-header">
+        <h4>Chat with {recipientName}</h4>
+        <button onClick={onClose} className="btn-close">✕</button>
+      </div>
+      <div className="chat-body">
+        {messages.map((msg) => (
+          <div key={msg.id} className={`chat-bubble ${msg.isMine ? 'mine' : 'theirs'}`}>
+            <p>{msg.messageText}</p>
+            <span className="timestamp">{new Date(msg.createdAt).toLocaleTimeString()}</span>
+          </div>
+        ))}
+      </div>
+      <form onSubmit={handleSend} className="chat-footer">
+        <input
+          type="text"
+          value={inputText}
+          onChange={(e) => setInputText(e.target.value)}
+          placeholder="Type a message..."
+        />
+        <button type="submit" className="btn btn-primary">Send</button>
+      </form>
+    </div>
+  );
+};
+```
+
+---
+
+## 3. Routine Automated Database Maintenance
+
+To keep PostgreSQL operating at peak velocity:
+
+### 3.1 Weekly Database Maintenance Shell Script (`/usr/local/bin/pg-maintenance.sh`)
+
+```bash
+#!/usr/bin/env bash
+set -eo pipefail
+
+DB_NAME="kajbazar_db"
+
+echo "[$(date)] Running VACUUM ANALYZE on $DB_NAME..."
+psql -U postgres -d "$DB_NAME" -c "VACUUM ANALYZE VERBOSE;"
+
+echo "[$(date)] Reindexing high-traffic search indexes..."
+psql -U postgres -d "$DB_NAME" -c "REINDEX INDEX CONCURRENTLY idx_worker_profiles_search;"
+psql -U postgres -d "$DB_NAME" -c "REINDEX INDEX CONCURRENTLY idx_reviews_worker;"
+
+echo "[$(date)] Maintenance complete!"
+```
+
+---
+
+## 4. Conclusion & Roadmap to Volume 09
+
+Congratulations! You now know how to evolve KajBazar, perform zero-downtime database expansions, audit security dependencies, and add enterprise real-time features like WebSockets and appointments!
+
+In the next volume, we will study **Application Security & Incident Response**:
+👉 **Proceed to [Volume 09: Security & Incident Response Guide](09-security-and-incident-response-guide.md)**
+
+---
+
+## 5. Complete End-to-End Feature 2: Service Booking & Appointment Scheduling
+
+Let us implement the complete source code for **Service Bookings & Appointments**.
+
+### 5.1 Database Schema (`sql/06_booking_feature.sql`)
+
+```sql
+DO $$ BEGIN
+    CREATE TYPE booking_status AS ENUM ('pending', 'confirmed', 'in_progress', 'completed', 'cancelled');
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
+
+CREATE TABLE IF NOT EXISTS bookings (
+    id SERIAL PRIMARY KEY,
+    customer_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    worker_profile_id INT NOT NULL REFERENCES service_provider_profiles(id) ON DELETE CASCADE,
+    category_id INT NOT NULL REFERENCES categories(id) ON DELETE RESTRICT,
+    scheduled_date TIMESTAMPTZ NOT NULL,
+    service_address TEXT NOT NULL,
+    problem_description TEXT NOT NULL,
+    status booking_status NOT NULL DEFAULT 'pending',
+    estimated_cost NUMERIC(10, 2),
+    created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_bookings_worker ON bookings (worker_profile_id, scheduled_date);
+CREATE INDEX IF NOT EXISTS idx_bookings_customer ON bookings (customer_id, scheduled_date);
+```
+
+---
+
+### 5.2 C# Domain Entity (`src/KajBazar.Core/Entities/Booking.cs`)
+
 ```csharp
 namespace KajBazar.Core.Entities;
 
-public class WorkerPortfolioPhoto
+public enum BookingStatus
 {
-    public Guid PhotoId { get; set; } = Guid.NewGuid();
-    public Guid ProfileId { get; set; }
-    public string PhotoUrl { get; set; } = string.Empty;
-    public string? Caption { get; set; }
-    public int DisplayOrder { get; set; } = 0;
+    Pending,
+    Confirmed,
+    InProgress,
+    Completed,
+    Cancelled
+}
+
+public class Booking
+{
+    public int Id { get; set; }
+    public Guid CustomerId { get; set; }
+    public int WorkerProfileId { get; set; }
+    public int CategoryId { get; set; }
+    public DateTime ScheduledDate { get; set; }
+    public string ServiceAddress { get; set; } = string.Empty;
+    public string ProblemDescription { get; set; } = string.Empty;
+    public BookingStatus Status { get; set; } = BookingStatus.Pending;
+    public decimal? EstimatedCost { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
-    public virtual ServiceProviderProfile Profile { get; set; } = null!;
+    public User Customer { get; set; } = null!;
+    public ServiceProviderProfile WorkerProfile { get; set; } = null!;
+    public Category Category { get; set; } = null!;
 }
 ```
 
 ---
 
-## 4. Dependency Auditing & Upgrades
+### 5.3 ASP.NET Core Booking Controller (`src/KajBazar.API/Controllers/BookingsController.cs`)
 
-### 4.1 Auditing NuGet Packages in .NET
-Check for security advisories and outdated packages:
-```bash
-# Check for vulnerable packages
-dotnet list package --vulnerable
-
-# Check for outdated packages
-dotnet list package --outdated
-```
-
-To upgrade a package (e.g. `Npgsql.EntityFrameworkCore.PostgreSQL`):
-```bash
-dotnet add src/KajBazar.Infrastructure/KajBazar.Infrastructure.csproj package Npgsql.EntityFrameworkCore.PostgreSQL --version 8.0.4
-```
-*Always run `dotnet test` immediately after upgrading packages to verify nothing broke!*
-
-### 4.2 Auditing npm Dependencies in React
-Check for vulnerabilities in JavaScript packages:
-```bash
-cd client
-npm audit
-
-# Automatically fix non-breaking vulnerabilities
-npm audit fix
-```
-
----
-
-## 5. Server Hygiene & Log Rotation
-
-### 5.1 Preventing "Disk Full" Outages with `logrotate`
-If Nginx or ASP.NET Core writes millions of lines to log files without cleaning them up, your server will eventually run out of disk space (`0 bytes available`). When this happens, PostgreSQL stops accepting writes, and the site crashes!
-
-Configure `/etc/logrotate.d/kajbazar`:
-```ini
-/var/log/kajbazar/*.log {
-    daily
-    missingok
-    rotate 14
-    compress
-    delaycompress
-    notifempty
-    create 0640 deploy www-data
-    sharedscripts
-}
-```
-*This automatically compresses logs daily and deletes logs older than 14 days.*
-
-### 5.2 Vacuuming and Database Statistics Refresh
-Every Sunday at 3:00 AM, run database maintenance:
-```bash
-psql -U postgres -d kajbazar_db -c "VACUUM (VERBOSE, ANALYZE);"
-```
-
----
-
-## 6. Application Health Checks & Uptime Monitoring
-
-### 6.1 Implementing the `/healthz` Health Check Endpoint
-Add standard ASP.NET Core Health Checks in `Program.cs`:
 ```csharp
-builder.Services.AddHealthChecks()
-    .AddNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")!);
+using System.Security.Claims;
+using KajBazar.Core.Entities;
+using KajBazar.Infrastructure.Data;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
-// Map endpoint in pipeline
-app.MapHealthChecks("/healthz");
+namespace KajBazar.API.Controllers;
+
+[ApiController]
+[Route("api/[controller]")]
+[Authorize]
+public class BookingsController : ControllerBase
+{
+    private readonly KajBazarDbContext _context;
+
+    public BookingsController(KajBazarDbContext context)
+    {
+        _context = context;
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> CreateBooking([FromBody] CreateBookingRequest request)
+    {
+        var customerIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (!Guid.TryParse(customerIdStr, out var customerId))
+            return Unauthorized();
+
+        var booking = new Booking
+        {
+            CustomerId = customerId,
+            WorkerProfileId = request.WorkerProfileId,
+            CategoryId = request.CategoryId,
+            ScheduledDate = request.ScheduledDate,
+            ServiceAddress = request.ServiceAddress,
+            ProblemDescription = request.ProblemDescription,
+            Status = BookingStatus.Pending
+        };
+
+        _context.Set<Booking>().Add(booking);
+        await _context.SaveChangesAsync();
+
+        return Ok(booking);
+    }
+
+    [HttpGet("my-bookings")]
+    public async Task<IActionResult> GetMyBookings()
+    {
+        var customerIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (!Guid.TryParse(customerIdStr, out var customerId))
+            return Unauthorized();
+
+        var bookings = await _context.Set<Booking>()
+            .Include(b => b.WorkerProfile)
+                .ThenInclude(wp => wp.User)
+            .Include(b => b.Category)
+            .Where(b => b.CustomerId == customerId)
+            .OrderByDescending(b => b.ScheduledDate)
+            .ToListAsync();
+
+        return Ok(bookings);
+    }
+}
+
+public record CreateBookingRequest(
+    int WorkerProfileId,
+    int CategoryId,
+    DateTime ScheduledDate,
+    string ServiceAddress,
+    string ProblemDescription
+);
 ```
-
-Now, visiting `http://localhost:5000/healthz` returns `Healthy` in 1 millisecond if both the API and database are functioning properly.
-
-### 6.2 External Uptime Monitoring
-Connect a free uptime monitoring service (like Uptime Kuma or Better Stack) to ping `https://kajbazar.com/healthz` every 60 seconds. If the server fails to reply, it instantly sends an SMS or Telegram alert to your phone!
 
 ---
 
-## 7. Next Steps
+## 6. Complete End-to-End Feature 3: SMS Verification Gateway Integration
 
-Your application is now built for long-term survival, smooth upgrades, and continuous feature delivery.
+Let us implement SMS One-Time Password (OTP) verification for Bangladeshi mobile numbers:
 
-Next, study how to protect KajBazar from hackers, malicious attacks, and data breaches:
-👉 **[Volume 09: Security & Incident Response Guide](09-security-and-incident-response-guide.md)**
+### 6.1 C# SMS Service Implementation (`src/KajBazar.Infrastructure/Services/SmsService.cs`)
+
+```csharp
+using System.Net.Http.Json;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+
+namespace KajBazar.Infrastructure.Services;
+
+public interface ISmsService
+{
+    Task<bool> SendOtpAsync(string phoneNumber, string otpCode);
+}
+
+public class SmsService : ISmsService
+{
+    private readonly HttpClient _httpClient;
+    private readonly IConfiguration _config;
+    private readonly ILogger<SmsService> _logger;
+
+    public SmsService(HttpClient httpClient, IConfiguration config, ILogger<SmsService> logger)
+    {
+        _httpClient = httpClient;
+        _config = config;
+        _logger = logger;
+    }
+
+    public async Task<bool> SendOtpAsync(string phoneNumber, string otpCode)
+    {
+        try
+        {
+            var apiKey = _config["Sms:ApiKey"];
+            var senderId = _config["Sms:SenderId"] ?? "KajBazar";
+            var message = $"[KajBazar] Your verification code is: {otpCode}. Valid for 5 minutes. Do not share this code.";
+
+            // Local Bangladeshi SMS API endpoint (e.g. SSL Wireless / Greenweb / Teletalk)
+            var payload = new
+            {
+                api_key = apiKey,
+                senderid = senderId,
+                number = phoneNumber,
+                message = message
+            };
+
+            var response = await _httpClient.PostAsJsonAsync("https://api.smsnet.bd/sendsms", payload);
+            if (response.IsSuccessStatusCode)
+            {
+                _logger.LogInformation("SMS OTP sent successfully to {Phone}", phoneNumber);
+                return true;
+            }
+
+            _logger.LogWarning("SMS API returned non-success code: {Status}", response.StatusCode);
+            return false;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to dispatch SMS OTP to {Phone}", phoneNumber);
+            return false;
+        }
+    }
+}
+```

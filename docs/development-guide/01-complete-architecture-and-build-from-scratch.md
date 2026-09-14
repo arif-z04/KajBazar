@@ -3,387 +3,747 @@
 
 ---
 
-## 📖 Welcome, Future Builder!
+## 📖 Welcome, Future Software Engineer!
 
-If you have never built a full-stack web application before, or if words like "3-tier architecture", "Entity Framework", "Dependency Injection", and "REST API" make you feel intimidated—**relax**. Take a deep breath. 
+If you have never built a full-stack software application before, or if phrases like *"3-tier layered architecture"*, *"Entity Framework Core"*, *"Dependency Injection"*, *"REST API"*, and *"Single Page Application"* make your head spin—**take a deep breath**. You are in the right place.
 
-This document was written specifically to explain every single brick and mortar of **KajBazar** as if you are starting from absolute scratch on a brand-new, empty computer. We assume zero prior knowledge of enterprise software patterns. Every concept will be explained using real-world physical analogies before we look at terminal commands or code.
+This comprehensive guide was written specifically to explain every single brick, beam, and nail of **KajBazar** as if you are starting from an absolute clean slate on a brand-new computer with nothing installed. We assume zero prior knowledge of enterprise software engineering patterns. Every single concept will first be explained using intuitive, physical real-world analogies before we touch a terminal, write a command, or inspect a single line of code.
+
+By the time you finish this volume, you will not only understand how KajBazar is structured; you will understand **why** professional software engineers structure modern enterprise web systems this way, how computers talk to each other across networks, and how to construct this entire project from a blank terminal.
 
 ---
 
-## 📑 Detailed Table of Contents
+## 📑 Master Table of Contents
 
 1. [The "Dumb Person" Mental Model: How Modern Web Systems Actually Work](#1-the-dumb-person-mental-model-how-modern-web-systems-actually-work)
-   - 1.1 The Restaurant Analogy (Frontend, Backend, Database)
-   - 1.2 What is a Client (Browser / React)?
-   - 1.3 What is a Server (ASP.NET Core 8 Web API)?
-   - 1.4 What is a Database (PostgreSQL)?
-   - 1.5 What is HTTP and JSON (The Waiter's Notepad)?
-   - 1.6 What is an Operating System Process and Port?
+   - 1.1 The Restaurant Analogy: Customer, Waiter, Kitchen, and Cold Storage
+   - 1.2 What is a Client (The Browser, DOM, and React.js)?
+   - 1.3 What is a Server (ASP.NET Core 8 Kestrel Web API)?
+   - 1.4 What is a Database (PostgreSQL Relational Storage)?
+   - 1.5 What is HTTP and JSON (The Universal Language of the Web)?
+   - 1.6 What is an Operating System Process, Thread, and Network Port?
+   - 1.7 How the Internet Moves Packets: DNS, IP Addresses, TCP Handshakes, and Sockets
 2. [High-Level Architecture of KajBazar](#2-high-level-architecture-of-kajbazar)
    - 2.1 The 3-Tier Layered Architecture
-   - 2.2 Why We Divided the Backend into 3 C# Projects (Clean Architecture)
-   - 2.3 Visual Request-Response Lifecycle Diagram
-   - 2.4 Separation of Concerns: The Golden Rule of Software
+   - 2.2 Why We Divided the Backend into 3 C# Projects (Clean Architecture / Onion Model)
+   - 2.3 The Dependency Inversion Principle Explained Simply
+   - 2.4 Separation of Concerns: The Golden Rule of Maintainable Systems
+   - 2.5 ASCII Architecture Blueprint of the Entire System
 3. [Prerequisites & Machine Setup](#3-prerequisites--machine-setup)
-   - 3.1 Operating System & Hardware Requirements
-   - 3.2 Installing Git (Step-by-Step for Ubuntu/Linux, macOS, and Windows)
-   - 3.3 Installing .NET 8 SDK (Step-by-Step and PATH Verification)
-   - 3.4 Installing Node.js & npm (Using NVM for Version Isolation)
-   - 3.5 Installing PostgreSQL 15+ (Setting Up Passwords and Service)
-   - 3.6 Installing Postman / curl / VS Code Extensions
+   - 3.1 Hardware, RAM, CPU, and Disk Space Requirements
+   - 3.2 Operating System Guides (Ubuntu/Debian Linux, macOS, and Windows 11)
+   - 3.3 Installing and Configuring Git
+   - 3.4 Installing .NET 8 SDK (SDK vs Runtime vs CLI)
+   - 3.5 Installing Node.js & npm (Using NVM for Version Control)
+   - 3.6 Installing and Securing PostgreSQL 15+
+   - 3.7 Recommended Developer Tooling (VS Code, C# Dev Kit, Postman, curl)
 4. [Step-by-Step Construction from an Empty Directory](#4-step-by-step-construction-from-an-empty-directory)
-   - 4.1 Step 1: Initialize the Git Repository and Project Folder
-   - 4.2 Step 2: Create the .NET Solution and 4 Projects
+   - 4.1 Step 1: Initialize the Root Folder and Git Repository
+   - 4.2 Step 2: Create the .NET Solution and 4 Project Libraries
    - 4.3 Step 3: Wire Up Project References (Inter-Project Dependencies)
    - 4.4 Step 4: Install Required NuGet Packages
    - 4.5 Step 5: Initialize the Frontend Application with Vite & React
    - 4.6 Step 6: Install Frontend npm Packages
    - 4.7 Step 7: Create the Database SQL Scripts Directory
+   - 4.8 Step 8: Initialize Documentation and Diagrams
 5. [Deep Dive into the Solution Files and `.csproj` XML](#5-deep-dive-into-the-solution-files-and-csproj-xml)
-   - 5.1 Understanding `KajBazar.sln`
-   - 5.2 Anatomy of `KajBazar.Core.csproj`
-   - 5.3 Anatomy of `KajBazar.Infrastructure.csproj`
-   - 5.4 Anatomy of `KajBazar.API.csproj`
-   - 5.5 Anatomy of `KajBazar.Tests.csproj`
-   - 5.6 Anatomy of `client/package.json`
-6. [Deep Dive into the Folder Structure](#6-deep-dive-into-the-folder-structure)
-   - 6.1 Root Directory Walkthrough
-   - 6.2 Backend Folder Anatomy (`src/`)
-   - 6.3 Frontend Folder Anatomy (`client/`)
-   - 6.4 Database Folder Anatomy (`sql/`)
-   - 6.5 Test Folder Anatomy (`tests/`)
-   - 6.6 Documentation & Diagrams Anatomy (`docs/`)
-7. [The Data Flow: From User Click to Disk and Back](#7-the-data-flow-from-user-click-to-disk-and-back)
-   - 7.1 Step 1: User Types in the Browser
-   - 7.2 Step 2: React Component Captures Event
-   - 7.3 Step 3: Axios Prepares and Sends HTTP Request
-   - 7.4 Step 4: Network Cable & Kestrel Web Server
-   - 7.5 Step 5: ASP.NET Core Middleware Pipeline
-   - 7.6 Step 6: Controller Receives DTO & Validates
-   - 7.7 Step 7: Repository Executes EF Core LINQ Query
-   - 7.8 Step 8: Npgsql Driver Translates to Raw SQL
-   - 7.9 Step 9: PostgreSQL Reads Tables & Executes Trigger
-   - 7.10 Step 10: The Response Returns to the User
+   - 5.1 Understanding `KajBazar.sln` Line-by-Line
+   - 5.2 Anatomy of `KajBazar.Core.csproj` Line-by-Line
+   - 5.3 Anatomy of `KajBazar.Infrastructure.csproj` Line-by-Line
+   - 5.4 Anatomy of `KajBazar.API.csproj` Line-by-Line
+   - 5.5 Anatomy of `KajBazar.Tests.csproj` Line-by-Line
+   - 5.6 Anatomy of `client/package.json` Line-by-Line
+   - 5.7 Anatomy of `client/vite.config.js` Line-by-Line
+   - 5.8 Anatomy of `.gitignore` Line-by-Line
+6. [Deep Dive into the Folder Structure and Every File](#6-deep-dive-into-the-folder-structure-and-every-file)
+   - 6.1 Master Repository Tree Listing
+   - 6.2 Detailed Explanation of Every Directory and File
+   - 6.3 Configuration Files: `appsettings.json`, `appsettings.Development.json`, `launchSettings.json`
+7. [The Lifecycle of a Web Request: From User Click to Disk and Back](#7-the-lifecycle-of-a-web-request-from-user-click-to-disk-and-back)
+   - 7.1 Chronological 22-Step Trace of a Search Request
+   - 7.2 What Happens in the Browser (DOM Events, React State, Axios)
+   - 7.3 What Happens on the Network (TCP Packets, TLS, HTTP Headers)
+   - 7.4 What Happens in Kestrel & ASP.NET Core Middleware
+   - 7.5 What Happens in the Controller & Dependency Injection
+   - 7.6 What Happens in Entity Framework Core & Npgsql
+   - 7.7 What Happens Inside PostgreSQL (Engine, Buffers, B-Tree Index, Disk I/O)
+   - 7.8 The Journey Back: JSON Serialization, HTTP 200 OK, React Virtual DOM Reconciliation
 8. [Running the Entire Platform Locally](#8-running-the-entire-platform-locally)
-   - 8.1 Database Initialization
-   - 8.2 Running Backend API
-   - 8.3 Running Frontend Vite Server
-   - 8.4 Verifying Full-Stack Integration
-9. [Common Beginner Pitfalls When Building from Scratch](#9-common-beginner-pitfalls-when-building-from-scratch)
+   - 8.1 Database Initialization: Creating DB, running DDL, running seed data
+   - 8.2 Running Backend API with `dotnet run`
+   - 8.3 Running Frontend Vite Server with `npm run dev`
+   - 8.4 Verifying Full-Stack Integration in the Browser
+   - 8.5 Testing Live Endpoints with `curl`
+9. [Common Beginner Pitfalls & How to Avoid Them](#9-common-beginner-pitfalls-and-how-to-avoid-them)
    - 9.1 Circular Dependencies Between Projects
-   - 9.2 Port Collisions (Port 5000 or 5173 Already in Use)
-   - 9.3 Case Sensitivity in PostgreSQL vs C#
-   - 9.4 Forgetting `await` in Async Methods
-10. [Conclusion & Next Steps](#10-conclusion--next-steps)
+   - 9.2 Port Collisions (Port 5000, 5432, 5173 Already in Use)
+   - 9.3 Case Sensitivity in PostgreSQL vs C# (Snake_case vs PascalCase)
+   - 9.4 Forgetting `await` in Asynchronous Methods
+   - 9.5 CORS Errors (Cross-Origin Resource Sharing)
+   - 9.6 Environment Variable and Connection String Misconfigurations
+10. [Hands-on Beginner Exercises & Practical Challenges](#10-hands-on-beginner-exercises-and-practical-challenges)
+    - 10.1 Exercise 1: Adding a New Field to an Entity
+    - 10.2 Exercise 2: Adding a Custom Health Check Endpoint
+    - 10.3 Exercise 3: Adding a Custom Filter to the Frontend
+    - 10.4 Exercise 4: Writing a Custom Middleware for Request Duration
+    - 10.5 Exercise 5: Adding a Worker Profile Card Badge
+11. [Frequently Asked Questions (FAQ) for Absolute Beginners](#11-frequently-asked-questions-faq-for-absolute-beginners)
+12. [Conclusion & Roadmap to Volume 02](#12-conclusion-and-roadmap-to-volume-02)
 
 ---
 
 ## 1. The "Dumb Person" Mental Model: How Modern Web Systems Actually Work
 
-### 1.1 The Restaurant Analogy (Frontend, Backend, Database)
+Before touching any technical terminology, let us understand what software applications actually do in the physical world.
 
-Imagine you walk into a nice restaurant in Patuakhali called **"The KajBazar Cafe"**.
+### 1.1 The Restaurant Analogy: Customer, Waiter, Kitchen, and Cold Storage
+
+Imagine a busy, traditional Bengali restaurant in Patuakhali called **"KajBazar Dining"**. Every day, hundreds of people walk in to eat lunch. To serve people smoothly without chaos, the restaurant divides work among four distinct roles:
 
 ```
-+---------------------------------------------------------------------------------+
-|                              THE RESTAURANT ANALOGY                              |
-|                                                                                 |
-|   [ Customer at Table ]        [ The Waiter ]             [ The Kitchen Cook ]  |
-|         (FRONTEND)                (BACKEND)                   (DATABASE)        |
-|                                                                                 |
-|  Look at printed menu.  --->  Takes order note.   --->  Walks to walk-in fridge |
-|  Decide on grilled fish.      Checks if allowed.        Pulls raw fish & spices |
-|  Smiles and taps table.       Validates order rules.    Cooks & arranges plate  |
-|                                                                                 |
-|  Sees steaming hot plate <--- Delivers plated fish <--- Handed dish from kitchen|
-|  Eats and is satisfied.       Hands over bill.          Updates pantry ledger   |
-+---------------------------------------------------------------------------------+
++----------------------------------------------------------------------------------------------------+
+|                                    THE RESTAURANT ANALOGY                                          |
+|                                                                                                    |
+|  [ Customer at Table ]        [ The Waiter ]             [ The Head Chef ]     [ Cold Storage Room]|
+|       (FRONTEND)                 (BACKEND)                  (DATABASE ENGINE)       (PHYSICAL DISK)|
+|                                                                                                    |
+|  1. Looks at printed menu.   2. Takes order pad.        3. Verifies ingredients.4. Opens metal bins|
+|  2. Decides on Ilish Polao.  3. Validates order:           Reads recipe ledger.    Pulls fresh fish|
+|  3. Signals waiter & orders.    - Is table valid?          Directs line cooks.     Pulls rice/ghee |
+|                             4. Walks order to kitchen.  5. Plates hot meal.        Updates ledger  |
+|                                                                                                    |
+|  8. Receives hot plate! <--- 7. Carries plate to table <--- 6. Hands plate over                     |
+|     Eats, leaves review.        Collects payment note.         Prepares next order.                |
++----------------------------------------------------------------------------------------------------+
 ```
 
-Let's map each part to software:
-1. **The Dining Table (Frontend / User Interface)**:
-   - This is what the customer actually sees, touches, and clicks. The nice tablecloth, the menu cards, the buttons. In KajBazar, this is the **React.js Single Page Application** running in Google Chrome or Mozilla Firefox on your computer or smartphone.
-2. **The Waiter (Backend Web API / ASP.NET Core 8)**:
-   - The customer never enters the kitchen! That would be chaotic and dangerous. Instead, the customer tells the waiter: *"Please bring me a list of verified electricians in Dumki"*.
-   - The waiter checks the rules: *"Is this customer logged in? Is the request polite and valid?"*. If yes, the waiter walks into the kitchen, gets the information, formats it nicely, and carries it back to the table. In KajBazar, this is our **C# ASP.NET Core 8 Web API**.
-3. **The Kitchen Pantry & Refrigerator (Database / PostgreSQL)**:
-   - This is where the raw ingredients are safely locked away in organized shelves and cold rooms. Nobody from the public can touch the shelves. Only authorized kitchen staff (the backend) can open the door with their secret key. In KajBazar, this is our **PostgreSQL Relational Database**.
+Let us break down each physical role and see how it maps directly to KajBazar:
 
-### 1.2 What is a Client (Browser / React)?
-A "Client" is any program that runs on your personal device (laptop, phone, tablet). 
-When you visit `http://localhost:5173`, your browser downloads HTML, JavaScript, and CSS files. The JavaScript runs inside your browser. It renders buttons, text boxes, and search cards. It reacts instantly when you type.
+1. **The Customer (Frontend - React.js in the Web Browser)**:
+   - The customer sits at a table. They cannot go into the kitchen. They do not know how the stove works, where the raw fish is stored, or how the chef prepares the spices.
+   - The customer only sees what is placed in front of them: a visual menu with pretty pictures, prices, and buttons.
+   - In our application, **React.js** is the customer-facing interface running inside the user's Google Chrome or Firefox browser. It draws buttons, cards, search bars, and dropdown menus on the screen.
 
-### 1.3 What is a Server (ASP.NET Core 8 Web API)?
-A "Server" is a computer program running in the background, listening 24 hours a day for messages arriving over the internet or network. It doesn't have a screen or pretty buttons. It only cares about raw data. It receives questions like:
-- *"Does a user with email `rahim@example.com` and password `Secret123` exist?"*
-It answers in fractions of a second:
-- *"Yes! Here is a secure digital passport (JWT token) proving who they are."*
+2. **The Waiter (Backend API - ASP.NET Core 8 Web API)**:
+   - The customer cannot shout directly into the refrigerator to grab food. If customers could walk into the kitchen, someone might steal food, contaminate ingredients, or cause an explosion.
+   - Instead, the customer speaks to the **Waiter**.
+   - The waiter listens politely, checks the rules (*"Are you 18 or older to order this? Is the kitchen currently open? Did you provide your phone number?"*), writes down the request on an order slip in standard shorthand (JSON), and carries it to the kitchen.
+   - In KajBazar, **ASP.NET Core 8** is the waiter. It sits between the user's browser and the database. It enforces security, checks passwords, validates business rules (e.g. *Rule BR-06: Customers must explicitly click 'Call Worker' to view phone numbers*), and handles errors gracefully.
 
-### 1.4 What is a Database (PostgreSQL)?
-A database is specialized software designed to write data onto physical computer hard drives and retrieve it in milliseconds, even if millions of rows exist. Unlike a simple text file or Excel spreadsheet, a relational database (RDBMS) like PostgreSQL guarantees **ACID properties**:
-- **Atomicity**: If an operation has 3 steps (e.g., deducting balance, creating invoice, updating status) and step 2 fails, steps 1 and 3 are automatically rolled back. No corrupt half-finished data!
-- **Consistency**: All rules (foreign keys, check constraints, unique emails) are strictly enforced by the database engine itself.
-- **Isolation**: Hundreds of users can search and review workers at the exact same millisecond without colliding.
-- **Durability**: Once PostgreSQL says "Saved", that data will survive even if the computer's power cord is ripped out of the wall.
+3. **The Head Chef & Kitchen (Database Engine - PostgreSQL)**:
+   - The kitchen receives the order slip from the waiter. The chef does not talk to the customer directly.
+   - The chef knows where every spice, vegetable, and cut of meat is stored. The chef follows strict mathematical recipes (SQL queries) to find, slice, filter, and combine ingredients into a finished dish.
+   - In KajBazar, **PostgreSQL** is the database management engine. It knows how to search through 100,000 service providers in 2 milliseconds using indexed B-trees.
 
-### 1.5 What is HTTP and JSON (The Waiter's Notepad)?
-- **HTTP (Hypertext Transfer Protocol)**: The standard set of grammar and rules computers use to talk over the internet.
-  - `GET`: "Please give me information." (e.g. `GET /api/workers`)
-  - `POST`: "Please create something new." (e.g. `POST /api/auth/register`)
-  - `PUT`: "Please replace or update existing information." (e.g. `PUT /api/reviews/{id}`)
-  - `DELETE`: "Please delete this item." (e.g. `DELETE /api/workers/{id}`)
-- **JSON (JavaScript Object Notation)**: The universal text language used to exchange data. It looks like human-readable key-value pairs:
-```json
+4. **The Cold Storage / Walk-In Fridge (Physical Disk Storage)**:
+   - If the restaurant loses power, the raw food does not magically vanish because it is physically locked inside heavy steel refrigerators on solid ground.
+   - In computer terms, this is **Non-Volatile Storage (SSD/NVMe)**. Even if your computer restarts or crashes, PostgreSQL ensures that all user accounts, phone numbers, and reviews are permanently recorded on disk in Write-Ahead Log (WAL) files.
+
+---
+
+### 1.2 What is a Client (The Browser, DOM, and React.js)?
+
+When you double-click Google Chrome or Safari, you are launching an application called a **Web Browser**. But what does a browser actually do?
+
+A browser is essentially a rendering engine and JavaScript execution machine:
+1. It downloads text files over the network: HTML (HyperText Markup Language), CSS (Cascading Style Sheets), and JS (JavaScript).
+2. It parses HTML into a tree structure of memory objects called the **Document Object Model (DOM)**. For example:
+   ```html
+   <div>
+     <h1>Welcome to KajBazar</h1>
+     <button>Find an Electrician</button>
+   </div>
+   ```
+3. It paints those objects onto your physical computer monitor as colored pixels.
+4. When a user clicks a button, JavaScript catches that hardware click event and decides what to do next.
+
+#### Why React.js Instead of Plain Vanilla JavaScript?
+In older websites built with plain JavaScript, if a customer changed their search filter from "Plumber" to "Electrician", the programmer had to manually write code to delete 50 HTML elements from the screen and create 50 new HTML elements one by one. This was slow, error-prone, and caused screen flickering.
+
+**React.js** solves this using a brilliant concept called the **Virtual DOM**:
+- React keeps an imaginary, lightweight copy of the webpage in computer memory.
+- When data changes (for example, 5 new electricians arrive from the server), React compares the old virtual tree with the new virtual tree (a process called *Reconciliation* or *Diffing*).
+- React calculates the absolute minimum number of real pixels that need to change on the monitor and updates only those exact pixels in microseconds.
+- This creates the silky-smooth, instant-loading feeling of modern web applications.
+
+---
+
+### 1.3 What is a Server (ASP.NET Core 8 Kestrel Web API)?
+
+A **Server** sounds like a mysterious black box in a science fiction movie, but in reality:
+> **A server is simply a regular computer program that runs continuously in an infinite loop, listening on a specific network port for incoming messages from other computers.**
+
+In KajBazar, our server program is written in **C#** and runs on top of **.NET 8** using an ultra-high-performance web server component called **Kestrel**.
+
+When Kestrel starts up on your computer, it tells the Linux or Windows operating system:
+> *"Hey Operating System! Please reserve Port 5000 for me. Whenever any network packet arrives at this computer addressed to Port 5000, do not drop it. Wake me up and hand that packet directly to my process!"*
+
+Kestrel can process over **1,000,000 requests per second** per server node because .NET 8 compiles C# into highly optimized native machine code using a Just-In-Time (JIT) compiler.
+
+---
+
+### 1.4 What is a Database (PostgreSQL Relational Storage)?
+
+Why can't we just store all our user accounts and worker profiles in a simple `.txt` or `.json` file on our computer?
+
+Imagine if 500 customers all clicked *"Submit Review"* at the exact same millisecond:
+1. Customer A opens `reviews.txt` to append a review.
+2. Customer B opens `reviews.txt` at the exact same moment.
+3. Customer A saves their file, overwriting the file.
+4. Customer B saves their file, completely wiping out Customer A's review! This disaster is called a **Race Condition** or **Write Conflict**.
+5. Furthermore, searching a text file with 1,000,000 rows for *"electricians in Dumki"* would require reading every single letter from start to finish (a Full Table Scan), freezing your computer for 30 seconds.
+
+A **Relational Database Management System (RDBMS)** like **PostgreSQL** solves all of these problems through mathematical guarantees known as **ACID**:
+- **Atomicity (All or Nothing)**: If an operation involves multiple steps (e.g., deducting payment and creating a job ticket), either all steps succeed together, or if one fails, the entire transaction rolls back as if nothing ever happened.
+- **Consistency**: The database enforces strict rules. A phone number must match the Bangladeshi mobile pattern (`^01[3-9]\d{8}$`). A review rating must be between 1 and 5. You cannot insert a review for a worker that does not exist.
+- **Isolation**: 10,000 users can read and write at the exact same moment without corrupting each other's data. PostgreSQL uses **Multi-Version Concurrency Control (MVCC)** so readers never block writers, and writers never block readers.
+- **Durability**: Once PostgreSQL says *"Saved"*, the data is committed to non-volatile disk logs (WAL). Even if someone unplugs the computer power cable a microsecond later, no data is lost upon reboot.
+
+---
+
+### 1.5 What is HTTP and JSON (The Universal Language of the Web)?
+
+When your browser (React) talks to your server (ASP.NET Core), how do they communicate? They speak a protocol called **HTTP (HyperText Transfer Protocol)**.
+
+An HTTP request is nothing more than plain English text formatted in a specific pattern sent over a network cable.
+
+#### Anatomy of an HTTP Request:
+```http
+POST /api/auth/login HTTP/1.1
+Host: localhost:5000
+Content-Type: application/json
+User-Agent: Mozilla/5.0 (Chrome/120.0)
+Content-Length: 58
+
 {
-  "fullName": "Md. Rafiqul Islam",
-  "trade": "Electrician",
-  "hourlyRate": 350.00,
-  "isVerified": true
+  "identifier": "01711223344",
+  "password": "Password123#"
 }
 ```
 
-### 1.6 What is an Operating System Process and Port?
-When an application runs on a computer:
-- A **Process** is a running instance of a program in RAM. For example, `dotnet` running our backend is one process with a unique Process ID (PID like `12450`).
-- A **Port** is like an apartment door number on your computer. Your computer has 65,535 ports:
-  - Port `80`: Standard HTTP web traffic.
-  - Port `443`: Secure HTTPS encrypted traffic.
-  - Port `5000`: Where our ASP.NET Core Web API listens.
-  - Port `5173`: Where our Vite React frontend development server listens.
-  - Port `5432`: Where PostgreSQL listens for database queries.
+Let us decode every line:
+1. `POST`: The HTTP **Verb** (Method). Tells the server what action we want to perform:
+   - `GET`: "Please give me data" (e.g., fetch list of plumbers).
+   - `POST`: "Please create new data" (e.g., register a user, submit a review).
+   - `PUT` / `PATCH`: "Please update existing data" (e.g., update phone number).
+   - `DELETE`: "Please remove data" (e.g., delete a spam review).
+2. `/api/auth/login`: The **URL Path** (Route). Tells the server which exact door to knock on.
+3. `Host: localhost:5000`: Where the server lives.
+4. `Content-Type: application/json`: Tells the server that the payload inside the envelope is formatted in JSON.
+5. `{ "identifier": "...", "password": "..." }`: The **Request Body** (Payload).
+
+#### What is JSON?
+**JSON (JavaScript Object Notation)** is a universal text format for representing structured data:
+- Objects are enclosed in curly braces `{}`.
+- Lists/arrays are enclosed in square brackets `[]`.
+- Data is stored in key-value pairs: `"key": "value"`.
+- It is human-readable, lightweight, and supported by every programming language on Earth (C#, Python, JavaScript, Go, Rust, Java).
+
+---
+
+### 1.6 What is an Operating System Process, Thread, and Network Port?
+
+To understand how software runs on your computer, you must understand three core OS concepts:
+
+1. **Process**:
+   - A process is an instance of a computer program executing in its own isolated memory sandbox.
+   - When you run `dotnet run`, your operating system assigns it a unique **PID (Process ID)**, such as `PID 48291`, and gives it a dedicated slice of RAM. Process A cannot spy on or modify Process B's memory.
+
+2. **Thread**:
+   - A thread is a worker inside a process. A single process can have dozens or hundreds of threads running concurrently across multiple CPU cores.
+   - When 50 customers make requests to KajBazar at the exact same moment, .NET uses a **Thread Pool** to assign a thread to each customer simultaneously.
+
+3. **Network Port**:
+   - Imagine your computer is a massive apartment building with an address (IP Address: `127.0.0.1`).
+   - The apartment building has 65,535 separate apartment doors, called **Ports**.
+   - Port 5432 is where Mr. PostgreSQL lives.
+   - Port 5000 is where Ms. ASP.NET Core Kestrel lives.
+   - Port 5173 is where Mr. Vite Development Server lives.
+   - When network packets arrive at your computer, the port number tells the operating system which exact apartment door to deliver the letter to.
+
+---
+
+### 1.7 How the Internet Moves Packets: DNS, IP Addresses, TCP Handshakes, and Sockets
+
+When you type `http://localhost:5173` into your browser, what actually happens physically inside your computer?
+
+```
+[Browser: Chrome] 
+       │ 
+       ▼ (1) Resolves "localhost" to IP 127.0.0.1 (Loopback Adapter)
+[Network Stack: TCP/IP]
+       │
+       ▼ (2) SYN Packet (Hey Port 5000, can we talk?)
+[Kestrel: Port 5000]
+       │
+       ▼ (3) SYN-ACK Packet (Yes, I am ready! Here is my acknowledgement.)
+[Browser: Chrome]
+       │
+       ▼ (4) ACK Packet (Great! Connection established. Here is my HTTP GET request.)
+[Established TCP Socket]
+```
+
+1. **DNS / Host Resolution**: The browser checks `/etc/hosts` or DNS to convert a human name (`localhost` or `kajbazar.com`) into a machine IP address (`127.0.0.1` or `159.65.130.45`).
+2. **TCP 3-Way Handshake**: Computers do not just blurt out data into the wire. They establish a guaranteed, reliable connection using the SYN -> SYN-ACK -> ACK handshake. If any packet gets lost on noisy Wi-Fi, TCP automatically resends it until verified.
+3. **Socket Stream**: Once connected, an open pipe (a network socket) is created between the browser process and the Kestrel process, allowing high-speed two-way data streaming.
 
 ---
 
 ## 2. High-Level Architecture of KajBazar
 
+Now that you have the mental model of clients, servers, and databases, let us inspect the architectural blueprint of **KajBazar**.
+
 ### 2.1 The 3-Tier Layered Architecture
 
-KajBazar follows the industry-standard **Three-Tier Architecture**:
+KajBazar is built on the industry-standard **3-Tier Layered Architecture**:
 
 ```
-+=============================================================================+
-|                        TIER 1: PRESENTATION LAYER                           |
-|                      (client/ - React 18 SPA + Vite)                        |
-|                                                                             |
-|  - Pages: HomePage, WorkerDirectoryPage, WorkerProfilePage, AdminDashboard   |
-|  - Components: WorkerCard, WorkerFilter, StarRating, Navigation, Modals    |
-|  - State: AuthContext (Stores Current User, Role, JWT in localStorage)      |
-|  - HTTP Services: Axios API client with automatic Bearer Token headers      |
-+======================================+======================================+
-                                       |
-                           JSON over HTTPS (Port 5000)
-                                       |
-+======================================v======================================+
-|                        TIER 2: APPLICATION & LOGIC                          |
-|                       (src/ - ASP.NET Core 8 Web API)                       |
-|                                                                             |
-|  +-----------------------------------------------------------------------+  |
-|  | KajBazar.API (Presentation Layer of Backend)                          |  |
-|  | - Controllers: AuthController, WorkersController, ReviewsController    |  |
-|  | - Middleware: ExceptionHandlingMiddleware, Authentication/CORS       |  |
-|  +-----------------------------------+-----------------------------------+  |
-|                                      |                                      |
-|  +-----------------------------------v-----------------------------------+  |
-|  | KajBazar.Core (Domain Core - Zero External Dependencies)              |  |
-|  | - Entities: User, ServiceProviderProfile, Review, Recommendation      |  |
-|  | - DTOs: AuthDtos, WorkerDtos, ReviewDtos, AdminDtos, GeographyDtos    |  |
-|  | - Interfaces: IUserRepository, IServiceProviderRepository, etc.       |  |
-|  +-----------------------------------+-----------------------------------+  |
-|                                      |                                      |
-|  +-----------------------------------v-----------------------------------+  |
-|  | KajBazar.Infrastructure (Implementation & Data Access)                |  |
-|  | - KajBazarDbContext (EF Core Npgsql Mapping)                          |  |
-|  | - Repositories: EF Core implementations of Core Interfaces            |  |
-|  | - Services: AuthService (BCrypt Hashing + JWT Generation)             |  |
-|  +-----------------------------------------------------------------------+  |
-+======================================+======================================+
-                                       |
-                             Npgsql TCP (Port 5432)
-                                       |
-+======================================v======================================+
-|                          TIER 3: DATA STORAGE                               |
-|                         (PostgreSQL 15+ Database)                           |
-|                                                                             |
-|  - 12 Tables (users, service_providers, reviews, recommendations, etc.)    |
-|  - Check Constraints, Foreign Keys with ON DELETE CASCADE / RESTRICT        |
-|  - Triggers: update_worker_rating_stats() recalculates averages on reviews  |
-|  - B-Tree Indexes: Fast lookup by category, location, and rating            |
-+=============================================================================+
++-----------------------------------------------------------------------------------+
+|                            TIER 1: PRESENTATION LAYER                             |
+|                                                                                   |
+|   Technology: React 18, Vite, React Router, Axios, Pure Modern CSS               |
+|   Location:   client/                                                             |
+|   Role:       Renders UI, handles user input, executes client-side validation,    |
+|               manages JWT session state in browser localStorage.                  |
++-----------------------------------------------------------------------------------+
+                                         │
+                                         │ HTTPS / JSON REST API Calls
+                                         ▼
++-----------------------------------------------------------------------------------+
+|                            TIER 2: APPLICATION & API LAYER                        |
+|                                                                                   |
+|   Technology: ASP.NET Core 8 Web API, C# 12, Kestrel, JWT Bearer, BCrypt         |
+|   Location:   src/KajBazar.API & src/KajBazar.Core & src/KajBazar.Infrastructure |
+|   Role:       Authenticates users, authorizes roles (Admin/Worker/Customer),      |
+|               enforces business logic (Rule BR-06), orchestrates repositories.    |
++-----------------------------------------------------------------------------------+
+                                         │
+                                         │ SQL Queries over TCP (Port 5432)
+                                         ▼
++-----------------------------------------------------------------------------------+
+|                            TIER 3: DATA PERSISTENCE LAYER                         |
+|                                                                                   |
+|   Technology: PostgreSQL 15+, PL/pgSQL Triggers, Foreign Keys, B-Tree Indexes     |
+|   Location:   sql/ & Physical Database Storage (kajbazar_db)                      |
+|   Role:       Stores 12 normalized relational tables, maintains ACID guarantees,  |
+|               executes rating calculation trigger on review mutations.            |
++-----------------------------------------------------------------------------------+
 ```
-
-### 2.2 Why We Divided the Backend into 3 C# Projects (Clean Architecture)
-
-In traditional, poorly-written software, developers dump all their code into a single folder. The database queries are mixed with web page buttons, and password hashing is mixed with HTML templates. When something breaks, everything breaks!
-
-In KajBazar, we use **Clean Architecture** by creating three separate C# projects:
-
-1. **`KajBazar.Core` (The Brain)**:
-   - This project contains our **Domain Models** (`User`, `ServiceProviderProfile`, `Review`) and **Interfaces** (`IUserRepository`, `IServiceProviderRepository`).
-   - **Crucial Rule**: `KajBazar.Core` has **ZERO** dependencies on databases, HTTP, or external frameworks. It is 100% pure C#. If we decide to swap PostgreSQL for MongoDB or Oracle tomorrow, `KajBazar.Core` never has to change!
-2. **`KajBazar.Infrastructure` (The Muscle)**:
-   - This project knows how to talk to PostgreSQL. It uses **Entity Framework Core 8** and **Npgsql**.
-   - It implements the interfaces defined in `KajBazar.Core`. For example, `KajBazar.Core` says *"I need an `IUserRepository` that can find a user by email"*. `KajBazar.Infrastructure` provides `UserRepository.cs`, which writes the actual SQL query to find that user in PostgreSQL.
-3. **`KajBazar.API` (The Voice)**:
-   - This is the web-facing part of the backend. It receives incoming HTTP requests from the internet, checks security tokens, calls the appropriate repository, and converts the output into clean JSON.
 
 ---
 
-### 2.3 Visual Request-Response Lifecycle Diagram
+### 2.2 Why We Divided the Backend into 3 C# Projects (Clean Architecture / Onion Model)
 
-```mermaid
-sequenceDiagram
-    autonumber
-    actor Consumer as Consumer (Web Browser)
-    participant React as React 18 Frontend
-    participant API as ASP.NET Core 8 Web API
-    participant Auth as JWT Authentication Middleware
-    participant Repo as EF Core Repository
-    participant DB as PostgreSQL Database
+If you inspect the `src/` directory of KajBazar, you will notice that the backend is not a single giant folder of code. It is cleanly partitioned into three separate C# projects:
 
-    Consumer->>React: Clicks "Electricians in Dumki, Patuakhali"
-    React->>API: GET /api/workers?categoryId=1&districtId=2&upazilaId=5
-    API->>Auth: Check if endpoint requires auth (Public endpoint: Passed)
-    API->>Repo: GetWorkersAsync(categoryId=1, districtId=2, upazilaId=5)
-    Repo->>DB: SELECT * FROM service_providers WHERE verification_status='VERIFIED' ...
-    DB-->>Repo: Returns matching 4 worker records
-    Repo-->>API: List<ServiceProviderDto>
-    API-->>React: HTTP 200 OK + JSON Worker List
-    React-->>Consumer: Renders 4 Worker Cards with Ratings & Contact Buttons
+```
+src/
+├── KajBazar.Core/             <-- The Heart (Domain Entities, Interfaces, DTOs)
+├── KajBazar.Infrastructure/   <-- The Muscles (DbContext, SQL Repositories, BCrypt)
+└── KajBazar.API/              <-- The Face (Controllers, Middleware, HTTP Pipeline)
+```
+
+Why did we do this instead of putting everything into one project?
+
+Imagine you are building an expensive house:
+- If you weld the plumbing pipes directly into the brick foundation, and 5 years later a pipe leaks, you have to bulldoze the entire house to replace a pipe!
+- In software, if your database code is tangled inside your web controllers, you cannot upgrade your database, change your framework, or test your business rules without breaking everything.
+
+This separation follows the famous **Clean Architecture (Onion Architecture)** principles invented by Robert C. Martin ("Uncle Bob"):
+
+```
+           +---------------------------------------------------------+
+           |                      KajBazar.API                       |
+           |             (Controllers, Middlewares, HTTP)            |
+           |                            │                            |
+           |                            ▼                            |
+           |             +-----------------------------+             |
+           |             |   KajBazar.Infrastructure   |             |
+           |             | (DbContext, SQL, Repos, JWT)|             |
+           |             |              │              |             |
+           |             |              ▼              |             |
+           |             |     +-----------------+     |             |
+           |             |     |  KajBazar.Core  |     |             |
+           |             |     | (Entities, DTOs)|     |             |
+           |             |     +-----------------+     |             |
+           |             +-----------------------------+             |
+           +---------------------------------------------------------+
+```
+
+1. **`KajBazar.Core` (The Center of the Universe)**:
+   - Contains pure business concepts: what is a `User`? What is a `ServiceProviderProfile`? What is a `Review`?
+   - Contains repository contracts (interfaces): `IUserRepository`, `IReviewRepository`.
+   - **Crucial Rule**: `KajBazar.Core` has **ZERO** dependencies on external libraries or databases! It does not know PostgreSQL exists. It does not know HTTP exists. It is pure, timeless C# domain logic.
+
+2. **`KajBazar.Infrastructure` (The Outside World Adapter)**:
+   - Contains the actual implementation of the database logic using **Entity Framework Core** and **Npgsql**.
+   - Contains `KajBazarDbContext`, `UserRepository`, `ReviewRepository`, and `AuthService` (which hashes passwords with BCrypt and creates JWT tokens).
+   - References `KajBazar.Core`.
+
+3. **`KajBazar.API` (The Presentation & Entrypoint)**:
+   - Contains the HTTP controllers (`AuthController`, `WorkersController`, `ReviewsController`), configuration files (`appsettings.json`), and `Program.cs`.
+   - References both `KajBazar.Core` and `KajBazar.Infrastructure` so it can register dependencies and boot up the web server.
+
+---
+
+### 2.3 The Dependency Inversion Principle Explained Simply
+
+The **Dependency Inversion Principle (DIP)** is the "D" in the famous **SOLID** principles of object-oriented design.
+
+It states:
+> *High-level modules should not depend on low-level modules. Both should depend on abstractions (interfaces).*
+
+#### The Physical Analogy: The Electric Wall Socket
+In your bedroom, you have a 3-pin electrical wall socket.
+- The wall socket does not care whether you plug in a Samsung smartphone charger, a Dyson vacuum cleaner, or a Sony PlayStation 5.
+- The wall socket defines an **Interface** (delivers 220V AC power through 3 prongs).
+- Any appliance that implements that 3-pin plug interface will work seamlessly.
+- You do not need to rewire your house's electrical panel every time you buy a new phone!
+
+#### In KajBazar:
+Our `WorkersController` needs to fetch verified workers.
+- Instead of talking directly to PostgreSQL or writing raw SQL queries inside the controller, the controller only asks for `IServiceProviderRepository`:
+  ```csharp
+  // The Controller depends ONLY on the abstract interface (the wall socket)
+  public class WorkersController : ControllerBase
+  {
+      private readonly IServiceProviderRepository _workerRepo;
+
+      public WorkersController(IServiceProviderRepository workerRepo)
+      {
+          _workerRepo = workerRepo;
+      }
+  }
+  ```
+- If tomorrow we decide to switch from PostgreSQL to MongoDB or Amazon DynamoDB, we only write a new repository class that implements `IServiceProviderRepository`. **The controller code does not change by a single comma!**
+
+---
+
+### 2.4 Separation of Concerns: The Golden Rule of Maintainable Systems
+
+Every file in KajBazar has **one single job** (Single Responsibility Principle):
+- **Entities** (`User.cs`, `Review.cs`): Define the shape of data in memory.
+- **DTOs** (`RegisterRequestDto.cs`, `WorkerSummaryDto.cs`): Define what data travels over the network wire.
+- **Interfaces** (`IReviewRepository.cs`): Define what operations are possible without worrying about how they are executed.
+- **Repositories** (`ReviewRepository.cs`): Execute the actual SQL/LINQ queries against the database.
+- **Controllers** (`ReviewsController.cs`): Receive HTTP requests, check authorization headers, call repositories, and return HTTP status codes.
+- **Middleware** (`ExceptionHandlingMiddleware.cs`): Catches unexpected crashes across the entire app and formats friendly error messages.
+
+---
+
+### 2.5 ASCII Architecture Blueprint of the Entire System
+
+Here is the complete birds-eye architectural blueprint showing how all components interact:
+
+```
++===================================================================================================+
+|                                    KAJBAZAR SYSTEM ARCHITECTURE                                   |
++===================================================================================================+
+
+  [ WEB BROWSER: DESKTOP OR MOBILE ]
+                 │
+                 │ 1. User interacts with UI (Clicks "Find Plumber" or "Call Worker")
+                 ▼
+  [ REACT 18 SPA FRONTEND ] (Vite Dev Server :5173 / Nginx Production :80/:443)
+  ├── Global State: AuthContext (Token, User Profile, Role: Customer/Worker/Admin)
+  ├── Routing: react-router-dom (/workers, /profile/:id, /recommend, /admin)
+  ├── API Client: Axios Client with Interceptors (Injects 'Authorization: Bearer <token>')
+  └── UI Components: WorkerCard (Rule BR-06), WorkerFilter, DetailModal, AdminDashboard
+                 │
+                 │ 2. HTTP/1.1 REST Request over TCP Socket (JSON Payload)
+                 ▼
+  [ KESTREL WEB SERVER (ASP.NET CORE 8) ] (:5000)
+  ├── Exception Handling Middleware (Translates unhandled bugs into RFC 7807 Problem Details)
+  ├── CORS Middleware (Allows React at localhost:5173 to communicate safely)
+  ├── Routing Middleware (Directs /api/workers?districtId=1 to WorkersController.Search())
+  ├── Authentication Middleware (Decodes JWT token signature using HMAC-SHA256 Secret)
+  └── Authorization Middleware (Enforces [Authorize(Roles = "admin")] policies)
+                 │
+                 │ 3. Method Invocation via Dependency Injection
+                 ▼
+  [ CONTROLLER LAYER (KajBazar.API) ]
+  ├── AuthController           ──> Register, Login, Token Refresh
+  ├── WorkersController        ──> Search, Filter, Profile, Reveal Phone (BR-06)
+  ├── ReviewsController        ──> Submit Rating (1-5), Prevent Duplicates
+  ├── RecommendationsController──> Submit Community Worker, Admin Approval
+  ├── AdminController          ──> Moderation, Verification, Audit Logs
+  ├── CategoriesController     ──> CRUD Categories (Electrician, Plumber, etc.)
+  └── GeographyController      ──> Districts & Upazilas Lookup
+                 │
+                 │ 4. Invokes Repository Contracts (Domain Interfaces)
+                 ▼
+  [ INFRASTRUCTURE LAYER (KajBazar.Infrastructure) ]
+  ├── KajBazarDbContext (EF Core 8 Object-Relational Mapper)
+  │   ├── Snake_case naming convention translator
+  │   ├── PostgreSQL Enum type converters (user_role, verification_status)
+  │   └── Relationship mappings (HasMany, HasOne, OnDelete Restrict)
+  ├── Repositories (Npgsql Execution Engine)
+  └── Security Services (BCrypt Password Hasher, JWT Token Generator)
+                 │
+                 │ 5. Parameterized SQL Queries & Transactions (Port 5432)
+                 ▼
+  [ POSTGRESQL 15+ RELATIONAL DATABASE (kajbazar_db) ]
+  ├── 12 Relational Tables (users, roles, profiles, categories, reviews, audit_logs...)
+  ├── Foreign Key Constraints & Check Constraints (Regex for BD phone: ^01[3-9]\d{8}$)
+  ├── B-Tree Indexes (Fast lookups on worker status, category, location)
+  └── PL/pgSQL Trigger (trg_update_worker_rating_stats: auto-recalculates average rating)
 ```
 
 ---
 
 ## 3. Prerequisites & Machine Setup
 
-Before building or running the project, you need the following standard development tools installed on your operating system (Linux, macOS, or Windows 11 with WSL2).
+Let us now prepare your physical computer so that you can compile and run KajBazar without any errors.
 
-### 3.1 Operating System & Hardware Requirements
-- **OS**: Linux (Ubuntu 20.04+, Debian 11+, Arch, Fedora), macOS Monterey+, or Windows 10/11 (WSL2 recommended).
-- **RAM**: Minimum 4 GB (8 GB+ recommended).
-- **Disk Space**: At least 2 GB free disk space.
+### 3.1 Hardware, RAM, CPU, and Disk Space Requirements
 
-### 3.2 Installing Git
-Git tracks every line of code history. Check if installed:
+KajBazar is designed to be lightweight, efficient, and capable of running on modest development machines:
+
+| Hardware Component | Minimum Requirement | Recommended Specification |
+|:---|:---|:---|
+| **CPU** | Dual-core 2.0 GHz (x86_64 or ARM64) | Quad-core Intel Core i5 / AMD Ryzen 5 / Apple M1+ |
+| **RAM** | 4 GB | 8 GB or 16 GB |
+| **Disk Storage** | 5 GB free space | 15 GB free space (SSD preferred) |
+| **Operating System**| Ubuntu 20.04+, Debian 11+, macOS 12+, Windows 10/11 | Ubuntu 22.04 / 24.04 LTS or Arch Linux |
+
+---
+
+### 3.2 Operating System Guides (Ubuntu/Debian Linux, macOS, and Windows 11)
+
+#### For Ubuntu / Debian Linux:
+Update your package index first:
 ```bash
+sudo apt update && sudo apt upgrade -y
+sudo apt install -y curl wget gnupg2 software-properties-common apt-transport-https lsb-release build-essential
+```
+
+#### For macOS:
+Install the Homebrew package manager if you haven't already:
+```bash
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+```
+
+#### For Windows 11:
+We strongly recommend using **Windows Subsystem for Linux 2 (WSL2)** running Ubuntu 22.04:
+```powershell
+# Run in Windows PowerShell as Administrator:
+wsl --install -d Ubuntu-22.04
+```
+Once installed, open your Ubuntu terminal and follow the Linux instructions.
+
+---
+
+### 3.3 Installing and Configuring Git
+
+Git is the distributed version control system that tracks every line of code change:
+
+```bash
+# Ubuntu / Debian
+sudo apt install -y git
+
+# macOS
+brew install git
+
+# Verify installation
 git --version
+# Expected output: git version 2.34.1 or higher
 ```
-If not installed:
-- **Ubuntu/Debian**: `sudo apt update && sudo apt install -y git`
-- **macOS**: `brew install git`
-- **Windows**: Download from [git-scm.com](https://git-scm.com).
 
-### 3.3 Installing .NET 8 SDK
-KajBazar is built on .NET 8 LTS (Long Term Support). Check if installed:
+Now configure your global developer identity (replace with your real name and email):
 ```bash
-dotnet --version
+git config --global user.name "Your Name"
+git config --global user.email "your.email@example.com"
+git config --global init.defaultBranch main
 ```
-If it is not installed or shows version 7 or older, install .NET 8 SDK:
-- **Linux (Official Script Method)**:
-  ```bash
-  curl -sSL https://dot.net/v1/dotnet-install.sh | bash -s -- --channel 8.0
-  echo 'export DOTNET_ROOT=$HOME/.dotnet' >> ~/.bashrc
-  echo 'export PATH=$PATH:$HOME/.dotnet' >> ~/.bashrc
-  source ~/.bashrc
-  dotnet --version
-  # Should print: 8.0.xxx
-  ```
-- **Ubuntu Package**: `sudo apt install -y dotnet-sdk-8.0`
-- **macOS**: `brew install dotnet-sdk`
-- **Windows**: Download the .NET 8 SDK installer from [dotnet.microsoft.com](https://dotnet.microsoft.com/download/dotnet/8.0).
 
-### 3.4 Installing Node.js & npm
-Node.js runs our JavaScript development tools, and npm installs frontend packages.
+---
+
+### 3.4 Installing .NET 8 SDK (SDK vs Runtime vs CLI)
+
+It is crucial to understand the difference between the **.NET Runtime** and the **.NET SDK**:
+- **.NET Runtime**: Only allows you to *run* pre-compiled `.dll` applications. It does NOT have a compiler!
+- **.NET SDK (Software Development Kit)**: Contains the C# compiler (`csc`), the build system (MSBuild), the CLI tool (`dotnet`), template generators, and the runtime. **You must install the SDK to develop KajBazar.**
+
+#### Installing .NET 8 SDK on Ubuntu/Debian:
 ```bash
-node --version
-npm --version
-```
-Requirements: Node.js version `18.x`, `20.x`, or `22.x`.
-If not installed:
-- **Linux / macOS (via NVM)**:
-  ```bash
-  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
-  source ~/.bashrc
-  nvm install 20
-  nvm use 20
-  ```
-- **Windows**: Download Node.js LTS installer from [nodejs.org](https://nodejs.org).
+# Register Microsoft package repository
+wget https://packages.microsoft.com/config/ubuntu/$(lsb_release -rs)/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
+sudo dpkg -i packages-microsoft-prod.deb
+rm packages-microsoft-prod.deb
 
-### 3.5 Installing PostgreSQL 15+
-PostgreSQL stores all users, worker profiles, reviews, and logs.
+# Install .NET 8 SDK
+sudo apt update
+sudo apt install -y dotnet-sdk-8.0
+
+# Verify installation
+dotnet --info
+```
+You should see output similar to:
+```text
+.NET SDK:
+ Version:           8.0.404
+ Commit:            0ec2f47285
+
+Runtime Environment:
+ OS Name:           ubuntu
+ OS Version:        22.04
+ Base Path:         /usr/lib/dotnet/sdk/8.0.404/
+```
+
+*Note: If your machine has multiple .NET SDK versions installed (e.g. .NET 10 preview and .NET 8), always ensure `dotnet --list-sdks` shows `8.0.xxx`. You can target a specific SDK using a `global.json` file if needed.*
+
+---
+
+### 3.5 Installing Node.js & npm (Using NVM for Version Control)
+
+Node.js is the JavaScript runtime that executes our frontend build tools. We strongly recommend using **NVM (Node Version Manager)** to install Node.js because it avoids permissions issues with `sudo npm`:
+
 ```bash
-psql --version
-```
-If not installed:
-- **Ubuntu/Debian**:
-  ```bash
-  sudo apt update
-  sudo apt install -y postgresql postgresql-contrib
-  sudo systemctl enable postgresql
-  sudo systemctl start postgresql
-  ```
-- **macOS**: `brew install postgresql@15 && brew services start postgresql@15`
-- **Windows**: Download installer from [postgresql.org](https://www.postgresql.org/download/windows/).
+# Install NVM
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
 
-### 3.6 Installing Postman / curl / VS Code
-- **VS Code**: The recommended code editor with the "C# Dev Kit" and "ES7+ React/Redux" extensions.
-- **curl**: Command-line HTTP tool built into all modern operating systems.
+# Activate NVM in current shell
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+
+# Install Node.js 20 LTS (Long Term Support)
+nvm install 20
+nvm use 20
+nvm alias default 20
+
+# Verify installation
+node -v
+# Expected: v20.18.0 or higher
+npm -v
+# Expected: 10.8.2 or higher
+```
+
+---
+
+### 3.6 Installing and Securing PostgreSQL 15+
+
+PostgreSQL is our relational database engine:
+
+```bash
+# Ubuntu / Debian
+sudo apt install -y postgresql postgresql-contrib
+
+# Start and enable PostgreSQL service on boot
+sudo systemctl start postgresql
+sudo systemctl enable postgresql
+
+# Verify status
+sudo systemctl status postgresql
+# Expected: Active: active (running)
+```
+
+Now, configure the default `postgres` superuser password so our application can connect:
+```bash
+# Set password for postgres system user
+sudo -u postgres psql -c "ALTER USER postgres PASSWORD 'postgres';"
+```
+
+Verify that you can connect to the database command line:
+```bash
+psql -U postgres -h localhost -c "SELECT version();"
+```
+You should see:
+```text
+                                                 version                                                  
+----------------------------------------------------------------------------------------------------------
+ PostgreSQL 16.3 (Ubuntu 16.3-1.pgdg22.04+1) on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 11.4.0) ...
+```
+
+---
+
+### 3.7 Recommended Developer Tooling
+
+To maximize your developer productivity, install the following recommended tools:
+
+1. **Visual Studio Code (VS Code)**:
+   - Free, lightweight, and modern code editor.
+   - Recommended Extensions:
+     - *C# Dev Kit* (by Microsoft)
+     - *Tailwind CSS IntelliSense* / *Modern CSS*
+     - *PostgreSQL* (by Chris Kolkman)
+     - *GitLens* (for visual git history)
+2. **Postman or Thunder Client**:
+   - For testing HTTP REST endpoints interactively.
+3. **curl & jq**:
+   - Standard command-line tools for firing HTTP requests and formatting JSON responses.
 
 ---
 
 ## 4. Step-by-Step Construction from an Empty Directory
 
-If you had to recreate this entire repository from a blank terminal on an empty machine, here are the exact commands you would run.
+Now comes the fun part! Imagine you are sitting in front of a completely blank directory called `Kajbazar`. Here is the exact command-by-command recipe to construct the entire project from scratch.
 
-### 4.1 Step 1: Initialize the Git Repository and Project Folder
+### 4.1 Step 1: Initialize the Root Folder and Git Repository
+
+Open your terminal:
 ```bash
 mkdir Kajbazar
 cd Kajbazar
 git init
 ```
 
-Create a root `.gitignore` file so we don't accidentally commit build artifacts, passwords, or dependencies:
+Create the standard `.gitignore` file to ensure build artifacts and temporary files are never accidentally committed to Git:
 ```bash
 cat << 'EOF' > .gitignore
-# .NET build output
+## .NET Core build artifacts
 bin/
 obj/
 *.user
 *.suo
+.vscode/
+.idea/
 
-# Node dependencies and build output
+## Node.js frontend artifacts
 node_modules/
 dist/
 .vite/
+npm-debug.log*
 
-# Environment and secrets
+## Environment secrets
 .env
-appsettings.Development.json
-*.local
+.env.local
+*.pfx
+*.pem
 
-# OS files
-.DS_Store
-Thumbs.db
+## Database files
+*.db
+*.sqlite
 EOF
 ```
 
-### 4.2 Step 2: Create the .NET Solution and 4 Projects
-A .NET Solution (`.sln`) is a master container that ties multiple projects together.
+Commit the initial configuration:
+```bash
+git add .gitignore
+git commit -m "chore: initialize repository and gitignore"
+```
+
+---
+
+### 4.2 Step 2: Create the .NET Solution and 4 Project Libraries
+
+A **Solution (`.sln`)** is a master container that groups multiple C# projects together so they can be compiled and tested with a single command.
+
+Execute these commands in the project root:
 
 ```bash
 # 1. Create the master solution file
 dotnet new sln -n KajBazar
 
-# 2. Create the Core Class Library
+# 2. Create the Domain Core class library (net8.0)
 dotnet new classlib -n KajBazar.Core -o src/KajBazar.Core -f net8.0
 
-# 3. Create the Infrastructure Class Library
+# 3. Create the Infrastructure class library (net8.0)
 dotnet new classlib -n KajBazar.Infrastructure -o src/KajBazar.Infrastructure -f net8.0
 
-# 4. Create the Web API project
-dotnet new webapi -n KajBazar.API -o src/KajBazar.API -f net8.0
+# 4. Create the Web API project (net8.0)
+dotnet new webapi -n KajBazar.API -o src/KajBazar.API -f net8.0 --no-openapi
 
-# 5. Create the xUnit Test project
+# 5. Create the xUnit Automated Test project (net8.0)
 dotnet new xunit -n KajBazar.Tests -o tests/KajBazar.Tests -f net8.0
 
 # 6. Add all 4 projects to the master solution
@@ -391,13 +751,21 @@ dotnet sln KajBazar.sln add src/KajBazar.Core/KajBazar.Core.csproj
 dotnet sln KajBazar.sln add src/KajBazar.Infrastructure/KajBazar.Infrastructure.csproj
 dotnet sln KajBazar.sln add src/KajBazar.API/KajBazar.API.csproj
 dotnet sln KajBazar.sln add tests/KajBazar.Tests/KajBazar.Tests.csproj
+
+# 7. Remove default template boilerplate files
+rm src/KajBazar.Core/Class1.cs
+rm src/KajBazar.Infrastructure/Class1.cs
+rm tests/KajBazar.Tests/UnitTest1.cs
 ```
 
+---
+
 ### 4.3 Step 3: Wire Up Project References (Inter-Project Dependencies)
-In Clean Architecture, dependencies point inward:
-- `KajBazar.Infrastructure` depends on `KajBazar.Core`.
-- `KajBazar.API` depends on `KajBazar.Infrastructure` and `KajBazar.Core`.
-- `KajBazar.Tests` depends on `KajBazar.Core`, `KajBazar.Infrastructure`, and `KajBazar.API`.
+
+Now we connect the projects following our Clean Architecture rules:
+1. `KajBazar.Infrastructure` must reference `KajBazar.Core`.
+2. `KajBazar.API` must reference both `KajBazar.Core` and `KajBazar.Infrastructure`.
+3. `KajBazar.Tests` must reference all three projects so it can test any component.
 
 ```bash
 # Infrastructure references Core
@@ -407,86 +775,155 @@ dotnet add src/KajBazar.Infrastructure/KajBazar.Infrastructure.csproj reference 
 dotnet add src/KajBazar.API/KajBazar.API.csproj reference src/KajBazar.Core/KajBazar.Core.csproj
 dotnet add src/KajBazar.API/KajBazar.API.csproj reference src/KajBazar.Infrastructure/KajBazar.Infrastructure.csproj
 
-# Tests reference all three
+# Tests reference all three projects
 dotnet add tests/KajBazar.Tests/KajBazar.Tests.csproj reference src/KajBazar.Core/KajBazar.Core.csproj
 dotnet add tests/KajBazar.Tests/KajBazar.Tests.csproj reference src/KajBazar.Infrastructure/KajBazar.Infrastructure.csproj
 dotnet add tests/KajBazar.Tests/KajBazar.Tests.csproj reference src/KajBazar.API/KajBazar.API.csproj
 ```
 
+---
+
 ### 4.4 Step 4: Install Required NuGet Packages
-NuGet is the official package manager for .NET (like npm for JavaScript).
+
+**NuGet** is the official package manager for .NET (analogous to `npm` for JavaScript or `pip` for Python). We need specific libraries to communicate with PostgreSQL, generate JWT tokens, hash passwords, and generate Swagger documentation.
 
 ```bash
-# Core packages (BCrypt for password hashing)
+# Core packages (BCrypt password hasher)
 dotnet add src/KajBazar.Core/KajBazar.Core.csproj package BCrypt.Net-Next --version 4.0.3
 
-# Infrastructure packages (EF Core, Npgsql PostgreSQL, Naming Conventions, JWT Tokens)
-dotnet add src/KajBazar.Infrastructure/KajBazar.Infrastructure.csproj package Npgsql.EntityFrameworkCore.PostgreSQL --version 8.0.2
+# Infrastructure packages (EF Core, Npgsql PostgreSQL Provider, Snake Case Naming)
+dotnet add src/KajBazar.Infrastructure/KajBazar.Infrastructure.csproj package Npgsql.EntityFrameworkCore.PostgreSQL --version 8.0.4
 dotnet add src/KajBazar.Infrastructure/KajBazar.Infrastructure.csproj package EFCore.NamingConventions --version 8.0.3
-dotnet add src/KajBazar.Infrastructure/KajBazar.Infrastructure.csproj package Microsoft.EntityFrameworkCore.Design --version 8.0.2
-dotnet add src/KajBazar.Infrastructure/KajBazar.Infrastructure.csproj package System.IdentityModel.Tokens.Jwt --version 8.0.2
+dotnet add src/KajBazar.Infrastructure/KajBazar.Infrastructure.csproj package Microsoft.EntityFrameworkCore --version 8.0.8
+dotnet add src/KajBazar.Infrastructure/KajBazar.Infrastructure.csproj package Microsoft.AspNetCore.Authentication.JwtBearer --version 8.0.8
 
-# API packages (Authentication Bearer, Swagger)
-dotnet add src/KajBazar.API/KajBazar.API.csproj package Microsoft.AspNetCore.Authentication.JwtBearer --version 8.0.2
-dotnet add src/KajBazar.API/KajBazar.API.csproj package Swashbuckle.AspNetCore --version 6.5.0
+# API packages (Swagger / OpenAPI Documentation Generator)
+dotnet add src/KajBazar.API/KajBazar.API.csproj package Swashbuckle.AspNetCore --version 6.6.2
+dotnet add src/KajBazar.API/KajBazar.API.csproj package Microsoft.AspNetCore.Authentication.JwtBearer --version 8.0.8
 
-# Test packages (In-Memory EF Core database for testing without PostgreSQL)
-dotnet add tests/KajBazar.Tests/KajBazar.Tests.csproj package Microsoft.EntityFrameworkCore.InMemory --version 8.0.2
+# Test packages (In-Memory Database for fast, zero-dependency unit tests)
+dotnet add tests/KajBazar.Tests/KajBazar.Tests.csproj package Microsoft.EntityFrameworkCore.InMemory --version 8.0.8
 ```
+
+Verify that the entire solution builds cleanly:
+```bash
+dotnet build KajBazar.sln
+# Expected: Build succeeded. 0 Warning(s), 0 Error(s).
+```
+
+---
 
 ### 4.5 Step 5: Initialize the Frontend Application with Vite & React
-Vite is the modern, blisteringly fast frontend build tool.
+
+Now let us build the frontend client using **Vite** (pronounced *"veet"*, the French word for "fast"). Vite is 10 to 50 times faster than the old `create-react-app` tool because it leverages native ES modules in modern browsers.
+
+In the project root:
 ```bash
-# Create client folder with React template
+# Create client directory using Vite React template
 npm create vite@latest client -- --template react
 
-# Move into client folder
 cd client
+npm install
 ```
 
-### 4.6 Step 6: Install Frontend npm Packages
-```bash
-# Install routing, HTTP client, and icon/styling utilities
-npm install react-router-dom axios
+---
 
-# Verify everything builds cleanly
-npm run build
+### 4.6 Step 6: Install Frontend npm Packages
+
+We need three essential packages for our React frontend:
+1. `axios`: For making HTTP requests to our ASP.NET Core backend.
+2. `react-router-dom`: For multi-page navigation without full browser reloads.
+3. `lucide-react`: For clean, modern SVG icons (stars, shield badges, phone icons).
+
+```bash
+cd client
+npm install axios react-router-dom lucide-react
 cd ..
 ```
 
+Verify that the frontend builds cleanly into static HTML/JS:
+```bash
+cd client
+npm run build
+cd ..
+# Expected: vite v5.x.x building for production... dist/index.html generated!
+```
+
+---
+
 ### 4.7 Step 7: Create the Database SQL Scripts Directory
+
+Create a dedicated `sql/` folder in the root to store all our raw SQL scripts:
 ```bash
 mkdir -p sql
-# In this directory, we store our 4 numbered SQL scripts:
-# 01_schema_ddl.sql       (Tables, indexes, triggers)
-# 02_seed_data.sql        (Districts, categories, verified test workers)
-# 03_crud_queries.sql     (CRUD testing statements)
-# 04_complex_queries.sql  (Analytical queries)
+```
+We will place 4 master SQL files inside this folder:
+- `sql/01_schema_ddl.sql`: Creates all 12 tables, indexes, constraints, and the rating recalculation trigger.
+- `sql/02_seed_data.sql`: Seeds roles, districts, upazilas, categories, test users, and verified workers with BCrypt hashes.
+- `sql/03_crud_queries.sql`: Contains operational CRUD queries for testing.
+- `sql/04_complex_queries.sql`: Contains 15 advanced analytical queries (window functions, rankings, aggregations).
+
+---
+
+### 4.8 Step 8: Initialize Documentation and Diagrams
+
+A professional project always maintains comprehensive documentation and architecture diagrams:
+```bash
+mkdir -p docs/development-guide
+mkdir -p docs/diagrams
+```
+
+Now let us commit our scaffolded project structure:
+```bash
+git add .
+git commit -m "feat: complete scaffolding of backend, frontend, database, and docs"
 ```
 
 ---
 
 ## 5. Deep Dive into the Solution Files and `.csproj` XML
 
-Let's look under the hood at the exact XML configuration files generated by .NET.
+Let us inspect the exact configuration files that tell the compiler how to build our software.
 
-### 5.1 Understanding `KajBazar.sln`
-The `.sln` file is a plain text configuration used by Visual Studio and the `dotnet` CLI to track which projects belong to the solution:
-```
+### 5.1 Understanding `KajBazar.sln` Line-by-Line
+
+When you open `KajBazar.sln` in a text editor, you see:
+```text
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KajBazar.Core", "src/KajBazar.Core/KajBazar.Core.csproj", "{GUID1}"
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KajBazar.Core", "src\KajBazar.Core\KajBazar.Core.csproj", "{47424C58-00C8-4DE3-BCF3-BFECEBE8AC31}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KajBazar.Infrastructure", "src/KajBazar.Infrastructure/KajBazar.Infrastructure.csproj", "{GUID2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KajBazar.Infrastructure", "src\KajBazar.Infrastructure\KajBazar.Infrastructure.csproj", "{6A0A9D21-F3B2-4E90-A6E5-B9F25091BCF2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KajBazar.API", "src/KajBazar.API/KajBazar.API.csproj", "{GUID3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KajBazar.API", "src\KajBazar.API\KajBazar.API.csproj", "{986C8D12-3B45-42E1-A65E-D2B12389CFE3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KajBazar.Tests", "tests/KajBazar.Tests/KajBazar.Tests.csproj", "{GUID4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KajBazar.Tests", "tests\KajBazar.Tests\KajBazar.Tests.csproj", "{3B8A7D91-E2F4-41A8-98C3-B4A1D2E5C9A1}"
 EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+...
 ```
 
-### 5.2 Anatomy of `KajBazar.Core.csproj`
+- `Microsoft Visual Studio Solution File`: Identifies the solution header format.
+- `Project("{FAE04EC0-301F...}")`: A unique GUID that identifies the project type (C# project).
+- `"KajBazar.Core"`: The human-readable name of the project.
+- `"src\KajBazar.Core\KajBazar.Core.csproj"`: The relative file path to the project definition.
+- `"{47424C58-00C8...}"`: A unique GUID assigned to this specific project so the build engine can track dependency graphs.
+
+---
+
+### 5.2 Anatomy of `KajBazar.Core.csproj` Line-by-Line
+
+Let us look inside `src/KajBazar.Core/KajBazar.Core.csproj`:
+
 ```xml
 <Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
@@ -496,15 +933,23 @@ EndProject
   <ItemGroup>
     <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
   </ItemGroup>
+
 </Project>
 ```
-- `<TargetFramework>net8.0</TargetFramework>`: Tells the compiler to target the .NET 8 LTS runtime.
-- `<Nullable>enable</Nullable>`: Turns on C# 8+ Nullable Reference Types. The compiler warns you if an object could be `null`, preventing the famous "NullReferenceException" crash!
-- `<ImplicitUsings>enable</ImplicitUsings>`: Automatically imports standard namespaces like `System`, `System.Collections.Generic`, `System.Threading.Tasks` so you don't have to write 20 `using` statements at the top of every file.
 
-### 5.3 Anatomy of `KajBazar.Infrastructure.csproj`
+- `<Project Sdk="Microsoft.NET.Sdk">`: Tells MSBuild to use the modern, lightweight .NET Core SDK build rules rather than the old legacy .NET Framework 4.8 rules.
+- `<TargetFramework>net8.0</TargetFramework>`: Tells the C# compiler to target **.NET 8.0 Long Term Support (LTS)**. This unlocks modern C# 12 language features like primary constructors and collection expressions.
+- `<ImplicitUsings>enable</ImplicitUsings>`: Automatically imports standard namespaces like `System`, `System.Collections.Generic`, `System.Linq`, and `System.Threading.Tasks` in every file so you don't have to write 15 `using` statements at the top of every single file.
+- `<Nullable>enable</Nullable>`: Turns on C#'s **Nullable Reference Types** feature. If a variable might be null, you must explicitly declare it with a question mark (e.g. `string? bio`). If you forget to check for null, the compiler warns you at build time, preventing dreaded `NullReferenceException` crashes!
+- `<PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />`: Pulls in the battle-tested BCrypt hashing algorithm for securely hashing passwords before storing them.
+
+---
+
+### 5.3 Anatomy of `KajBazar.Infrastructure.csproj` Line-by-Line
+
 ```xml
 <Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
@@ -517,19 +962,25 @@ EndProject
 
   <ItemGroup>
     <PackageReference Include="EFCore.NamingConventions" Version="8.0.3" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.2">
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
-    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.2" />
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.0.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.8" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.8" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.4" />
   </ItemGroup>
+
 </Project>
 ```
 
-### 5.4 Anatomy of `KajBazar.API.csproj`
+- `<ProjectReference Include="..\KajBazar.Core\KajBazar.Core.csproj" />`: Gives Infrastructure direct access to all Entities, DTOs, and Interfaces defined in Core.
+- `Npgsql.EntityFrameworkCore.PostgreSQL`: The official open-source database driver that connects Entity Framework Core directly to PostgreSQL.
+- `EFCore.NamingConventions`: Automatically converts C# PascalCase names (`ServiceProviderProfile`) to PostgreSQL snake_case names (`service_provider_profiles`).
+
+---
+
+### 5.4 Anatomy of `KajBazar.API.csproj` Line-by-Line
+
 ```xml
 <Project Sdk="Microsoft.NET.Sdk.Web">
+
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
@@ -542,223 +993,552 @@ EndProject
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.2" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.8" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
   </ItemGroup>
+
 </Project>
 ```
-Notice `Sdk="Microsoft.NET.Sdk.Web"`. This tells .NET that this project is a web server and automatically includes Kestrel, routing, JSON serializers, and ASP.NET Core middleware.
+
+- `<Project Sdk="Microsoft.NET.Sdk.Web">`: Notice `.Web` at the end! This tells MSBuild that this project is an executable web server application containing Kestrel, routing, and controller middleware.
+- `Swashbuckle.AspNetCore`: Automatically inspects our C# controllers and generates an interactive Swagger web page at `/swagger` where developers can test every API endpoint in their browser.
 
 ---
 
-## 6. Deep Dive into the Folder Structure
+### 5.5 Anatomy of `KajBazar.Tests.csproj` Line-by-Line
 
-Here is the complete project directory structure:
+```xml
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="coverlet.collector" Version="6.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="8.0.8" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
+    <PackageReference Include="xunit" Version="2.5.3" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.5.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\KajBazar.API\KajBazar.API.csproj" />
+    <ProjectReference Include="..\..\src\KajBazar.Core\KajBazar.Core.csproj" />
+    <ProjectReference Include="..\..\src\KajBazar.Infrastructure\KajBazar.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>
+```
+
+- `Microsoft.EntityFrameworkCore.InMemory`: Allows our automated tests to spin up an ephemeral, blazing-fast database entirely in RAM in 10 milliseconds without needing a real PostgreSQL instance running.
+- `xunit`: The premier unit testing framework for .NET.
+
+---
+
+### 5.6 Anatomy of `client/package.json` Line-by-Line
+
+Now let us examine the frontend configuration file:
+
+```json
+{
+  "name": "client",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "axios": "^1.7.7",
+    "lucide-react": "^0.453.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.27.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.11",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.3.2",
+    "vite": "^5.4.8"
+  }
+}
+```
+
+- `"type": "module"`: Enables modern ECMAScript Module (ESM) syntax (`import ... from ...` instead of `require(...)`).
+- `"scripts"`:
+  - `npm run dev`: Starts the local development server with Hot Module Replacement (HMR). When you edit a `.jsx` file, the browser updates instantly without a page refresh!
+  - `npm run build`: Compiles, minifies, and bundles all React components into ultra-compact JavaScript and CSS files in `client/dist/`.
+- `"dependencies"`: Libraries required at runtime by the user's browser.
+- `"devDependencies"`: Libraries only used on your machine during development and compilation.
+
+---
+
+### 5.7 Anatomy of `client/vite.config.js` Line-by-Line
+
+```javascript
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+
+// https://vitejs.dev/config/
+export default defineConfig({
+  plugins: [react()],
+  server: {
+    port: 5173,
+    proxy: {
+      '/api': {
+        target: 'http://localhost:5000',
+        changeOrigin: true,
+        secure: false,
+      },
+    },
+  },
+});
+```
+
+- `plugins: [react()]`: Teaches Vite how to compile JSX syntax (HTML inside JavaScript) into pure JavaScript function calls (`React.createElement`).
+- `port: 5173`: Forces the Vite development server to run on port 5173.
+- `proxy`: A developer lifesaver! Whenever React code makes a request to `/api/...`, Vite forwards it behind the scenes to `http://localhost:5000` (our ASP.NET Core backend). This completely eliminates CORS (Cross-Origin Resource Sharing) headaches during local development!
+
+---
+
+### 5.8 Anatomy of `.gitignore` Line-by-Line
+
+Let us inspect why every line in `.gitignore` is necessary:
+- `bin/` and `obj/`: Temporary compiled binary outputs from MSBuild. They are machine-specific and can always be regenerated with `dotnet build`. Committing them bloats your Git repository with gigabytes of useless binary junk.
+- `node_modules/`: Contains thousands of third-party JavaScript libraries downloaded by npm. It can exceed 300MB! Anyone can regenerate it instantly by running `npm install`.
+- `dist/`: The compiled frontend production bundle. Regenerated via `npm run build`.
+- `.env` / `*.pfx`: Secret environment variables, database passwords, and SSL private keys. **Never commit secrets to Git!**
+
+---
+
+## 6. Deep Dive into the Folder Structure and Every File
+
+Let us view the complete file map of KajBazar:
+
+### 6.1 Master Repository Tree Listing
 
 ```
-Kajbazar/
-├── KajBazar.sln                  # Master .NET Solution file
-├── prompt.md                     # Project requirements & mission prompt
-├── README.md                     # High-level overview & quickstart
-├── client/                       # React 18 Frontend Single Page Application
-│   ├── index.html                # HTML entry point with viewport & title
-│   ├── package.json              # Frontend scripts & dependencies
-│   ├── vite.config.js            # Vite build & development server config
+KajBazar/
+├── .gitignore
+├── KajBazar.sln
+├── README.md
+├── prompt.md
+├── client/
+│   ├── index.html
+│   ├── package.json
+│   ├── vite.config.js
 │   └── src/
-│       ├── App.jsx               # Route definitions & layout wrappers
-│       ├── index.jsx             # React DOM root render mount
-│       ├── components/           # Reusable UI widgets
-│       │   ├── Navigation.jsx    # Top navigation bar with role-based links
-│       │   └── WorkerComponents.jsx # WorkerCard, WorkerFilter, DetailModal
+│       ├── App.css
+│       ├── App.jsx
+│       ├── index.jsx
+│       ├── components/
+│       │   ├── Navigation.jsx
+│       │   └── WorkerComponents.jsx
 │       ├── context/
-│       │   └── AuthContext.jsx   # Global session state (user, token, role)
+│       │   └── AuthContext.jsx
 │       ├── pages/
-│       │   ├── HomePage.jsx      # Landing page, stats, quick category grid
-│       │   ├── WorkerDirectoryPage.jsx # Multi-filter worker search directory
-│       │   ├── WorkerProfilePage.jsx   # Worker details, reviews, contact
-│       │   ├── RecommendWorkerPage.jsx # Offline worker nomination form
-│       │   └── AuthAndAdminPages.jsx   # Login, Register, Admin Dashboard
-│       ├── services/
-│       │   └── api.js            # Axios client with JWT interceptor
-│       └── styles/
-│           └── App.css           # Responsive modern CSS design system
-├── src/                          # Backend ASP.NET Core 8 Web API
-│   ├── KajBazar.Core/            # Domain Entities, DTOs, and Interfaces
-│   │   ├── DTOs/                 # Data Transfer Objects
-│   │   │   ├── AdminDtos.cs
-│   │   │   ├── AuthDtos.cs
-│   │   │   ├── GeographyDtos.cs
-│   │   │   ├── RecommendationDtos.cs
-│   │   │   ├── ReviewDtos.cs
-│   │   │   └── WorkerDtos.cs
-│   │   ├── Entities/             # C# Database Models
-│   │   │   ├── User.cs
-│   │   │   ├── ServiceProviderProfile.cs
+│       │   ├── AuthAndAdminPages.jsx
+│       │   ├── HomePage.jsx
+│       │   ├── RecommendWorkerPage.jsx
+│       │   ├── WorkerDirectoryPage.jsx
+│       │   └── WorkerProfilePage.jsx
+│       └── services/
+│           └── api.js
+├── docs/
+│   ├── Class-diagrams.md
+│   ├── Database-details.md
+│   ├── Database-setup-and-integration.md
+│   ├── Frontend-guide.md
+│   ├── KajBazar_Project_Proposal_Formatted.md
+│   ├── Project-running-and-publishing.md
+│   ├── Testing-procedure.md
+│   ├── walkthrough.md
+│   ├── development-guide/
+│   │   ├── 00-master-overview-and-table-of-contents.md
+│   │   ├── 01-complete-architecture-and-build-from-scratch.md
+│   │   ├── 02-database-guide-and-production-hardening.md
+│   │   ├── 03-backend-aspnet-core-developer-guide.md
+│   │   ├── 04-frontend-react-developer-guide.md
+│   │   ├── 05-testing-guide-and-test-suites.md
+│   │   ├── 06-deployment-and-devops-guide.md
+│   │   ├── 07-troubleshooting-and-faq-guide.md
+│   │   ├── 08-maintenance-and-evolution-guide.md
+│   │   ├── 09-security-and-incident-response-guide.md
+│   │   └── 10-performance-optimization-and-scaling-guide.md
+│   └── diagrams/
+│       ├── 01_context_diagram.mmd
+│       ├── 02_dfd_level_0.mmd
+│       ├── 03_dfd_level_1.mmd
+│       ├── 04_dfd_level_2.mmd
+│       ├── 05_use_case_diagram.mmd
+│       ├── 06_activity_diagram_registration.mmd
+│       ├── 07_activity_diagram_search.mmd
+│       ├── 08_activity_diagram_review.mmd
+│       ├── 09_activity_diagram_recommendation.mmd
+│       ├── 10_class_diagram_domain.mmd
+│       ├── 11_class_diagram_architecture.mmd
+│       ├── 12_er_diagram_conceptual.mmd
+│       ├── 13_er_diagram_physical.mmd
+│       ├── 14_state_diagrams.mmd
+│       ├── 15_sequence_diagrams.mmd
+│       └── README.md
+├── sql/
+│   ├── 01_schema_ddl.sql
+│   ├── 02_seed_data.sql
+│   ├── 03_crud_queries.sql
+│   └── 04_complex_queries.sql
+├── src/
+│   ├── KajBazar.API/
+│   │   ├── KajBazar.API.csproj
+│   │   ├── Program.cs
+│   │   ├── appsettings.json
+│   │   ├── appsettings.Development.json
+│   │   ├── Controllers/
+│   │   │   ├── AdminController.cs
+│   │   │   ├── AuthController.cs
+│   │   │   ├── CategoriesController.cs
+│   │   │   ├── GeographyController.cs
+│   │   │   ├── RecommendationsController.cs
+│   │   │   ├── ReviewsController.cs
+│   │   │   └── WorkersController.cs
+│   │   └── Middleware/
+│   │       └── ExceptionHandlingMiddleware.cs
+│   ├── KajBazar.Core/
+│   │   ├── KajBazar.Core.csproj
+│   │   ├── DTOs/
+│   │   │   └── DTOs.cs
+│   │   ├── Entities/
+│   │   │   ├── AdminAuditLog.cs
+│   │   │   ├── Category.cs
+│   │   │   ├── CommunityRecommendation.cs
+│   │   │   ├── District.cs
+│   │   │   ├── Report.cs
 │   │   │   ├── Review.cs
-│   │   │   ├── Recommendation.cs
-│   │   │   └── AdminAuditLog.cs
-│   │   └── Interfaces/           # Repository Contracts
-│   │       └── RepositoryInterfaces.cs
-│   ├── KajBazar.Infrastructure/  # EF Core DbContext, Repositories, AuthService
-│   │   ├── Data/
-│   │   │   └── KajBazarDbContext.cs
-│   │   ├── Repositories/
-│   │   │   ├── UserRepository.cs
-│   │   │   ├── ServiceProviderRepository.cs
-│   │   │   ├── ReviewRepository.cs
-│   │   │   ├── RecommendationRepository.cs
-│   │   │   ├── GeographyRepository.cs
-│   │   │   ├── CategoryRepository.cs
-│   │   │   └── AdminAuditLogRepository.cs
-│   │   └── Services/
-│   │       └── AuthService.cs
-│   └── KajBazar.API/             # Controllers, Middleware, Configuration
-│       ├── Program.cs            # App startup, DI configuration, Swagger
-│       ├── appsettings.json      # Connection strings & JWT secrets
-│       ├── Controllers/
-│       │   ├── AdminController.cs
-│       │   ├── AuthController.cs
-│       │   ├── CategoriesController.cs
-│       │   ├── GeographyController.cs
-│       │   ├── RecommendationsController.cs
-│       │   ├── ReviewsController.cs
-│       │   └── WorkersController.cs
-│       └── Middleware/
-│           └── ExceptionHandlingMiddleware.cs
-├── sql/                          # Production-hardened PostgreSQL Scripts
-│   ├── 01_schema_ddl.sql         # 12 Tables, constraints, triggers, indexes
-│   ├── 02_seed_data.sql          # Sample districts, categories, verified workers
-│   ├── 03_crud_queries.sql       # Tested CRUD verification queries
-│   └── 04_complex_queries.sql    # Analytical reporting queries
-├── tests/                        # Automated xUnit Test Project
-│   └── KajBazar.Tests/
-│       ├── AdminAuditLogTests.cs
-│       ├── AuthTests.cs
-│       ├── RecommendationTests.cs
-│       ├── ReviewAndRatingTests.cs
-│       └── WorkerSearchAndProfileTests.cs
-└── docs/                         # Diagrams and Developer Documentation
-    ├── diagrams/                 # 15 Mermaid diagrams (.mmd)
-    └── development-guide/        # 10 comprehensive volumes
+│   │   │   ├── Role.cs
+│   │   │   ├── ServiceProviderProfile.cs
+│   │   │   ├── Upazila.cs
+│   │   │   ├── User.cs
+│   │   │   └── WorkerCategory.cs
+│   │   ├── Enums/
+│   │   │   └── DomainEnums.cs
+│   │   └── Interfaces/
+│   │       ├── IAdminAuditLogRepository.cs
+│   │       ├── IAuthService.cs
+│   │       ├── ICategoryRepository.cs
+│   │       ├── IGeographyRepository.cs
+│   │       ├── IRecommendationRepository.cs
+│   │       ├── IReviewRepository.cs
+│   │       ├── IServiceProviderRepository.cs
+│   │       └── IUserRepository.cs
+│   └── KajBazar.Infrastructure/
+│       ├── KajBazar.Infrastructure.csproj
+│       ├── Data/
+│       │   └── KajBazarDbContext.cs
+│       ├── Repositories/
+│       │   ├── AdminAuditLogRepository.cs
+│       │   ├── CategoryRepository.cs
+│       │   ├── GeographyRepository.cs
+│       │   ├── RecommendationRepository.cs
+│       │   ├── ReviewRepository.cs
+│       │   ├── ServiceProviderRepository.cs
+│       │   └── UserRepository.cs
+│       └── Services/
+│           └── AuthService.cs
+└── tests/
+    └── KajBazar.Tests/
+        ├── KajBazar.Tests.csproj
+        ├── AdminAuditLogTests.cs
+        ├── AuthTests.cs
+        ├── RecommendationTests.cs
+        ├── ReviewAndRatingTests.cs
+        └── WorkerSearchAndProfileTests.cs
 ```
 
 ---
 
-## 7. The Data Flow: From User Click to Disk and Back
+### 6.2 Detailed Explanation of Every Directory and File
 
-Let's walk through an exact, step-by-step trace of what happens inside the computer when a user clicks the **"Search Electricians"** button.
+#### Frontend Files (`client/`):
+- `index.html`: The single HTML container page loaded by the browser. Contains `<div id="root"></div>` where React mounts.
+- `src/index.jsx`: The JavaScript entrypoint that mounts `App.jsx` into the root DOM node.
+- `src/App.jsx`: The top-level component defining application routing and theme wrappers.
+- `src/App.css`: Master styling file containing CSS variables, card grids, modal styles, and mobile responsive rules.
+- `src/services/api.js`: The central Axios instance configured with baseURL and request/response interceptors.
+- `src/context/AuthContext.jsx`: React Context providing global user authentication state, login, register, and logout functions.
+- `src/components/Navigation.jsx`: Navigation bar with role-aware links and mobile menu drawer.
+- `src/components/WorkerComponents.jsx`: Reusable UI components including `WorkerCard`, `WorkerFilter`, and `WorkerDetailModal`.
+- `src/pages/HomePage.jsx`: Landing page featuring hero banner, live platform counters, and category discovery grid.
+- `src/pages/WorkerDirectoryPage.jsx`: Filterable worker directory supporting district, upazila, category, and keyword search.
+- `src/pages/WorkerProfilePage.jsx`: Detailed individual worker portfolio showing skills, rating breakdown, and customer testimonials.
+- `src/pages/RecommendWorkerPage.jsx`: Public form allowing citizens to nominate informal service providers.
+- `src/pages/AuthAndAdminPages.jsx`: Combined authentication pages and the comprehensive 5-tab Admin Control Dashboard.
+
+#### Backend Core Files (`src/KajBazar.Core/`):
+- `Entities/`: Pure C# classes representing database tables (`User`, `Role`, `ServiceProviderProfile`, `Category`, `District`, `Upazila`, `Review`, `CommunityRecommendation`, `Report`, `AdminAuditLog`).
+- `Enums/`: Enumeration definitions (`UserRole`, `VerificationStatus`, `ReportStatus`, `RecommendationStatus`).
+- `DTOs/`: Immutable record types used for network communication (`RegisterRequestDto`, `LoginRequestDto`, `WorkerSummaryDto`, `ReviewDto`, etc.).
+- `Interfaces/`: Repository and service contracts defining application capabilities.
+
+#### Backend Infrastructure Files (`src/KajBazar.Infrastructure/`):
+- `Data/KajBazarDbContext.cs`: EF Core database context configuring PostgreSQL snake_case conventions, relationship cascades, and custom type mappings.
+- `Repositories/`: Concrete implementations of domain interfaces executing optimized LINQ and SQL queries.
+- `Services/AuthService.cs`: Implementation of JWT token generation and BCrypt password verification.
+
+#### Backend API Files (`src/KajBazar.API/`):
+- `Program.cs`: ASP.NET Core application entrypoint configuring dependency injection, middleware pipeline, JWT validation, CORS, and Swagger.
+- `Controllers/`: 7 REST API controllers exposing HTTP endpoints.
+- `Middleware/ExceptionHandlingMiddleware.cs`: Global exception handler returning RFC 7807 Problem Details.
+- `appsettings.json`: Configuration file storing database connection strings and JWT signing secrets.
+
+---
+
+### 6.3 Configuration Files: `appsettings.json`, `appsettings.Development.json`, `launchSettings.json`
+
+Let us inspect `src/KajBazar.API/appsettings.json`:
+
+```json
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "Host=localhost;Port=5432;Database=kajbazar_db;Username=postgres;Password=postgres"
+  },
+  "Jwt": {
+    "Key": "KajBazarSuperSecretKeyForJwtSigningMustBeVeryLong2026!",
+    "Issuer": "KajBazarAPI",
+    "Audience": "KajBazarClient",
+    "ExpiryMinutes": 1440
+  },
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+  "AllowedHosts": "*"
+}
+```
+
+- `DefaultConnection`: The connection string telling Npgsql where PostgreSQL lives (`localhost:5432`), the database name (`kajbazar_db`), and credentials.
+- `Jwt:Key`: The secret symmetric 256-bit key used to digitally sign JWT tokens. If an attacker guesses this key, they can forge admin tokens! In production, this is loaded from an environment variable.
+- `Jwt:ExpiryMinutes`: 1440 minutes = 24 hours. Tokens expire after 24 hours, requiring the user to re-authenticate.
+
+---
+
+## 7. The Lifecycle of a Web Request: From User Click to Disk and Back
+
+To truly understand full-stack software development, let us walk through the exact journey of a single user action:
+> **A user opens KajBazar, selects "Patuakhali" -> "Dumki" -> "Electrician", and clicks "Search".**
+
+Here is the exact step-by-step chronology across hardware, memory, and code:
 
 ```
-[User Browser]
-      │  (1) Clicks "Filter: Electrician, Dumki"
-      ▼
-[React: WorkerDirectoryPage.jsx]
-      │  (2) Calls fetchWorkers({ categoryId: 1, upazilaId: 5 })
-      ▼
-[Axios: api.js]
-      │  (3) Formats GET http://localhost:5000/api/workers?categoryId=1&upazilaId=5
-      ▼
-[Operating System TCP/IP Stack]
-      │  (4) Sends TCP packets to Port 5000
-      ▼
-[Kestrel Web Server]
-      │  (5) Unpacks HTTP request header and query string
-      ▼
-[ASP.NET Core Middleware Pipeline]
-      │  (6) Runs ExceptionHandlingMiddleware
-      │  (7) Runs CORS Policy: Verifies Origin http://localhost:5173 is allowed
-      │  (8) Runs Authentication/Authorization: Confirms route is public [AllowAnonymous]
-      ▼
-[Routing Engine]
-      │  (9) Maps request to WorkersController.GetWorkers()
-      ▼
-[WorkersController.cs]
-      │  (10) Calls _workerRepo.SearchWorkersAsync(filter)
-      ▼
-[ServiceProviderRepository.cs]
-      │  (11) Builds EF Core LINQ query:
-      │       context.ServiceProviders
-      │         .Where(w => w.VerificationStatus == "VERIFIED")
-      │         .Where(w => w.UpazilaId == 5)
-      │         .Where(w => w.WorkerCategories.Any(c => c.CategoryId == 1))
-      ▼
-[Npgsql EF Core Provider]
-      │  (12) Translates LINQ into optimized PostgreSQL SQL:
-      │       SELECT sp.*, u.full_name, u.phone_number, up.name, d.name
-      │       FROM service_providers sp
-      │       JOIN users u ON sp.user_id = u.id
-      │       JOIN worker_categories wc ON sp.id = wc.worker_id
-      │       WHERE sp.verification_status = 'VERIFIED'
-      │         AND sp.upazila_id = 5 AND wc.category_id = 1;
-      ▼
-[PostgreSQL 15 Database Server]
-      │  (13) Query Planner hits B-tree index idx_workers_upazila_status
-      │  (14) Reads 4 rows from disk/shared buffers in 0.8ms
-      ▼
-[Data Travels Back Up]
-      │  (15) Npgsql parses PostgreSQL binary wire protocol into C# Objects
-      │  (16) Repository projects into List<WorkerSummaryDto>
-      │  (17) Controller wraps in Ok(workers) (HTTP 200)
-      │  (18) System.Text.Json serializes to UTF-8 JSON payload
-      │  (19) Kestrel sends HTTP 200 response packets back over TCP
-      │  (20) Axios receives JSON array and resolves Promise
-      │  (21) WorkerDirectoryPage calls setWorkers(data)
-      │  (22) React reconciles Virtual DOM and updates screen
-      ▼
-[User Screen Displays 4 Verified Electrician Cards!]
+[ STEP 1: USER CLICKS BUTTON ]
+  │
+  ▼
+[ STEP 2: BROWSER EVENT LOOP ]
+  The browser fires an `onClick` synthetic event. 
+  `WorkerDirectoryPage.jsx` calls `handleFilterSubmit()`.
+  │
+  ▼
+[ STEP 3: AXIOS CALL ]
+  `api.get('/workers?districtId=1&upazilaId=2&categoryId=1')` is invoked.
+  Axios request interceptor executes: checks `localStorage` for `token`.
+  Attaches header: `Authorization: Bearer eyJhbGci...`
+  │
+  ▼
+[ STEP 4: NETWORK SOCKET TRANSMISSION ]
+  The browser writes TCP data packets onto the network interface card (NIC).
+  The packets travel through loopback address `127.0.0.1` targeting port 5000.
+  │
+  ▼
+[ STEP 5: KESTREL WEB SERVER RECEIVES BYTES ]
+  The Linux operating system wakes up the Kestrel process listening on port 5000.
+  Kestrel parses the raw bytes into an `HttpContext` object containing request headers, query string, and body.
+  │
+  ▼
+[ STEP 6: ASP.NET CORE MIDDLEWARE PIPELINE ]
+  1. `ExceptionHandlingMiddleware`: Wraps the execution in a `try/catch` block.
+  2. `UseCors`: Inspects the `Origin` header. Confirms `http://localhost:5173` is allowed.
+  3. `UseAuthentication`: Inspects the JWT Bearer token if present. Validates signature.
+  4. `UseAuthorization`: Verifies if the route requires special roles.
+  │
+  ▼
+[ STEP 7: ACTION ROUTING & MODEL BINDING ]
+  The routing engine matches `GET /api/workers` to `WorkersController.Search()`.
+  The .NET Model Binder inspects the query string and automatically converts:
+  - `"districtId=1"`  ──> `int? districtId = 1`
+  - `"upazilaId=2"`   ──> `int? upazilaId = 2`
+  - `"categoryId=1"`  ──> `int? categoryId = 1`
+  │
+  ▼
+[ STEP 8: CONTROLLER DELEGATES TO REPOSITORY ]
+  `WorkersController` calls `await _workerRepo.SearchWorkersAsync(categoryId, districtId, upazilaId, search)`.
+  │
+  ▼
+[ STEP 9: EF CORE LINQ QUERY CONSTRUCTION ]
+  Inside `ServiceProviderRepository.cs`, an `IQueryable<ServiceProviderProfile>` is constructed:
+  ```csharp
+  var query = _context.ServiceProviderProfiles
+      .Include(p => p.User)
+      .Include(p => p.WorkerCategories)
+      .Where(p => p.VerificationStatus == VerificationStatus.Verified);
+  ```
+  │
+  ▼
+[ STEP 10: SQL TRANSLATION BY NPGSQL ]
+  EF Core compiles the C# LINQ expression tree into native PostgreSQL SQL:
+  ```sql
+  SELECT p.id, u.full_name, u.phone_number, p.average_rating, p.total_reviews
+  FROM service_provider_profiles p
+  JOIN users u ON p.user_id = u.id
+  JOIN worker_categories wc ON wc.worker_profile_id = p.id
+  WHERE p.verification_status = 'verified' 
+    AND p.district_id = 1 
+    AND p.upazila_id = 2 
+    AND wc.category_id = 1;
+  ```
+  │
+  ▼
+[ STEP 11: POSTGRESQL EXECUTION ENGINE ]
+  PostgreSQL receives the SQL statement over socket port 5432:
+  1. Parser & Rewriter: Checks syntax and permissions.
+  2. Query Optimizer: Uses B-Tree index `idx_worker_profiles_search` to quickly find matching tuples.
+  3. Buffer Pool: Fetches matching 8KB data pages from memory (or disk NVMe if cold).
+  4. Returns the result rows as binary tabular data.
+  │
+  ▼
+[ STEP 12: OBJECT MAPPING & DTO PROJECTION ]
+  EF Core materializes the database rows into C# objects.
+  The repository projects them into lightweight `WorkerSummaryDto` records:
+  ```csharp
+  new WorkerSummaryDto(
+      Id: p.Id,
+      FullName: p.User.FullName,
+      Rating: p.AverageRating,
+      ReviewCount: p.TotalReviews,
+      ...
+  )
+  ```
+  │
+  ▼
+[ STEP 13: CONTROLLER RETURNS HTTP 200 OK ]
+  `WorkersController` wraps the DTO list in `Ok(workers)`.
+  `System.Text.Json` serializes the C# list into a UTF-8 JSON text string.
+  │
+  ▼
+[ STEP 14: KESTREL TRANSMITS HTTP RESPONSE ]
+  Kestrel adds response headers:
+  - `HTTP/1.1 200 OK`
+  - `Content-Type: application/json; charset=utf-8`
+  - `Content-Length: 1482`
+  Sends packets over TCP socket back to the browser.
+  │
+  ▼
+[ STEP 15: REACT STATE UPDATE & RE-RENDER ]
+  1. Axios receives the JSON string, parses it into a JavaScript Array, and resolves the Promise.
+  2. `WorkerDirectoryPage` calls `setWorkers(response.data)`.
+  3. React triggers a re-render: compares Virtual DOM with real DOM.
+  4. React injects 4 new `WorkerCard` components into the screen.
+  5. The user sees 4 verified electrician cards with stars and ratings in Dumki!
 ```
 
 ---
 
 ## 8. Running the Entire Platform Locally
 
-Follow these 4 simple steps to run the complete platform on your computer right now:
+Follow these clear, step-by-step instructions to run the entire system on your computer right now:
 
 ### 8.1 Database Initialization
-Make sure PostgreSQL is running on `localhost:5432`:
+
+Make sure your PostgreSQL service is running:
 ```bash
-# 1. Create database
+sudo systemctl start postgresql
+```
+
+Execute the database creation and seeding scripts in your terminal:
+```bash
+# 1. Create the database
 psql -U postgres -c "CREATE DATABASE kajbazar_db;"
 
-# 2. Run schema DDL (creates all 12 tables, indexes, triggers)
+# 2. Execute schema definition (tables, constraints, triggers)
 psql -U postgres -d kajbazar_db -f sql/01_schema_ddl.sql
 
-# 3. Seed initial data (categories, districts, upazilas, test users, verified workers)
+# 3. Execute seed data (roles, categories, geographic data, test users)
 psql -U postgres -d kajbazar_db -f sql/02_seed_data.sql
 ```
 
-### 8.2 Running Backend API
-Open a terminal window:
+Verify that the tables were created successfully:
+```bash
+psql -U postgres -d kajbazar_db -c "\dt"
+```
+You will see 12 tables listed:
+- `admin_audit_logs`
+- `categories`
+- `community_recommendations`
+- `districts`
+- `reports`
+- `reviews`
+- `roles`
+- `service_provider_profiles`
+- `upazilas`
+- `user_roles`
+- `users`
+- `worker_categories`
+
+---
+
+### 8.2 Running Backend API with `dotnet run`
+
+Open a terminal window and navigate to the API project:
 ```bash
 cd src/KajBazar.API
 dotnet run
 ```
-You will see:
-```
+
+You should see:
+```text
+Building...
 info: Microsoft.Hosting.Lifetime[14]
       Now listening on: http://localhost:5000
 info: Microsoft.Hosting.Lifetime[0]
       Application started. Press Ctrl+C to shut down.
+info: Microsoft.Hosting.Lifetime[0]
+      Hosting environment: Development
 ```
-*Tip: You can open your browser to `http://localhost:5000/swagger` to see the interactive API explorer!*
 
-### 8.3 Running Frontend Vite Server
-Open a second terminal window:
+Open your web browser and visit `http://localhost:5000/swagger`. You will be greeted by the interactive **Swagger UI** displaying all available REST endpoints!
+
+---
+
+### 8.3 Running Frontend Vite Server with `npm run dev`
+
+Open a second terminal window and navigate to the frontend directory:
 ```bash
 cd client
-npm install   # Only needed on first run
+npm install   # Only necessary the very first time
 npm run dev
 ```
-You will see:
-```
-  VITE v5.4.14  ready in 210 ms
+
+You should see:
+```text
+  VITE v5.4.14  ready in 220 ms
 
   ➜  Local:   http://localhost:5173/
   ➜  Network: use --host to expose
+  ➜  press h + enter to show help
 ```
 
-### 8.4 Verifying Full-Stack Integration
-1. Open your web browser to `http://localhost:5173`.
+---
+
+### 8.4 Verifying Full-Stack Integration in the Browser
+
+1. Open your browser and navigate to `http://localhost:5173`.
 2. You will see the **KajBazar** homepage with live statistics:
    - "Verified Service Providers"
    - "Districts & Upazilas Covered"
@@ -769,26 +1549,219 @@ You will see:
 
 ---
 
-## 9. Common Beginner Pitfalls When Building from Scratch
+### 8.5 Testing Live Endpoints with `curl`
 
-### 9.1 Circular Dependencies Between Projects
-In C#, Project A cannot reference Project B if Project B references Project A. 
-If you try to add a reference from `KajBazar.Core` to `KajBazar.Infrastructure`, the build will fail with a circular dependency error. Keep `KajBazar.Core` completely independent!
+You can verify that the backend API is working directly from your terminal using `curl`:
 
-### 9.2 Port Collisions
-If you see `Failed to bind to address http://127.0.0.1:5000: address already in use`, it means another process is still running. Run `sudo lsof -i :5000` to find the process ID and terminate it with `kill -9 <PID>`.
+#### Test 1: Fetch Categories
+```bash
+curl -s http://localhost:5000/api/categories | jq .
+```
+Expected output: JSON array containing Electrician, Plumber, Carpenter, etc.
 
-### 9.3 Case Sensitivity in PostgreSQL vs C#
-PostgreSQL converts unquoted table and column names to lowercase. C# uses PascalCase. If you don't configure `.UseSnakeCaseNamingConvention()` in EF Core, queries will fail with `relation "ServiceProviders" does not exist`.
+#### Test 2: Search Workers
+```bash
+curl -s "http://localhost:5000/api/workers?search=Kabir" | jq .
+```
+Expected output: JSON array containing Kabir Hossain's verified electrician profile.
 
-### 9.4 Forgetting `await` in Async Methods
-If you call `_context.Users.ToListAsync()` without `await`, C# returns a `Task<List<User>>` object instead of the actual list of users. Always remember to `await` every asynchronous database operation!
+#### Test 3: Authenticate User
+```bash
+curl -s -X POST http://localhost:5000/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"identifier":"admin@kajbazar.com","password":"Password123#"}' | jq .
+```
+Expected output: JSON response containing a signed JWT token string!
 
 ---
 
-## 10. Conclusion & Next Steps
+## 9. Common Beginner Pitfalls & How to Avoid Them
 
-You now understand the complete high-level design, component boundaries, and directory structure of KajBazar!
+### 9.1 Circular Dependencies Between Projects
+- **The Problem**: You try to add a reference from `KajBazar.Core` to `KajBazar.Infrastructure`.
+- **The Error**: `error MSB4006: There is a circular dependency in the target dependency graph.`
+- **The Fix**: Remember the Onion Architecture! `Core` must remain pure. Core must NEVER reference Infrastructure.
 
-To dive deeper into the database schema, relational constraints, and security triggers, proceed to:
-👉 **[Volume 02: Database Guide & Production Hardening](02-database-guide-and-production-hardening.md)**
+### 9.2 Port Collisions (Port 5000, 5432, or 5173 Already in Use)
+- **The Problem**: Another program or a zombie background instance is already holding port 5000.
+- **The Error**: `System.IO.IOException: Failed to bind to address http://localhost:5000: address already in use.`
+- **The Fix**: Find the culprit process and kill it:
+  ```bash
+  sudo lsof -i :5000
+  # Note the PID, then terminate it:
+  kill -9 <PID>
+  ```
+
+### 9.3 Case Sensitivity in PostgreSQL vs C# (Snake_case vs PascalCase)
+- **The Problem**: In C#, properties are PascalCase (`AverageRating`). In PostgreSQL, unquoted column names are lowercase snake_case (`average_rating`).
+- **The Error**: `Npgsql.PostgresException: relation "serviceproviderprofiles" does not exist.`
+- **The Fix**: In `KajBazarDbContext.cs`, we use `.UseSnakeCaseNamingConvention()` from the `EFCore.NamingConventions` package. This automatically bridges the naming difference.
+
+### 9.4 Forgetting `await` in Asynchronous Methods
+- **The Problem**: You write `var users = _context.Users.ToListAsync();` without `await`.
+- **The Error**: The variable `users` is of type `Task<List<User>>` rather than `List<User>`. If you try to loop over it, the code will fail to compile.
+- **The Fix**: Always prefix async calls with `await`: `var users = await _context.Users.ToListAsync();`.
+
+### 9.5 CORS Errors (Cross-Origin Resource Sharing)
+- **The Problem**: The browser blocks requests from `http://localhost:5173` to `http://localhost:5000`.
+- **The Error**: `Access to XMLHttpRequest at 'http://localhost:5000/api/workers' from origin 'http://localhost:5173' has been blocked by CORS policy.`
+- **The Fix**: Ensure `app.UseCors("AllowFrontend")` is placed **before** `app.UseAuthentication()` and `app.UseAuthorization()` in `Program.cs`.
+
+### 9.6 Environment Variable and Connection String Misconfigurations
+- **The Problem**: PostgreSQL connection fails with password authentication failed.
+- **The Fix**: Ensure your `appsettings.json` connection string password matches what was set during PostgreSQL installation (`ALTER USER postgres PASSWORD 'postgres';`).
+
+---
+
+## 10. Hands-on Beginner Exercises & Practical Challenges
+
+To solidify your understanding, attempt these five practical development exercises:
+
+### 10.1 Exercise 1: Adding a New Field to an Entity
+- **Objective**: Add a `FacebookUrl` string property to `ServiceProviderProfile`.
+- **Steps**:
+  1. Open `src/KajBazar.Core/Entities/ServiceProviderProfile.cs`.
+  2. Add:
+     ```csharp
+     public string? FacebookUrl { get; set; }
+     ```
+  3. In `sql/01_schema_ddl.sql`, add `facebook_url VARCHAR(255)` to `service_provider_profiles`.
+  4. In `src/KajBazar.Core/DTOs/DTOs.cs`, update `WorkerProfileDetailDto` to include `string? FacebookUrl`.
+  5. In `ServiceProviderRepository.cs`, map `FacebookUrl = p.FacebookUrl`.
+  6. Rebuild and run tests: `dotnet test KajBazar.sln`.
+
+### 10.2 Exercise 2: Adding a Custom Health Check Endpoint
+- **Objective**: Add a dedicated health check endpoint at `/api/health`.
+- **Steps**:
+  1. In `src/KajBazar.API/Controllers/AuthController.cs`, add:
+     ```csharp
+     [HttpGet("health")]
+     [AllowAnonymous]
+     public IActionResult HealthCheck()
+     {
+         return Ok(new 
+         { 
+             status = "healthy", 
+             system = "KajBazar API",
+             timestamp = DateTime.UtcNow 
+         });
+     }
+     ```
+  2. Test with curl: `curl http://localhost:5000/api/auth/health`.
+
+### 10.3 Exercise 3: Adding a Custom Filter to the Frontend
+- **Objective**: Add a minimum rating filter (e.g. "4 stars and above") in `WorkerDirectoryPage.jsx`.
+- **Steps**:
+  1. Add a state variable: `const [minRating, setMinRating] = useState(0);`.
+  2. In the render function, filter the worker list:
+     ```javascript
+     const filteredWorkers = workers.filter(w => w.rating >= minRating);
+     ```
+  3. Add a `<select>` dropdown in the UI allowing the user to choose 0, 3, 4, or 5 stars.
+
+### 10.4 Exercise 4: Writing a Custom Middleware for Request Duration
+- **Objective**: Log how many milliseconds every HTTP request takes to execute.
+- **Steps**:
+  1. Create `src/KajBazar.API/Middleware/PerformanceMiddleware.cs`:
+     ```csharp
+     public class PerformanceMiddleware
+     {
+         private readonly RequestDelegate _next;
+         private readonly ILogger<PerformanceMiddleware> _logger;
+
+         public PerformanceMiddleware(RequestDelegate next, ILogger<PerformanceMiddleware> logger)
+         {
+             _next = next;
+             _logger = logger;
+         }
+
+         public async Task InvokeAsync(HttpContext context)
+         {
+             var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+             await _next(context);
+             stopwatch.Stop();
+             _logger.LogInformation("Request {Path} executed in {Elapsed}ms", context.Request.Path, stopwatch.ElapsedMilliseconds);
+         }
+     }
+     ```
+  2. Register in `Program.cs`: `app.UseMiddleware<PerformanceMiddleware>();`.
+
+### 10.5 Exercise 5: Adding a Worker Profile Card Badge
+- **Objective**: Render a "Top Rated" gold badge on `WorkerCard.jsx` if `worker.rating >= 4.5` and `worker.reviewCount >= 5`.
+- **Steps**:
+  1. In `client/src/components/WorkerComponents.jsx`, inside `WorkerCard`:
+     ```javascript
+     {worker.rating >= 4.5 && worker.reviewCount >= 5 && (
+       <span className="badge badge-gold">🏆 Top Rated</span>
+     )}
+     ```
+  2. Add CSS in `App.css`:
+     ```css
+     .badge-gold {
+       background: #fef3c7;
+       color: #92400e;
+       font-weight: 700;
+       padding: 2px 8px;
+       border-radius: 9999px;
+       font-size: 0.75rem;
+     }
+     ```
+
+---
+
+## 11. Frequently Asked Questions (FAQ) for Absolute Beginners
+
+### Q1: Why do we use PostgreSQL instead of MySQL or MongoDB?
+**Answer**: PostgreSQL was chosen because KajBazar's core domain is highly relational. A worker belongs to a user, has many categories, operates in specific upazilas, receives reviews from other users, and has audit records. PostgreSQL provides world-class ACID compliance, powerful check constraints (regex validation on phone numbers), and built-in PL/pgSQL triggers for automatic rating calculations.
+
+### Q2: Why .NET 8 instead of Node.js/Express or Python/FastAPI for the backend?
+**Answer**: .NET 8 delivers extraordinary throughput (over 1M requests/sec on Kestrel), strong compile-time type safety via C# 12, built-in Dependency Injection, native support for Entity Framework Core, and robust enterprise authentication libraries. It enforces architectural discipline, preventing "spaghetti code" common in large dynamic language codebases.
+
+### Q3: Why do we need DTOs? Why not just return the Entity directly from the controller?
+**Answer**: Three critical reasons:
+1. **Security (Prevent Overposting Attacks)**: If you return or bind an entity directly, a malicious user could submit `{ "isAdmin": true, "passwordHash": "..." }` and overwrite database columns!
+2. **Prevent Circular Reference Exceptions**: A `User` references `ServiceProviderProfile`, and `ServiceProviderProfile` references `User`. If you serialize the entity directly to JSON, the serializer enters an infinite loop and crashes with `JsonException: A possible object cycle was detected`.
+3. **Decoupling**: You can change your database table columns without breaking mobile apps or frontend clients that rely on the API contract.
+
+### Q4: What is the difference between `dotnet build` and `dotnet run`?
+**Answer**: `dotnet build` compiles your C# code into Intermediate Language (IL) assemblies (`.dll` files) and verifies there are no syntax or type errors. `dotnet run` first performs a build, and then immediately launches the resulting `.dll` executable inside the .NET runtime.
+
+### Q5: What does `npm run dev` do under the hood?
+**Answer**: `npm run dev` starts the **Vite Development Server**. Vite reads `vite.config.js`, starts a local HTTP server on port 5173, watches all `.jsx` and `.css` files for changes, and uses Hot Module Replacement (HMR) via WebSockets to instantly push code updates to your open browser tab without reloading the page.
+
+### Q6: What is a JWT token, and where should it be stored in the browser?
+**Answer**: A JSON Web Token (JWT) is a cryptographically signed text string containing user identity information (User ID, Name, Roles). When a user logs in, the server returns the JWT. The frontend stores it in `localStorage` or an HTTP-only cookie and sends it in the `Authorization: Bearer <token>` header on every subsequent API request.
+
+### Q7: What is Business Rule BR-06, and why is it important?
+**Answer**: Rule BR-06 states: *"Service provider contact phone numbers must not be displayed publicly in plain text on search result cards. Customers must click 'Call Worker' to reveal the phone number."* This protects informal workers from aggressive web scraping, spam bots, and harassment, while simultaneously allowing the platform to track customer engagement and intent.
+
+### Q8: What is an In-Memory Database in xUnit tests?
+**Answer**: An In-Memory database is an EF Core provider that stores data entirely in RAM rather than connecting to a physical PostgreSQL server on disk. This allows automated test suites to run in under 1 second without needing a live database connection or network setup.
+
+### Q9: Can I deploy KajBazar on a free VPS or Raspberry Pi?
+**Answer**: Yes! Both .NET 8 and React run natively on ARM64 architectures (including Raspberry Pi 4/5). With memory optimization, KajBazar can easily run on a $4/month VPS with 1 GB of RAM.
+
+### Q10: How do I reset my database back to a clean state?
+**Answer**: Run:
+```bash
+psql -U postgres -c "DROP DATABASE kajbazar_db;"
+psql -U postgres -c "CREATE DATABASE kajbazar_db;"
+psql -U postgres -d kajbazar_db -f sql/01_schema_ddl.sql
+psql -U postgres -d kajbazar_db -f sql/02_seed_data.sql
+```
+
+---
+
+## 12. Conclusion & Roadmap to Volume 02
+
+Congratulations! You have completed **Volume 01: Complete Architecture & Build From Scratch Guide**.
+
+You now possess:
+- A rock-solid conceptual mental model of how clients, servers, and databases work together.
+- A deep understanding of Clean Architecture, Dependency Inversion, and 3-Tier Layering.
+- The step-by-step CLI commands required to scaffold the entire project from zero.
+- Complete familiarity with the solution files, project configurations, and directory structure.
+- Microsecond-level comprehension of a web request lifecycle.
+
+In the next volume, we will zoom in on the data layer and master PostgreSQL:
+👉 **Proceed to [Volume 02: Database Guide & Production Hardening](02-database-guide-and-production-hardening.md)**

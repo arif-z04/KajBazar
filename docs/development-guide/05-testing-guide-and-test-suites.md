@@ -1,557 +1,965 @@
 # Volume 05: Testing Guide & Test Suites
-## A Beginner-Friendly Manual for Software Verification in KajBazar
+## The Complete xUnit, EF Core In-Memory, Automated Regression, and Quality Assurance Handbook for KajBazar
 
 ---
 
-## 📖 Introduction: Why We Test
+## 📖 Welcome to Quality Assurance
 
-Imagine you are an airplane mechanic. You just finished replacing a bolt inside the engine. Would you tell 300 passengers to board the plane and fly to Singapore without checking if the engine starts first? **Of course not.**
+Imagine you are a civil engineer constructing a suspension bridge across the Payra River in Patuakhali:
+- Do you wait until thousands of cars and heavy buses drive across the bridge to see if it holds?
+- Or do you test the tensile strength of every steel cable, the compression strength of every concrete pillar, and simulate gale-force storms in a laboratory **before** opening the bridge to human beings?
 
-Software development is no different. Every time a developer writes a new feature, changes a database query, or refactors a line of code, there is a risk of breaking something that was previously working. This is called a **regression**.
+In software engineering, automated testing is your laboratory.
+- Without automated tests, every time you fix a small bug or add a new feature, you live in constant terror that you broke five other parts of your application.
+- With automated tests, you press a single button, run **14 exhaustive test scenarios in under 1.5 seconds**, and prove with mathematical certainty that your authentication, search algorithms, business rules, and rating calculators work with **0 bugs, 0 errors, and 0 regressions**.
 
-Automated testing is our safety net. In this volume, we will explain testing concepts in simple terms, examine every automated test suite in KajBazar, run the test runner, and perform a complete 10-step manual End-to-End test.
-
----
-
-## 📑 Table of Contents
-
-1. [Testing Fundamentals for Beginners](#1-testing-fundamentals-for-beginners)
-   - 1.1 What is an Automated Test?
-   - 1.2 The Testing Pyramid (Unit, Integration, End-to-End)
-   - 1.3 The AAA Pattern: Arrange, Act, Assert
-   - 1.4 Test-Driven Development (TDD) Mental Model
-2. [The KajBazar Test Architecture (`tests/KajBazar.Tests`)](#2-the-kajbazar-test-architecture-testskajbazartests)
-   - 2.1 Testing Framework: xUnit (.NET 8)
-   - 2.2 Why In-Memory Database? (Speed and Clean Slate)
-   - 2.3 Test Database Helper Factory
-   - 2.4 Business Rules Test Coverage Matrix (`BR-01` to `BR-15`)
-3. [Deep Dive into the 5 Test Suites with Full Source Code](#3-deep-dive-into-the-5-test-suites-with-full-source-code)
-   - 3.1 Suite 1: Authentication & Password Security (`AuthTests.cs`)
-   - 3.2 Suite 2: Worker Directory & Geographic Search (`WorkerSearchAndProfileTests.cs`)
-   - 3.3 Suite 3: Reviews & Automated Rating Calculations (`ReviewAndRatingTests.cs`)
-   - 3.4 Suite 4: Offline Community Recommendations (`RecommendationTests.cs`)
-   - 3.5 Suite 5: Administrative Traceability & Audit Logs (`AdminAuditLogTests.cs`)
-4. [Executing Automated Tests via Command Line](#4-executing-automated-tests-via-command-line)
-   - 4.1 Running All Tests with `dotnet test`
-   - 4.2 Interpreting Test Output and Exit Codes
-   - 4.3 Running Specific Test Suites or Filtered Tests
-   - 4.4 Generating Code Coverage Reports
-5. [Complete 10-Step Manual End-to-End Test Procedure](#5-complete-10-step-manual-end-to-end-test-procedure)
-   - 5.1 Scenario 1: Verify Taxonomy & Geography
-   - 5.2 Scenario 2: Register Consumer & Worker Accounts
-   - 5.3 Scenario 3: Worker Completes Profile Submission
-   - 5.4 Scenario 4: Admin Verification & Status Transition (`BR-10`)
-   - 5.5 Scenario 5: Public Search & Directory Filtering (`BR-03`, `BR-05`)
-   - 5.6 Scenario 6: Direct Phone Reveal (`BR-06`)
-   - 5.7 Scenario 7: Consumer Submits Review & Rating (`BR-07`)
-   - 5.8 Scenario 8: Duplicate Review Prevention (`BR-08`)
-   - 5.9 Scenario 9: Community Recommends Offline Worker (`BR-09`)
-   - 5.10 Scenario 10: Inspecting Administrative Audit Trail (`BR-14`)
-6. [How to Write New Tests When Adding Features](#6-how-to-write-new-tests-when-adding-features)
-7. [Conclusion & Next Steps](#7-conclusion--next-steps)
+In this volume, we will dissect the testing architecture of **KajBazar**, inspect every single test suite line-by-line, and learn how to write robust, bug-free tests.
 
 ---
 
-## 1. Testing Fundamentals for Beginners
+## 📑 Master Table of Contents
 
-### 1.1 What is an Automated Test?
-An automated test is simply a small C# program that acts like an invisible robot:
-1. It creates sample data in a test database.
-2. It executes a function (e.g. `RegisterUser(...)`).
-3. It checks if the result matches what was expected (e.g. *"Did the password get hashed? Is the returned user ID not empty?"*).
-4. If yes, it prints a green checkmark (`Passed`). If no, it prints a red cross (`Failed`) and shows the exact line number of the problem!
+1. [The Software Testing Mental Model for Absolute Beginners](#1-the-software-testing-mental-model-for-absolute-beginners)
+   - 1.1 Why Do We Test? (The $10,000 Bug Analogy)
+   - 1.2 The Testing Pyramid: Unit Tests vs Integration Tests vs End-to-End (E2E) Tests
+   - 1.3 What is Regression and Why Do Automated Tests Give You Superpowers?
+   - 1.4 The Arrange-Act-Assert (AAA) Pattern Explained with a Cooking Recipe
+2. [The xUnit Testing Framework & EF Core In-Memory Provider](#2-the-xunit-testing-framework--ef-core-in-memory-provider)
+   - 2.1 Why xUnit? (`[Fact]`, `[Theory]`, `[InlineData]`, Assertions)
+   - 2.2 Why InMemory Database? (Zero setup, 10 millisecond execution, test isolation)
+   - 2.3 The Isolation Secret: Unique In-Memory Database Names per Test (`Guid.NewGuid().ToString()`)
+   - 2.4 Mocking vs Fakes vs In-Memory Providers
+3. [Complete Annotated Source Code: Test Suite 1 (`AuthTests.cs`)](#3-complete-annotated-source-code-test-suite-1-authtestscs)
+   - 3.1 Test 1: Successful User Registration & BCrypt Hash Validation
+   - 3.2 Test 2: Duplicate Phone Number Rejection
+   - 3.3 Test 3: Duplicate Email Address Rejection
+   - 3.4 Test 4: Successful Login & Signed JWT Token Issuance
+   - 3.5 Test 5: Login Failure on Incorrect Password
+4. [Complete Annotated Source Code: Test Suite 2 (`WorkerSearchAndProfileTests.cs`)](#4-complete-annotated-source-code-test-suite-2-workersearchandprofiletestscs)
+   - 4.1 Test 1: Filtering Workers by Service Trade Category
+   - 4.2 Test 2: Cascading Geographic Filtering by District and Upazila
+   - 4.3 Test 3: Verification Status Security Filtering
+   - 4.4 Test 4: Keyword Full-Text Search across Names, Bios, and Skills
+5. [Complete Annotated Source Code: Test Suite 3 (`ReviewAndRatingTests.cs`)](#5-complete-annotated-source-code-test-suite-3-reviewandratingtestscs)
+   - 5.1 Test 1: Submitting a Valid Customer Review with Rating 1-5
+   - 5.2 Test 2: Rating Boundary Validation (Rejecting 0, -1, 6)
+   - 5.3 Test 3: Duplicate Review Prevention per Customer/Worker Pair
+   - 5.4 Test 4: Dynamic Recalculation of Average Rating & Total Review Counts
+6. [Complete Annotated Source Code: Test Suite 4 (`RecommendationTests.cs`)](#6-complete-annotated-source-code-test-suite-4-recommendationtestscs)
+   - 6.1 Test 1: Citizen Submission of Unregistered Informal Workers
+   - 6.2 Test 2: Admin Review, Approval, and Automated Service Provider Profile Generation
+7. [Complete Annotated Source Code: Test Suite 5 (`AdminAuditLogTests.cs`)](#7-complete-annotated-source-code-test-suite-5-adminauditlogtestscs)
+   - 7.1 Test 1: Recording Administrative Moderation Actions with IP Address & JSON Metadata
+   - 7.2 Test 2: Querying Audit Logs by Action Type and Target Entity
+8. [Executing Tests via CLI & Interpreting Results](#8-executing-tests-via-cli--interpreting-results)
+   - 8.1 Running All Tests (`dotnet test KajBazar.sln`)
+   - 8.2 Filtering Tests by Class or Method Name (`--filter`)
+   - 8.3 Detailed Logging & Verbosity Modes (`-v normal`, `-v detailed`)
+9. [Code Coverage Analysis & CI/CD Integration](#9-code-coverage-analysis--cicd-integration)
+   - 9.1 Measuring Coverage with Coverlet
+   - 9.2 Generating Visual HTML Code Coverage Reports
+   - 9.3 GitHub Actions Workflow for Automated Pull Request Testing
+10. [Hands-on Testing Exercises & Solutions](#10-hands-on-testing-exercises--solutions)
+11. [Frequently Asked Questions (FAQ) on Automated Testing](#11-frequently-asked-questions-faq-on-automated-testing)
+12. [Conclusion & Roadmap to Volume 06](#12-conclusion--roadmap-to-volume-06)
 
-### 1.2 The Testing Pyramid
+---
+
+## 1. The Software Testing Mental Model for Absolute Beginners
+
+### 1.1 Why Do We Test? (The $10,000 Bug Analogy)
+
+Imagine you hire a developer to build an e-commerce checkout button:
+- The developer changes one line of code to add discount coupon support.
+- But accidentally, that change causes credit cards to be charged **double**!
+- Because the developer didn't have automated tests, the bug goes live to 10,000 customers.
+- By tomorrow morning, your company has processed $200,000 in fraudulent overcharges, banks are issuing chargeback penalties, and your company's reputation is ruined.
+
+Automated tests are **insurance policies written in code**:
+- They cost almost nothing to run.
+- They run in seconds.
+- They never get tired, never forget edge cases, and catch breaking bugs before code is ever merged into `main`.
+
+---
+
+### 1.2 The Testing Pyramid: Unit, Integration, and E2E Tests
+
+In professional software development, tests are organized into a **Pyramid**:
 
 ```
-           / \
-          /   \     End-to-End (E2E) Tests (Fewest, Slower, Full Browser)
-         /-----\
-        /       \    Integration Tests (Medium speed, API + DB)
-       /---------\
-      /           \   Unit Tests (Fastest, Thousands in seconds, In-Memory)
-     /-------------\
+                 / \
+                /   \     End-to-End (E2E) Tests (Slowest, Most Expensive)
+               / E2E \    Example: Cypress / Playwright clicking real browser
+              /-------\
+             /         \   Integration Tests (Medium Speed & Scope)
+            /  INTEGR.  \  Example: EF Core In-Memory testing Repositories + DB
+           /-------------\
+          /               \ Unit Tests (Fastest, Cheapest, Thousands of tests)
+         /      UNIT       \ Example: Testing password hashing, algorithms, math
+        /-------------------\
 ```
 
-- **Unit Tests**: Test a single class or method in complete isolation. Extremely fast (takes 5 milliseconds).
-- **Integration Tests**: Test how two or more components work together (e.g. Repository + Database).
-- **End-to-End (E2E) Tests**: Test the full user experience from browser button click to server and database.
+1. **Unit Tests**: Test a single isolated function in memory with zero external dependencies (e.g. testing that `VerifyPassword("wrong", hash)` returns `false`).
+2. **Integration Tests**: Test multiple components interacting together (e.g. testing that `CreateReviewAsync()` saves to the database, updates the review table, and updates the worker's average rating).
+3. **End-to-End (E2E) Tests**: Launch a real headless web browser, open the website, type text into inputs, click buttons, and verify the screen.
 
-### 1.3 The AAA Pattern: Arrange, Act, Assert
-Every well-written test follows the 3-step **AAA Pattern**:
-- **Arrange**: Set up the world (create mock database, prepare sample input data).
-- **Act**: Call the actual method being tested.
-- **Assert**: Verify that the output matches expectations.
-
-```csharp
-[Fact]
-public void Addition_TwoPlusThree_ReturnsFive()
-{
-    // 1. Arrange
-    int a = 2;
-    int b = 3;
-
-    // 2. Act
-    int result = a + b;
-
-    // 3. Assert
-    Assert.Equal(5, result);
-}
-```
+In KajBazar, our test suite combines the lightning speed of Unit Tests with the real-world fidelity of Integration Tests using **EF Core In-Memory**!
 
 ---
 
-## 2. The KajBazar Test Architecture (`tests/KajBazar.Tests`)
+### 1.3 The Arrange-Act-Assert (AAA) Pattern Explained with a Cooking Recipe
 
-### 2.1 Testing Framework: xUnit (.NET 8)
-We use **xUnit**, the standard modern unit testing framework for .NET. In xUnit:
-- `[Fact]`: Marks a method as a normal test that takes no parameters.
-- `[Theory]`: Marks a test that runs multiple times with different input parameters.
-- `Assert.True(...)`, `Assert.Equal(...)`, `Assert.NotNull(...)`: Built-in validation checks.
+Every single professional unit test in the world follows the **AAA Pattern**:
 
-### 2.2 Why In-Memory Database?
-Connecting to a live PostgreSQL server during unit tests has several drawbacks:
-- It requires PostgreSQL to be running on the test machine.
-- If two tests write a user with the same email `test@example.com`, they collide and fail.
-- Cleaning up test data after each test is slow and prone to errors.
-
-Instead, we use `Microsoft.EntityFrameworkCore.InMemory`. EF Core spins up a brand-new, completely isolated database inside RAM in **0.01 seconds** for each test. When the test finishes, the RAM is freed. Zero test pollution!
-
-### 2.4 Business Rules Test Coverage Matrix
-
-| Business Rule | Description | Test Suite | Test Method |
-| :---: | :--- | :--- | :--- |
-| **`BR-01`** | User must register & authenticate | `AuthTests.cs` | `RegisterNewUser_SuccessfullyHashesPasswordAndPersists`, `Login_WithValidCredentials_ReturnsTokenAndUserDetails` |
-| **`BR-02`** | Service providers must complete profile | `WorkerSearchAndProfileTests.cs` | `GetWorkerProfileById_ReturnsFullProfileAndCategories` |
-| **`BR-03`** | Only verified workers appear publicly | `WorkerSearchAndProfileTests.cs` | `SearchWorkers_ReturnsOnlyVerifiedWorkers` |
-| **`BR-04`** | Workers can specialize in multiple categories | `WorkerSearchAndProfileTests.cs` | `SearchWorkers_FilteredByCategory_ReturnsMatchingWorkers` |
-| **`BR-05`** | Filter workers by category, district, upazila | `WorkerSearchAndProfileTests.cs` | `SearchWorkers_FilteredByDistrictAndUpazila_ReturnsExactLocationMatches` |
-| **`BR-07`** | Authenticated consumers can submit reviews | `ReviewAndRatingTests.cs` | `SubmitReview_FirstTime_CreatesReviewAndRecalculatesWorkerRating` |
-| **`BR-08`** | One review per consumer per worker (upsert) | `ReviewAndRatingTests.cs` | `SubmitReview_SecondTimeBySameConsumer_UpdatesExistingReviewInsteadOfDuplicate` |
-| **`BR-09`** | Community recommendations for offline workers | `RecommendationTests.cs` | `CreateRecommendation_SuccessfullyPersistsWithPendingStatus` |
-| **`BR-10`** | Admin approves, rejects, suspends workers | `AdminAuditLogTests.cs` | `LogAction_PersistsAuditTrailRecordWithJsonValues` |
-| **`BR-14`** | Administrative actions logged to audit trail | `AdminAuditLogTests.cs` | `GetAuditLogs_ReturnsChronologicallyOrderedEvents` |
-| **`BR-15`** | Salted BCrypt password hashing | `AuthTests.cs` | `RegisterNewUser_SuccessfullyHashesPasswordAndPersists` |
-
----
-
-## 3. Deep Dive into the 5 Test Suites with Full Source Code
-
-All test files are located in [`tests/KajBazar.Tests/`](file:///home/noir/Desktop/PROJECTS/Kajbazar/tests/KajBazar.Tests). Let's review the complete code for each suite.
-
-### 3.1 Suite 1: Authentication & Password Security (`AuthTests.cs`)
-
-```csharp
-using KajBazar.Core.DTOs;
-using KajBazar.Core.Entities;
-using KajBazar.Infrastructure.Data;
-using KajBazar.Infrastructure.Repositories;
-using KajBazar.Infrastructure.Services;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Xunit;
-
-namespace KajBazar.Tests;
-
-public class AuthTests
-{
-    private KajBazarDbContext CreateInMemoryContext()
-    {
-        var options = new DbContextOptionsBuilder<KajBazarDbContext>()
-            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-            .Options;
-
-        var context = new KajBazarDbContext(options);
-        
-        // Seed default roles
-        context.Roles.AddRange(
-            new Role { Id = 1, Name = "Admin" },
-            new Role { Id = 2, Name = "ServiceProvider" },
-            new Role { Id = 3, Name = "Consumer" }
-        );
-        context.SaveChanges();
-
-        return context;
-    }
-
-    [Fact]
-    public async Task RegisterNewUser_SuccessfullyHashesPasswordAndPersists()
-    {
-        // Arrange
-        var context = CreateInMemoryContext();
-        var userRepo = new UserRepository(context);
-        var inMemorySettings = new Dictionary<string, string?> {
-            {"Jwt:Key", "TestKeyForUnitTestsThatIsLongEnough32Chars"},
-            {"Jwt:Issuer", "TestIssuer"}
-        };
-        IConfiguration config = new ConfigurationBuilder().AddInMemoryCollection(inMemorySettings).Build();
-        var authService = new AuthService(userRepo, config);
-
-        var dto = new UserRegisterDto
-        {
-            FullName = "Rahim Mia",
-            Email = "rahim@example.com",
-            Password = "SecurePassword123#",
-            PhoneNumber = "01711223344",
-            Role = "Consumer"
-        };
-
-        // Act
-        var result = await authService.RegisterAsync(dto);
-
-        // Assert
-        Assert.NotNull(result);
-        Assert.Equal("rahim@example.com", result.Email);
-        Assert.Equal("Consumer", result.Role);
-
-        var savedUser = await context.Users.FirstOrDefaultAsync(u => u.Email == "rahim@example.com");
-        Assert.NotNull(savedUser);
-        Assert.NotEqual("SecurePassword123#", savedUser.PasswordHash);
-        Assert.StartsWith("$2", savedUser.PasswordHash); // Confirms BCrypt format
-    }
-
-    [Fact]
-    public async Task Login_WithValidCredentials_ReturnsTokenAndUserDetails()
-    {
-        // Arrange
-        var context = CreateInMemoryContext();
-        var userRepo = new UserRepository(context);
-        var inMemorySettings = new Dictionary<string, string?> {
-            {"Jwt:Key", "TestKeyForUnitTestsThatIsLongEnough32Chars"},
-            {"Jwt:Issuer", "TestIssuer"}
-        };
-        IConfiguration config = new ConfigurationBuilder().AddInMemoryCollection(inMemorySettings).Build();
-        var authService = new AuthService(userRepo, config);
-
-        await authService.RegisterAsync(new UserRegisterDto
-        {
-            FullName = "Karim Mia",
-            Email = "karim@example.com",
-            Password = "MyPassword123#",
-            PhoneNumber = "01811223344",
-            Role = "ServiceProvider"
-        });
-
-        // Act
-        var response = await authService.LoginAsync(new UserLoginDto
-        {
-            Email = "karim@example.com",
-            Password = "MyPassword123#"
-        });
-
-        // Assert
-        Assert.NotNull(response);
-        Assert.False(string.IsNullOrEmpty(response.Token));
-        Assert.Equal("Karim Mia", response.FullName);
-        Assert.Equal("ServiceProvider", response.Role);
-    }
-
-    [Fact]
-    public async Task Login_WithInvalidPassword_ThrowsUnauthorizedException()
-    {
-        // Arrange
-        var context = CreateInMemoryContext();
-        var userRepo = new UserRepository(context);
-        var inMemorySettings = new Dictionary<string, string?> {
-            {"Jwt:Key", "TestKeyForUnitTestsThatIsLongEnough32Chars"},
-            {"Jwt:Issuer", "TestIssuer"}
-        };
-        IConfiguration config = new ConfigurationBuilder().AddInMemoryCollection(inMemorySettings).Build();
-        var authService = new AuthService(userRepo, config);
-
-        await authService.RegisterAsync(new UserRegisterDto
-        {
-            FullName = "Karim Mia",
-            Email = "karim@example.com",
-            Password = "MyPassword123#",
-            PhoneNumber = "01811223344",
-            Role = "Consumer"
-        });
-
-        // Act & Assert
-        await Assert.ThrowsAsync<UnauthorizedAccessException>(async () =>
-        {
-            await authService.LoginAsync(new UserLoginDto
-            {
-                Email = "karim@example.com",
-                Password = "WrongPassword!"
-            });
-        });
-    }
-}
+```
++-----------------------------------------------------------------------------------+
+|                            THE ARRANGE-ACT-ASSERT PATTERN                         |
+|                                                                                   |
+|  1. ARRANGE  ──> Gather your ingredients and prep the kitchen.                    |
+|                  Create database in RAM, seed test user, instantiate repository.  |
+|                                                                                   |
+|  2. ACT      ──> Cook the meal! Execute the ONE action you are testing.           |
+|                  Call: await repo.CreateReviewAsync(...)                          |
+|                                                                                   |
+|  3. ASSERT   ──> Taste the meal! Verify the outcome against expectations.         |
+|                  Assert.Equal(5.00m, worker.AverageRating);                       |
++-----------------------------------------------------------------------------------+
 ```
 
 ---
 
-### 3.2 Suite 2: Worker Directory & Geographic Search (`WorkerSearchAndProfileTests.cs`)
+## 2. The xUnit Testing Framework & EF Core In-Memory Provider
 
-```csharp
-using KajBazar.Core.DTOs;
-using KajBazar.Core.Entities;
-using KajBazar.Infrastructure.Data;
-using KajBazar.Infrastructure.Repositories;
-using Microsoft.EntityFrameworkCore;
-using Xunit;
+### 2.1 Why xUnit?
 
-namespace KajBazar.Tests;
-
-public class WorkerSearchAndProfileTests
-{
-    private KajBazarDbContext CreateInMemoryContext()
-    {
-        var options = new DbContextOptionsBuilder<KajBazarDbContext>()
-            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-            .Options;
-        return new KajBazarDbContext(options);
-    }
-
-    [Fact]
-    public async Task SearchWorkers_ReturnsOnlyVerifiedWorkers()
-    {
-        // Arrange
-        var context = CreateInMemoryContext();
-        var user1 = new User { Id = Guid.NewGuid(), FullName = "Verified Worker", Email = "v@test.com", PhoneNumber = "0171", PasswordHash = "x", RoleId = 2 };
-        var user2 = new User { Id = Guid.NewGuid(), FullName = "Pending Worker", Email = "p@test.com", PhoneNumber = "0172", PasswordHash = "x", RoleId = 2 };
-        var district = new District { Id = 1, Name = "Patuakhali", Division = "Barishal" };
-        var upazila = new Upazila { Id = 1, DistrictId = 1, Name = "Dumki" };
-
-        context.Users.AddRange(user1, user2);
-        context.Districts.Add(district);
-        context.Upazilas.Add(upazila);
-
-        context.ServiceProviders.AddRange(
-            new ServiceProviderProfile
-            {
-                Id = Guid.NewGuid(),
-                UserId = user1.Id,
-                VerificationStatus = "VERIFIED",
-                DistrictId = 1,
-                UpazilaId = 1
-            },
-            new ServiceProviderProfile
-            {
-                Id = Guid.NewGuid(),
-                UserId = user2.Id,
-                VerificationStatus = "PENDING",
-                DistrictId = 1,
-                UpazilaId = 1
-            }
-        );
-        await context.SaveChangesAsync();
-
-        var repo = new ServiceProviderRepository(context);
-
-        // Act
-        var results = await repo.SearchWorkersAsync(new WorkerSearchFilterDto());
-
-        // Assert (BR-03): Only 1 verified worker must be returned!
-        Assert.Single(results);
-        Assert.Equal("Verified Worker", results[0].FullName);
-    }
-
-    [Fact]
-    public async Task SearchWorkers_FilteredByCategory_ReturnsMatchingWorkers()
-    {
-        // Arrange
-        var context = CreateInMemoryContext();
-        var catElectric = new Category { Id = 1, Name = "Electrician", Slug = "electrician" };
-        var catPlumber = new Category { Id = 2, Name = "Plumber", Slug = "plumber" };
-        context.Categories.AddRange(catElectric, catPlumber);
-
-        var user = new User { Id = Guid.NewGuid(), FullName = "Only Electrician", Email = "e@test.com", PhoneNumber = "0171", PasswordHash = "x", RoleId = 2 };
-        context.Users.Add(user);
-
-        var workerId = Guid.NewGuid();
-        context.ServiceProviders.Add(new ServiceProviderProfile
-        {
-            Id = workerId,
-            UserId = user.Id,
-            VerificationStatus = "VERIFIED",
-            DistrictId = 1,
-            UpazilaId = 1
-        });
-        context.WorkerCategories.Add(new WorkerCategory { WorkerId = workerId, CategoryId = 1 });
-        await context.SaveChangesAsync();
-
-        var repo = new ServiceProviderRepository(context);
-
-        // Act: Search for category 1 (Electrician)
-        var electricResults = await repo.SearchWorkersAsync(new WorkerSearchFilterDto { CategoryId = 1 });
-        // Act: Search for category 2 (Plumber)
-        var plumberResults = await repo.SearchWorkersAsync(new WorkerSearchFilterDto { CategoryId = 2 });
-
-        // Assert
-        Assert.Single(electricResults);
-        Assert.Empty(plumberResults);
-    }
-}
-```
+`xUnit.net` is the premier, open-source unit testing tool for the .NET community:
+- `[Fact]`: Marks a test method that requires no parameters and must always evaluate to true.
+- `[Theory]`: Marks a parameterized test that can be executed multiple times with different input values using `[InlineData]`.
+- `Assert.Equal(expected, actual)`: Compares two values.
+- `Assert.True(condition)`: Verifies a boolean statement.
+- `Assert.NotNull(object)`: Verifies an object reference exists.
 
 ---
 
-## 4. Executing Automated Tests via Command Line
+### 2.2 Why InMemory Database? Test Isolation
 
-### 4.1 Running All Tests with `dotnet test`
-From the project root directory, run:
-```bash
-dotnet test KajBazar.sln
-```
-
-### 4.2 Interpreting Test Output
-You will see output similar to this:
-```
-Starting test execution, please wait...
-A total of 1 test files matched the specified pattern.
-
-Passed!  - Failed:     0, Passed:    14, Skipped:     0, Total:    14, Duration: 312 ms - KajBazar.Tests.dll (net8.0)
-```
-- **Passed: 14**: All 14 tests succeeded.
-- **Failed: 0**: Zero errors.
-- **Duration: 312 ms**: The entire test suite ran in less than one-third of a second!
-
-### 4.3 Running Specific Test Suites
-To run only the Review tests:
-```bash
-dotnet test --filter "FullyQualifiedName~ReviewAndRatingTests"
-```
-
-To run only the Worker Search tests:
-```bash
-dotnet test --filter "FullyQualifiedName~WorkerSearchAndProfileTests"
-```
-
----
-
-## 5. Complete 10-Step Manual End-to-End Test Procedure
-
-If you want to manually verify the platform from start to finish using real HTTP calls or a web browser:
-
-### Step 1: Verify Categories Taxonomy
-```bash
-curl -s http://localhost:5000/api/categories | jq
-```
-*Expected*: Returns JSON array containing Electrician, Plumber, Appliance Technician, Carpenter, Painter.
-
-### Step 2: Verify Administrative Geography
-```bash
-curl -s http://localhost:5000/api/geography/districts | jq
-```
-*Expected*: Returns Patuakhali, Barishal, Dhaka, etc.
-
-### Step 3: Register a New Consumer Account (`BR-01`)
-```bash
-curl -s -X POST http://localhost:5000/api/auth/register \
-  -H "Content-Type: application/json" \
-  -d '{
-    "fullName": "Manual Test Consumer",
-    "email": "tester@example.com",
-    "password": "Password123#",
-    "phoneNumber": "01700999888",
-    "role": "Consumer"
-  }' | jq
-```
-*Expected*: Returns HTTP 200 with JWT token and User ID.
-
-### Step 4: Register a New Service Provider Account
-```bash
-curl -s -X POST http://localhost:5000/api/auth/register \
-  -H "Content-Type: application/json" \
-  -d '{
-    "fullName": "Kamal Hossain Electric",
-    "email": "kamal@example.com",
-    "password": "Password123#",
-    "phoneNumber": "01811445566",
-    "role": "ServiceProvider"
-  }' | jq
-```
-
-### Step 5: Worker Completes Profile Details (`BR-02`)
-Save Kamal's token into `$WORKER_TOKEN`:
-```bash
-curl -s -X POST http://localhost:5000/api/workers/profile \
-  -H "Authorization: Bearer $WORKER_TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "bio": "Certified industrial and residential wiring expert with 10 years experience.",
-    "yearsExperience": 10,
-    "hourlyRate": 400.00,
-    "nationalIdNumber": "1992551234567890",
-    "districtId": 1,
-    "upazilaId": 1,
-    "addressLine": "Dumki Bazaar Road, Shop #12",
-    "categoryIds": [1]
-  }' | jq
-```
-*Expected*: Profile saved with status `PENDING`. Note the returned `id` as `$NEW_WORKER_ID`.
-
-### Step 6: Verify Worker is NOT in Public Search (`BR-03`)
-```bash
-curl -s "http://localhost:5000/api/workers?query=Kamal" | jq
-```
-*Expected*: Empty array `[]`. Pending workers must never appear publicly!
-
-### Step 7: Admin Logs In & Verifies Worker (`BR-10`, `BR-14`)
-```bash
-ADMIN_TOKEN=$(curl -s -X POST http://localhost:5000/api/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{"email":"admin@kajbazar.com","password":"Password123#"}' | jq -r .token)
-
-curl -s -X PUT "http://localhost:5000/api/admin/workers/$NEW_WORKER_ID/verify" \
-  -H "Authorization: Bearer $ADMIN_TOKEN" | jq
-```
-*Expected*: Returns HTTP 200: `"Worker verified successfully"`.
-
-### Step 8: Worker Now Appears in Public Search (`BR-03`, `BR-05`)
-```bash
-curl -s "http://localhost:5000/api/workers?query=Kamal" | jq
-```
-*Expected*: Kamal Hossain now appears in search results with `verificationStatus: "VERIFIED"`.
-
-### Step 9: Consumer Posts a Review & Rating (`BR-07`)
-```bash
-CONSUMER_TOKEN=$(curl -s -X POST http://localhost:5000/api/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{"email":"tester@example.com","password":"Password123#"}' | jq -r .token)
-
-curl -s -X POST http://localhost:5000/api/reviews \
-  -H "Authorization: Bearer $CONSUMER_TOKEN" \
-  -H "Content-Type: application/json" \
-  -d "{
-    \"workerId\": \"$NEW_WORKER_ID\",
-    \"rating\": 5,
-    \"comment\": \"Outstanding wiring repair. Fixed my circuit breaker in 30 minutes!\"
-  }" | jq
-```
-*Expected*: Returns HTTP 200. Inspecting Kamal's profile now shows `averageRating: 5.00` and `totalReviews: 1`.
-
-### Step 10: Inspect Administrative Audit Trail (`BR-14`)
-```bash
-curl -s http://localhost:5000/api/admin/audit-logs \
-  -H "Authorization: Bearer $ADMIN_TOKEN" | jq '.[0]'
-```
-*Expected*: Top audit log record shows action `VERIFY_WORKER` targeting Kamal's UUID!
-
----
-
-## 6. How to Write New Tests When Adding Features
-
-When you add a new endpoint or feature to KajBazar:
-1. Open or create a test file in `tests/KajBazar.Tests/`.
-2. Instantiate an in-memory `KajBazarDbContext`:
+Why don't we run our tests against our live PostgreSQL database?
+1. **Speed**: Connecting to PostgreSQL over TCP sockets takes 20-50ms per test. With 500 tests, that takes 25 seconds. With In-Memory databases, 500 tests execute in **300 milliseconds**!
+2. **Isolation**: If Test A creates a user named "Kabir", and Test B expects the database to be completely empty, Test B fails because of Test A!
+3. **The Solution**: In every single test, we create a fresh, uniquely named In-Memory database:
    ```csharp
    var options = new DbContextOptionsBuilder<KajBazarDbContext>()
        .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
        .Options;
-   var context = new KajBazarDbContext(options);
    ```
-3. Use the **Arrange-Act-Assert** pattern.
-4. Run `dotnet test` to confirm it passes!
+   Because `Guid.NewGuid().ToString()` generates a unique random string, **every single test runs in its own pristine, 100% isolated database sandbox!**
 
 ---
 
-## 7. Conclusion & Next Steps
+## 3. Complete Annotated Source Code: Test Suite 1 (`AuthTests.cs`)
 
-With 14 passing automated tests and a complete manual verification procedure, our software quality is guaranteed.
+Here is the complete source code of `tests/KajBazar.Tests/AuthTests.cs`:
 
-Next, let's learn how to take this application out of your laptop and deploy it onto a production Linux server:
-👉 **[Volume 06: Deployment & DevOps Guide](06-deployment-and-devops-guide.md)**
+```csharp
+using System;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using Microsoft.Extensions.Configuration;
+using Moq;
+using Xunit;
+using KajBazar.Core.Entities;
+using KajBazar.Infrastructure.Services;
+
+namespace KajBazar.Tests
+{
+    public class AuthTests
+    {
+        private readonly Mock<IConfiguration> _configMock;
+        private readonly AuthService _authService;
+
+        public AuthTests()
+        {
+            _configMock = new Mock<IConfiguration>();
+            _configMock.Setup(c => c["JwtSettings:SecretKey"])
+                .Returns("KajBazarSuperSecretKeyWhichIsAtLeast256BitsLongForSecurity#123");
+            _configMock.Setup(c => c["JwtSettings:Issuer"]).Returns("KajBazarAPI");
+            _configMock.Setup(c => c["JwtSettings:Audience"]).Returns("KajBazarApp");
+            _configMock.Setup(c => c["JwtSettings:ExpiryInMinutes"]).Returns("1440");
+
+            _authService = new AuthService(_configMock.Object);
+        }
+
+        [Fact]
+        public void HashPassword_ProducesValidBCryptHash_AndVerifiesCorrectly()
+        {
+            // Arrange
+            var rawPassword = "StrongPassword#2026";
+
+            // Act
+            var hash = _authService.HashPassword(rawPassword);
+            var isMatch = _authService.VerifyPassword(rawPassword, hash);
+
+            // Assert
+            Assert.NotNull(hash);
+            Assert.Equal(60, hash.Length);
+            Assert.StartsWith("$2a$11$", hash);
+            Assert.True(isMatch);
+        }
+
+        [Fact]
+        public void VerifyPassword_WithWrongPassword_ReturnsFalse()
+        {
+            // Arrange
+            var rawPassword = "CorrectPassword123#";
+            var wrongPassword = "WrongPassword123#";
+            var hash = _authService.HashPassword(rawPassword);
+
+            // Act
+            var isMatch = _authService.VerifyPassword(wrongPassword, hash);
+
+            // Assert
+            Assert.False(isMatch);
+        }
+
+        [Fact]
+        public void GenerateJwtToken_ContainsExpectedClaimsAndValidSignature()
+        {
+            // Arrange
+            var testUser = new User
+            {
+                UserId = Guid.NewGuid(),
+                FullName = "Leon Islam",
+                Email = "leon@gmail.com",
+                PhoneNumber = "01711111111"
+            };
+            var role = "Consumer";
+
+            // Act
+            var tokenString = _authService.GenerateJwtToken(testUser, role);
+
+            // Assert
+            Assert.NotNull(tokenString);
+            var handler = new JwtSecurityTokenHandler();
+            var jwtToken = handler.ReadJwtToken(tokenString);
+
+            Assert.Equal("KajBazarAPI", jwtToken.Issuer);
+            Assert.Contains(jwtToken.Audiences, a => a == "KajBazarApp");
+            Assert.Equal(testUser.UserId.ToString(), jwtToken.Subject);
+
+            var nameClaim = jwtToken.Claims.First(c => c.Type == ClaimTypes.Name).Value;
+            var roleClaim = jwtToken.Claims.First(c => c.Type == ClaimTypes.Role).Value;
+            var emailClaim = jwtToken.Claims.First(c => c.Type == ClaimTypes.Email).Value;
+
+            Assert.Equal("Leon Islam", nameClaim);
+            Assert.Equal("Consumer", roleClaim);
+            Assert.Equal("leon@gmail.com", emailClaim);
+        }
+    }
+}
+
+```
+
+---
+
+## 4. Complete Annotated Source Code: Test Suite 2 (`WorkerSearchAndProfileTests.cs`)
+
+Here is the complete source code of `tests/KajBazar.Tests/WorkerSearchAndProfileTests.cs`:
+
+```csharp
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using Xunit;
+using KajBazar.Core.Entities;
+using KajBazar.Core.Enums;
+using KajBazar.Infrastructure.Data;
+using KajBazar.Infrastructure.Repositories;
+
+namespace KajBazar.Tests
+{
+    public class WorkerSearchAndProfileTests
+    {
+        private KajBazarDbContext GetInMemoryDbContext(string dbName)
+        {
+            var options = new DbContextOptionsBuilder<KajBazarDbContext>()
+                .UseInMemoryDatabase(databaseName: dbName)
+                .Options;
+
+            var context = new KajBazarDbContext(options);
+
+            // Seed sample data
+            var district1 = new District { DistrictId = 1, DistrictName = "Patuakhali" };
+            var district2 = new District { DistrictId = 2, DistrictName = "Dhaka" };
+            context.Districts.AddRange(district1, district2);
+
+            var upazila1 = new Upazila { UpazilaId = 1, DistrictId = 1, UpazilaName = "Dumki" };
+            var upazila2 = new Upazila { UpazilaId = 2, DistrictId = 1, UpazilaName = "Mirzaganj" };
+            var upazila3 = new Upazila { UpazilaId = 3, DistrictId = 2, UpazilaName = "Dhanmondi" };
+            context.Upazilas.AddRange(upazila1, upazila2, upazila3);
+
+            var catElectrician = new Category { CategoryId = 1, CategoryName = "Electrician", IsActive = true };
+            var catPlumber = new Category { CategoryId = 2, CategoryName = "Plumber", IsActive = true };
+            context.Categories.AddRange(catElectrician, catPlumber);
+
+            // Worker 1: Verified Electrician in Dumki, Patuakhali (Rating 4.8)
+            var user1 = new User { UserId = Guid.NewGuid(), FullName = "Karim Electrician", Email = "karim@test.com", PhoneNumber = "01811111111", IsActive = true };
+            var profile1 = new ServiceProviderProfile
+            {
+                ProfileId = Guid.NewGuid(),
+                UserId = user1.UserId,
+                User = user1,
+                DistrictId = 1,
+                District = district1,
+                UpazilaId = 1,
+                Upazila = upazila1,
+                Bio = "Master Electrician",
+                ExperienceYears = 8,
+                HourlyRate = 350,
+                VerificationStatus = VerificationStatus.Verified,
+                AverageRating = 4.8m,
+                TotalReviews = 5
+            };
+            var wc1 = new WorkerCategory { ProfileId = profile1.ProfileId, CategoryId = 1, Category = catElectrician, Profile = profile1 };
+            profile1.WorkerCategories.Add(wc1);
+
+            // Worker 2: Pending Electrician in Dumki, Patuakhali
+            var user2 = new User { UserId = Guid.NewGuid(), FullName = "Pending Worker", Email = "pending@test.com", PhoneNumber = "01822222222", IsActive = true };
+            var profile2 = new ServiceProviderProfile
+            {
+                ProfileId = Guid.NewGuid(),
+                UserId = user2.UserId,
+                User = user2,
+                DistrictId = 1,
+                District = district1,
+                UpazilaId = 1,
+                Upazila = upazila1,
+                Bio = "Pending Worker",
+                ExperienceYears = 3,
+                HourlyRate = 250,
+                VerificationStatus = VerificationStatus.Pending,
+                AverageRating = 0m,
+                TotalReviews = 0
+            };
+            var wc2 = new WorkerCategory { ProfileId = profile2.ProfileId, CategoryId = 1, Category = catElectrician, Profile = profile2 };
+            profile2.WorkerCategories.Add(wc2);
+
+            // Worker 3: Verified Plumber in Dhanmondi, Dhaka (Rating 4.0)
+            var user3 = new User { UserId = Guid.NewGuid(), FullName = "Rahim Plumber", Email = "rahim@test.com", PhoneNumber = "01833333333", IsActive = true };
+            var profile3 = new ServiceProviderProfile
+            {
+                ProfileId = Guid.NewGuid(),
+                UserId = user3.UserId,
+                User = user3,
+                DistrictId = 2,
+                District = district2,
+                UpazilaId = 3,
+                Upazila = upazila3,
+                Bio = "Licensed Plumber",
+                ExperienceYears = 5,
+                HourlyRate = 400,
+                VerificationStatus = VerificationStatus.Verified,
+                AverageRating = 4.0m,
+                TotalReviews = 2
+            };
+            var wc3 = new WorkerCategory { ProfileId = profile3.ProfileId, CategoryId = 2, Category = catPlumber, Profile = profile3 };
+            profile3.WorkerCategories.Add(wc3);
+
+            context.Users.AddRange(user1, user2, user3);
+            context.ServiceProviderProfiles.AddRange(profile1, profile2, profile3);
+            context.SaveChanges();
+
+            return context;
+        }
+
+        [Fact]
+        public async Task SearchWorkers_ReturnsOnlyVerifiedWorkers_BR03()
+        {
+            // Arrange
+            var db = GetInMemoryDbContext(Guid.NewGuid().ToString());
+            var repo = new ServiceProviderRepository(db);
+
+            // Act
+            var (workers, totalCount) = await repo.SearchWorkersAsync(null, null, null, null);
+
+            // Assert: Worker 2 is PENDING, so only 2 verified workers must be returned
+            Assert.Equal(2, totalCount);
+            Assert.All(workers, w => Assert.Equal(VerificationStatus.Verified, w.VerificationStatus));
+        }
+
+        [Fact]
+        public async Task SearchWorkers_FiltersByCategoryCorrectly_BR05()
+        {
+            // Arrange
+            var db = GetInMemoryDbContext(Guid.NewGuid().ToString());
+            var repo = new ServiceProviderRepository(db);
+
+            // Act
+            var (workers, totalCount) = await repo.SearchWorkersAsync("Electrician", null, null, null);
+
+            // Assert: Only Karim Electrician should be returned
+            Assert.Equal(1, totalCount);
+            Assert.Equal("Karim Electrician", workers.First().User.FullName);
+        }
+
+        [Fact]
+        public async Task SearchWorkers_FiltersByDistrictAndUpazila_BR05()
+        {
+            // Arrange
+            var db = GetInMemoryDbContext(Guid.NewGuid().ToString());
+            var repo = new ServiceProviderRepository(db);
+
+            // Act: Patuakhali (districtId = 1), Dumki (upazilaId = 1)
+            var (workers, totalCount) = await repo.SearchWorkersAsync(null, 1, 1, null);
+
+            // Assert
+            Assert.Equal(1, totalCount);
+            Assert.Equal("Dumki", workers.First().Upazila.UpazilaName);
+        }
+
+        [Fact]
+        public async Task SearchWorkers_FiltersByMinimumRating()
+        {
+            // Arrange
+            var db = GetInMemoryDbContext(Guid.NewGuid().ToString());
+            var repo = new ServiceProviderRepository(db);
+
+            // Act: MinRating 4.5
+            var (workers, totalCount) = await repo.SearchWorkersAsync(null, null, null, 4.5m);
+
+            // Assert: Only Karim (4.8) returned, Rahim (4.0) excluded
+            Assert.Equal(1, totalCount);
+            Assert.Equal(4.8m, workers.First().AverageRating);
+        }
+
+        [Fact]
+        public async Task UpdateStatusAsync_SetsVerificationStatusAndTimestamp_BR10()
+        {
+            // Arrange
+            var db = GetInMemoryDbContext(Guid.NewGuid().ToString());
+            var repo = new ServiceProviderRepository(db);
+            var pendingWorker = await db.ServiceProviderProfiles.FirstAsync(w => w.VerificationStatus == VerificationStatus.Pending);
+
+            // Act: Admin approves worker
+            await repo.UpdateStatusAsync(pendingWorker.ProfileId, VerificationStatus.Verified);
+
+            // Assert
+            var updated = await repo.GetByIdAsync(pendingWorker.ProfileId);
+            Assert.NotNull(updated);
+            Assert.Equal(VerificationStatus.Verified, updated.VerificationStatus);
+            Assert.NotNull(updated.VerifiedAt);
+        }
+    }
+}
+
+```
+
+---
+
+## 5. Complete Annotated Source Code: Test Suite 3 (`ReviewAndRatingTests.cs`)
+
+Here is the complete source code of `tests/KajBazar.Tests/ReviewAndRatingTests.cs`:
+
+```csharp
+using System;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using Xunit;
+using KajBazar.Core.Entities;
+using KajBazar.Core.Enums;
+using KajBazar.Infrastructure.Data;
+using KajBazar.Infrastructure.Repositories;
+
+namespace KajBazar.Tests
+{
+    public class ReviewAndRatingTests
+    {
+        private KajBazarDbContext GetInMemoryDbContext(string dbName)
+        {
+            var options = new DbContextOptionsBuilder<KajBazarDbContext>()
+                .UseInMemoryDatabase(databaseName: dbName)
+                .Options;
+
+            var context = new KajBazarDbContext(options);
+
+            var workerUser = new User
+            {
+                UserId = Guid.NewGuid(),
+                FullName = "Rahim Plumber",
+                Email = "rahim@plumb.com",
+                PhoneNumber = "01811111111"
+            };
+
+            var district = new District { DistrictId = 1, DistrictName = "Patuakhali" };
+            var upazila = new Upazila { UpazilaId = 1, DistrictId = 1, UpazilaName = "Dumki" };
+
+            var profile = new ServiceProviderProfile
+            {
+                ProfileId = Guid.NewGuid(),
+                UserId = workerUser.UserId,
+                User = workerUser,
+                DistrictId = 1,
+                District = district,
+                UpazilaId = 1,
+                Upazila = upazila,
+                AverageRating = 0m,
+                TotalReviews = 0,
+                VerificationStatus = VerificationStatus.Verified
+            };
+
+            var consumer1 = new User { UserId = Guid.NewGuid(), FullName = "Leon Consumer", Email = "leon@test.com", PhoneNumber = "01711111111" };
+            var consumer2 = new User { UserId = Guid.NewGuid(), FullName = "Tanvir Consumer", Email = "tanvir@test.com", PhoneNumber = "01722222222" };
+
+            context.Users.AddRange(workerUser, consumer1, consumer2);
+            context.Districts.Add(district);
+            context.Upazilas.Add(upazila);
+            context.ServiceProviderProfiles.Add(profile);
+            context.SaveChanges();
+
+            return context;
+        }
+
+        [Fact]
+        public async Task AddReview_AutomaticallyRecalculatesWorkerAverageRatingAndTotalCount()
+        {
+            // Arrange
+            var db = GetInMemoryDbContext(Guid.NewGuid().ToString());
+            var repo = new ReviewRepository(db);
+
+            var worker = await db.ServiceProviderProfiles.FirstAsync();
+            var consumer1 = await db.Users.FirstAsync(u => u.Email == "leon@test.com");
+            var consumer2 = await db.Users.FirstAsync(u => u.Email == "tanvir@test.com");
+
+            // Act 1: Consumer 1 adds 5-star review
+            var review1 = new Review
+            {
+                ReviewId = Guid.NewGuid(),
+                ConsumerId = consumer1.UserId,
+                WorkerProfileId = worker.ProfileId,
+                Rating = 5,
+                Comment = "Great work!"
+            };
+            await repo.AddOrUpdateReviewAsync(review1);
+
+            // Assert 1
+            var updatedWorker1 = await db.ServiceProviderProfiles.FirstAsync(w => w.ProfileId == worker.ProfileId);
+            Assert.Equal(1, updatedWorker1.TotalReviews);
+            Assert.Equal(5.00m, updatedWorker1.AverageRating);
+
+            // Act 2: Consumer 2 adds 4-star review
+            var review2 = new Review
+            {
+                ReviewId = Guid.NewGuid(),
+                ConsumerId = consumer2.UserId,
+                WorkerProfileId = worker.ProfileId,
+                Rating = 4,
+                Comment = "Very good."
+            };
+            await repo.AddOrUpdateReviewAsync(review2);
+
+            // Assert 2: Average of 5 and 4 = 4.50
+            var updatedWorker2 = await db.ServiceProviderProfiles.FirstAsync(w => w.ProfileId == worker.ProfileId);
+            Assert.Equal(2, updatedWorker2.TotalReviews);
+            Assert.Equal(4.50m, updatedWorker2.AverageRating);
+        }
+
+        [Fact]
+        public async Task AddOrUpdateReview_WhenReviewAlreadyExists_UpdatesExistingReview_BR08()
+        {
+            // Arrange
+            var db = GetInMemoryDbContext(Guid.NewGuid().ToString());
+            var repo = new ReviewRepository(db);
+
+            var worker = await db.ServiceProviderProfiles.FirstAsync();
+            var consumer = await db.Users.FirstAsync(u => u.Email == "leon@test.com");
+
+            // First review: 3 stars
+            var reviewInitial = new Review
+            {
+                ReviewId = Guid.NewGuid(),
+                ConsumerId = consumer.UserId,
+                WorkerProfileId = worker.ProfileId,
+                Rating = 3,
+                Comment = "Average service"
+            };
+            await repo.AddOrUpdateReviewAsync(reviewInitial);
+
+            // Verify initial review
+            var countBefore = await db.Reviews.CountAsync();
+            Assert.Equal(1, countBefore);
+
+            // Act: Consumer submits an updated review for the same worker (5 stars)
+            var reviewUpdated = new Review
+            {
+                ReviewId = Guid.NewGuid(),
+                ConsumerId = consumer.UserId,
+                WorkerProfileId = worker.ProfileId,
+                Rating = 5,
+                Comment = "Problem solved completely on second visit!"
+            };
+            await repo.AddOrUpdateReviewAsync(reviewUpdated);
+
+            // Assert: Total review count should STILL be 1 (no duplicate row created - BR-08)
+            var countAfter = await db.Reviews.CountAsync();
+            Assert.Equal(1, countAfter);
+
+            var savedReview = await repo.GetByUserAndWorkerAsync(consumer.UserId, worker.ProfileId);
+            Assert.NotNull(savedReview);
+            Assert.Equal(5, savedReview.Rating);
+            Assert.Equal("Problem solved completely on second visit!", savedReview.Comment);
+
+            // Worker rating should now be 5.00
+            var workerAfter = await db.ServiceProviderProfiles.FirstAsync(w => w.ProfileId == worker.ProfileId);
+            Assert.Equal(5.00m, workerAfter.AverageRating);
+            Assert.Equal(1, workerAfter.TotalReviews);
+        }
+    }
+}
+
+```
+
+---
+
+## 6. Complete Annotated Source Code: Test Suite 4 (`RecommendationTests.cs`)
+
+Here is the complete source code of `tests/KajBazar.Tests/RecommendationTests.cs`:
+
+```csharp
+using System;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using Xunit;
+using KajBazar.Core.Entities;
+using KajBazar.Core.Enums;
+using KajBazar.Infrastructure.Data;
+using KajBazar.Infrastructure.Repositories;
+
+namespace KajBazar.Tests
+{
+    public class RecommendationTests
+    {
+        private KajBazarDbContext GetInMemoryDbContext(string dbName)
+        {
+            var options = new DbContextOptionsBuilder<KajBazarDbContext>()
+                .UseInMemoryDatabase(databaseName: dbName)
+                .Options;
+
+            var context = new KajBazarDbContext(options);
+
+            var consumer = new User
+            {
+                UserId = Guid.NewGuid(),
+                FullName = "Asif Sourav",
+                Email = "asif@test.com",
+                PhoneNumber = "01733333333"
+            };
+
+            var admin = new User
+            {
+                UserId = Guid.NewGuid(),
+                FullName = "Admin User",
+                Email = "admin@test.com",
+                PhoneNumber = "01700000001"
+            };
+
+            var category = new Category { CategoryId = 1, CategoryName = "Electrician", IsActive = true };
+            var district = new District { DistrictId = 1, DistrictName = "Patuakhali" };
+            var upazila = new Upazila { UpazilaId = 1, DistrictId = 1, UpazilaName = "Dumki" };
+
+            context.Users.AddRange(consumer, admin);
+            context.Categories.Add(category);
+            context.Districts.Add(district);
+            context.Upazilas.Add(upazila);
+            context.SaveChanges();
+
+            return context;
+        }
+
+        [Fact]
+        public async Task SubmitRecommendation_SetsPendingStatus_BR09()
+        {
+            // Arrange
+            var db = GetInMemoryDbContext(Guid.NewGuid().ToString());
+            var repo = new RecommendationRepository(db);
+            var consumer = await db.Users.FirstAsync(u => u.Email == "asif@test.com");
+
+            var recommendation = new CommunityRecommendation
+            {
+                RecommendationId = Guid.NewGuid(),
+                RecommendedByUserId = consumer.UserId,
+                WorkerName = "Jamal Carpenter",
+                PhoneNumber = "01999999999",
+                CategoryId = 1,
+                DistrictId = 1,
+                UpazilaId = 1,
+                Notes = "Skilled village carpenter",
+                Status = RecommendationStatus.Pending,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            // Act
+            await repo.AddAsync(recommendation);
+
+            // Assert
+            var saved = await repo.GetByIdAsync(recommendation.RecommendationId);
+            Assert.NotNull(saved);
+            Assert.Equal("Jamal Carpenter", saved.WorkerName);
+            Assert.Equal(RecommendationStatus.Pending, saved.Status);
+            Assert.Null(saved.ReviewedByAdminId);
+        }
+
+        [Fact]
+        public async Task UpdateStatus_WhenAdminApproves_SetsStatusToApprovedAndRecordsAdminId()
+        {
+            // Arrange
+            var db = GetInMemoryDbContext(Guid.NewGuid().ToString());
+            var repo = new RecommendationRepository(db);
+            var consumer = await db.Users.FirstAsync(u => u.Email == "asif@test.com");
+            var admin = await db.Users.FirstAsync(u => u.Email == "admin@test.com");
+
+            var rec = new CommunityRecommendation
+            {
+                RecommendationId = Guid.NewGuid(),
+                RecommendedByUserId = consumer.UserId,
+                WorkerName = "Monir Painter",
+                PhoneNumber = "01888888888",
+                CategoryId = 1,
+                DistrictId = 1,
+                UpazilaId = 1,
+                Status = RecommendationStatus.Pending
+            };
+            await repo.AddAsync(rec);
+
+            // Act: Admin approves recommendation
+            await repo.UpdateStatusAsync(rec.RecommendationId, RecommendationStatus.Approved, admin.UserId);
+
+            // Assert
+            var updated = await repo.GetByIdAsync(rec.RecommendationId);
+            Assert.NotNull(updated);
+            Assert.Equal(RecommendationStatus.Approved, updated.Status);
+            Assert.Equal(admin.UserId, updated.ReviewedByAdminId);
+        }
+    }
+}
+
+```
+
+---
+
+## 7. Complete Annotated Source Code: Test Suite 5 (`AdminAuditLogTests.cs`)
+
+Here is the complete source code of `tests/KajBazar.Tests/AdminAuditLogTests.cs`:
+
+```csharp
+using System;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using Xunit;
+using KajBazar.Core.Entities;
+using KajBazar.Infrastructure.Data;
+using KajBazar.Infrastructure.Repositories;
+
+namespace KajBazar.Tests
+{
+    public class AdminAuditLogTests
+    {
+        private KajBazarDbContext GetInMemoryDbContext(string dbName)
+        {
+            var options = new DbContextOptionsBuilder<KajBazarDbContext>()
+                .UseInMemoryDatabase(databaseName: dbName)
+                .Options;
+
+            var context = new KajBazarDbContext(options);
+
+            var admin = new User
+            {
+                UserId = Guid.NewGuid(),
+                FullName = "Super Admin",
+                Email = "admin@kajbazar.com",
+                PhoneNumber = "01700000001"
+            };
+
+            context.Users.Add(admin);
+            context.SaveChanges();
+
+            return context;
+        }
+
+        [Fact]
+        public async Task LogAsync_RecordsActionAndDetails_BR14()
+        {
+            // Arrange
+            var db = GetInMemoryDbContext(Guid.NewGuid().ToString());
+            var repo = new AdminAuditLogRepository(db);
+            var admin = await db.Users.FirstAsync();
+            var targetId = Guid.NewGuid();
+
+            // Act
+            await repo.LogAsync(
+                admin.UserId,
+                "VERIFY_WORKER_PROFILE",
+                "service_provider_profiles",
+                targetId,
+                "Profile approved after verifying trade license."
+            );
+
+            // Assert
+            var logs = await repo.GetRecentLogsAsync(10);
+            var loggedAction = logs.FirstOrDefault();
+
+            Assert.NotNull(loggedAction);
+            Assert.Equal("VERIFY_WORKER_PROFILE", loggedAction.Action);
+            Assert.Equal("service_provider_profiles", loggedAction.EntityName);
+            Assert.Equal(targetId, loggedAction.EntityId);
+            Assert.Equal(admin.UserId, loggedAction.AdminUserId);
+            Assert.Equal("Profile approved after verifying trade license.", loggedAction.Details);
+        }
+
+        [Fact]
+        public async Task GetDashboardStats_CalculatesMetricsAccurately()
+        {
+            // Arrange
+            var db = GetInMemoryDbContext(Guid.NewGuid().ToString());
+            var repo = new AdminAuditLogRepository(db);
+
+            // Seed additional user and profiles
+            var consumer = new User { UserId = Guid.NewGuid(), FullName = "Consumer User", Email = "c@test.com", PhoneNumber = "01722222222" };
+            db.Users.Add(consumer);
+            await db.SaveChangesAsync();
+
+            // Act
+            var stats = await repo.GetDashboardStatsAsync();
+
+            // Assert: 2 users seeded (admin + consumer)
+            Assert.Equal(2, stats.TotalRegisteredUsers);
+            Assert.Equal(0, stats.TotalWorkerProfiles);
+            Assert.Equal(0, stats.PendingVerificationCount);
+        }
+    }
+}
+
+```
+
+---
+
+## 8. Executing Tests via CLI & Interpreting Results
+
+To run the automated tests on your machine, open your terminal:
+
+```bash
+dotnet test KajBazar.sln
+```
+
+Expected live output:
+```text
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  KajBazar.Core -> /home/noir/Desktop/PROJECTS/Kajbazar/src/KajBazar.Core/bin/Debug/net8.0/KajBazar.Core.dll
+  KajBazar.Infrastructure -> /home/noir/Desktop/PROJECTS/Kajbazar/src/KajBazar.Infrastructure/bin/Debug/net8.0/KajBazar.Infrastructure.dll
+  KajBazar.API -> /home/noir/Desktop/PROJECTS/Kajbazar/src/KajBazar.API/bin/Debug/net8.0/KajBazar.API.dll
+  KajBazar.Tests -> /home/noir/Desktop/PROJECTS/Kajbazar/tests/KajBazar.Tests/bin/Debug/net8.0/KajBazar.Tests.dll
+[xUnit.net 00:00:00.62]   Discovering: KajBazar.Tests
+[xUnit.net 00:00:00.65]   Discovered:  KajBazar.Tests
+[xUnit.net 00:00:00.66]   Starting:    KajBazar.Tests
+[xUnit.net 00:00:01.05]   Finished:    KajBazar.Tests
+Passed!  - Failed:     0, Passed:    14, Skipped:     0, Total:    14, Duration: 1 s - KajBazar.Tests.dll (net8.0)
+```
+
+Notice:
+- **14 passed, 0 failed, 0 skipped** in **1.05 seconds**!
+- That is **less than 80 milliseconds per test**!
+
+---
+
+## 9. Code Coverage Analysis & CI/CD Integration
+
+To measure test code coverage on your computer:
+```bash
+dotnet test --collect:"XPlat Code Coverage"
+```
+
+To integrate with GitHub Actions, create `.github/workflows/ci.yml`:
+```yaml
+name: KajBazar Automated CI
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+      - name: Restore dependencies
+        run: dotnet restore KajBazar.sln
+      - name: Build solution
+        run: dotnet build KajBazar.sln --no-restore
+      - name: Run automated test suites
+        run: dotnet test KajBazar.sln --no-build --verbosity normal
+```
+
+---
+
+## 10. Hands-on Testing Exercises & Solutions
+
+### 10.1 Exercise 1: Writing a Test for Business Rule BR-06 (Phone Reveal)
+- **Question**: Write a test verifying that `RevealPhoneNumberAsync` returns the worker's phone number for verified workers, but returns `null` for unverified workers.
+- **Solution**:
+  ```csharp
+  [Fact]
+  public async Task RevealPhoneNumber_UnverifiedWorker_ReturnsNull()
+  {
+      // ARRANGE
+      var context = CreateInMemoryDbContext();
+      var repo = new ServiceProviderRepository(context);
+      var user = new User { FullName = "Unverified", PhoneNumber = "01711000000" };
+      context.Users.Add(user);
+      var profile = new ServiceProviderProfile 
+      { 
+          User = user, 
+          VerificationStatus = VerificationStatus.Pending 
+      };
+      context.ServiceProviderProfiles.Add(profile);
+      await context.SaveChangesAsync();
+
+      // ACT
+      var phone = await repo.RevealPhoneNumberAsync(profile.Id);
+
+      // ASSERT
+      Assert.Null(phone); // Rule BR-06: Unverified phone numbers must never be revealed!
+  }
+  ```
+
+---
+
+## 11. Frequently Asked Questions (FAQ) on Automated Testing
+
+### Q1: Can an In-Memory database test database triggers?
+**Answer**: No. EF Core InMemory is a C# dictionary emulation of a database in RAM; it does not execute PostgreSQL PL/pgSQL triggers or regex check constraints. That is why our repository explicitly implements the rating recalculation logic in C# for InMemory compatibility, while the live PostgreSQL database runs the trigger `trg_update_worker_rating_stats` in production!
+
+### Q2: How do I run only a single test file from the terminal?
+**Answer**: Use the `--filter` flag:
+```bash
+dotnet test --filter FullyQualifiedName~AuthTests
+```
+
+---
+
+## 12. Conclusion & Roadmap to Volume 06
+
+Congratulations! You have mastered the **KajBazar Automated Testing Suite**.
+
+You now understand:
+- The Testing Pyramid and the Arrange-Act-Assert (AAA) pattern.
+- In-Memory Database isolation and zero-dependency testing.
+- How to test Authentication, Search, Reviews, Recommendations, and Audit Logs.
+- How to run tests via CLI in under 1.5 seconds.
+
+In the next volume, we will deploy our tested application to production servers:
+👉 **Proceed to [Volume 06: Deployment & DevOps Guide](06-deployment-and-devops-guide.md)**

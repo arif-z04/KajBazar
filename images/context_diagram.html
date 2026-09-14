@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>KajBazar Context Diagram (Level 0 DFD)</title>
+<style>
+  body {
+    margin: 0;
+    padding: 24px;
+    background: #0f172a;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .canvas-wrapper {
+    background: #ffffff;
+    border-radius: 8px;
+    padding: 24px;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+  }
+  text {
+    user-select: none;
+  }
+  .title {
+    font-size: 20px;
+    font-weight: 800;
+    fill: #0f172a;
+  }
+  .subtitle {
+    font-size: 13px;
+    fill: #64748b;
+  }
+  .entity-title {
+    font-size: 14px;
+    font-weight: 700;
+    fill: #ffffff;
+    letter-spacing: 0.5px;
+  }
+  .entity-sub {
+    font-size: 11px;
+    fill: #93c5fd;
+  }
+  .flow-text {
+    font-size: 11px;
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+    font-weight: 600;
+  }
+  .inbound { fill: #047857; }
+  .outbound { fill: #b45309; }
+</style>
+</head>
+<body>
+
+<div class="canvas-wrapper">
+<svg width="1700" height="1060" viewBox="0 0 1700 1060" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="arrow-in" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#059669" />
+    </marker>
+    <marker id="arrow-out" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#d97706" />
+    </marker>
+  </defs>
+
+  <!-- Title & Legend -->
+  <text x="40" y="45" class="title">KajBazar Platform — Context Diagram (Level 0 DFD)</text>
+  <text x="40" y="68" class="subtitle">Level-0 data flows connected directly to Process 0.0 with 90° non-overlapping trajectories</text>
+
+  <g transform="translate(1370, 30)">
+    <rect width="290" height="42" rx="4" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/>
+    <line x1="16" y1="21" x2="48" y2="21" stroke="#059669" stroke-width="2" marker-end="url(#arrow-in)"/>
+    <text x="56" y="25" font-size="12" font-weight="600" fill="#065f46">Inbound Flow</text>
+    <line x1="156" y1="21" x2="188" y2="21" stroke="#d97706" stroke-width="2" marker-end="url(#arrow-out)"/>
+    <text x="196" y="25" font-size="12" font-weight="600" fill="#92400e">Outbound Flow</text>
+  </g>
+
+  <!-- ==================== PROCESS 0.0 (CENTER) ==================== -->
+  <g transform="translate(850, 440)">
+    <circle r="120" fill="#0f766e" stroke="#115e59" stroke-width="3"/>
+    <circle r="110" fill="none" stroke="#5eead4" stroke-width="1.5" stroke-dasharray="4 3" opacity="0.6"/>
+    <text text-anchor="middle" y="-45" fill="#99f6e4" font-size="13" font-weight="800" letter-spacing="1">PROCESS 0.0</text>
+    <text text-anchor="middle" y="-18" fill="#ffffff" font-size="19" font-weight="800">KajBazar Platform</text>
+    <text text-anchor="middle" y="8" fill="#ccfbf1" font-size="12">Core Directory System</text>
+    <line x1="-70" y1="20" x2="70" y2="20" stroke="#14b8a6" stroke-width="1.2"/>
+    <text text-anchor="middle" y="42" fill="#f0fdfa" font-size="11" font-weight="600">Trust Engine • Directory</text>
+    <text text-anchor="middle" y="60" fill="#f0fdfa" font-size="11" font-weight="600">Verification & Moderation</text>
+  </g>
+
+  <!-- ==================== ENTITY: CONSUMER ==================== -->
+  <g transform="translate(40, 220)">
+    <rect width="210" height="340" rx="4" fill="#1e3a8a" stroke="#0f172a" stroke-width="2"/>
+    <text x="20" y="40" class="entity-title">CONSUMER</text>
+    <text x="20" y="62" class="entity-sub">Service Seeker / User</text>
+    <line x1="20" y1="80" x2="190" y2="80" stroke="#3b82f6" stroke-width="1"/>
+    <text x="20" y="110" fill="#bfdbfe" font-size="11">External Actor Roles:</text>
+    <text x="20" y="132" fill="#ffffff" font-size="11">• Searches for trades</text>
+    <text x="20" y="152" fill="#ffffff" font-size="11">• Rates service quality</text>
+    <text x="20" y="172" fill="#ffffff" font-size="11">• Submits recommendations</text>
+  </g>
+
+  <!-- Consumer Inbound Flows (1 - 4) -->
+  <!-- 1 -->
+  <text x="260" y="242" class="flow-text inbound">1. Registration / Login Credentials</text>
+  <path d="M 250,250 L 790,250 L 790,323" fill="none" stroke="#059669" stroke-width="1.8" marker-end="url(#arrow-in)"/>
+
+  <!-- 2 -->
+  <text x="260" y="282" class="flow-text inbound">2. Search Filters (Category, District, Upazila)</text>
+  <path d="M 250,290 L 765,290 L 765,335" fill="none" stroke="#059669" stroke-width="1.8" marker-end="url(#arrow-in)"/>
+
+  <!-- 3 -->
+  <text x="260" y="322" class="flow-text inbound">3. Worker Review & Star Rating (1-5)</text>
+  <path d="M 250,330 L 745,330 L 745,355" fill="none" stroke="#059669" stroke-width="1.8" marker-end="url(#arrow-in)"/>
+
+  <!-- 4 -->
+  <text x="260" y="362" class="flow-text inbound">4. Offline Worker Recommendation</text>
+  <path d="M 250,370 L 730,370" fill="none" stroke="#059669" stroke-width="1.8" marker-end="url(#arrow-in)"/>
+
+  <!-- Consumer Outbound Flows (5 - 7) -->
+  <!-- 5 -->
+  <text x="260" y="432" class="flow-text outbound">5. Search Results & Verified Worker Profiles</text>
+  <path d="M 730,440 L 250,440" fill="none" stroke="#d97706" stroke-width="1.8" marker-end="url(#arrow-out)"/>
+
+  <!-- 6 -->
+  <text x="260" y="472" class="flow-text outbound">6. Direct Phone Contact Number (tel:01xxx)</text>
+  <path d="M 740,495 L 740,480 L 250,480" fill="none" stroke="#d97706" stroke-width="1.8" marker-end="url(#arrow-out)"/>
+
+  <!-- 7 -->
+  <text x="260" y="512" class="flow-text outbound">7. Authentication JWT Token & Profile Info</text>
+  <path d="M 760,525 L 760,520 L 250,520" fill="none" stroke="#d97706" stroke-width="1.8" marker-end="url(#arrow-out)"/>
+
+
+  <!-- ==================== ENTITY: SERVICE PROVIDER ==================== -->
+  <g transform="translate(1450, 220)">
+    <rect width="210" height="340" rx="4" fill="#1e3a8a" stroke="#0f172a" stroke-width="2"/>
+    <text x="20" y="40" class="entity-title">SERVICE PROVIDER</text>
+    <text x="20" y="62" class="entity-sub">Technician / Tradesperson</text>
+    <line x1="20" y1="80" x2="190" y2="80" stroke="#3b82f6" stroke-width="1"/>
+    <text x="20" y="110" fill="#bfdbfe" font-size="11">External Actor Roles:</text>
+    <text x="20" y="132" fill="#ffffff" font-size="11">• Registers profile & rates</text>
+    <text x="20" y="152" fill="#ffffff" font-size="11">• Receives direct inquiries</text>
+    <text x="20" y="172" fill="#ffffff" font-size="11">• Maintains ratings/reviews</text>
+  </g>
+
+  <!-- Service Provider Inbound Flows (8 - 10) -->
+  <!-- 8 -->
+  <text x="1080" y="252" class="flow-text inbound">8. Profile Registration & Experience Bio</text>
+  <path d="M 1450,260 L 910,260 L 910,323" fill="none" stroke="#059669" stroke-width="1.8" marker-end="url(#arrow-in)"/>
+
+  <!-- 9 -->
+  <text x="1040" y="292" class="flow-text inbound">9. Service Categories Selection & Hourly Rate</text>
+  <path d="M 1450,300 L 935,300 L 935,335" fill="none" stroke="#059669" stroke-width="1.8" marker-end="url(#arrow-in)"/>
+
+  <!-- 10 -->
+  <text x="1100" y="332" class="flow-text inbound">10. Location Details (District, Upazila)</text>
+  <path d="M 1450,340 L 955,340 L 955,355" fill="none" stroke="#059669" stroke-width="1.8" marker-end="url(#arrow-in)"/>
+
+  <!-- Service Provider Outbound Flows (11 - 13) -->
+  <!-- 11 -->
+  <text x="1000" y="422" class="flow-text outbound">11. Verification Status (Pending/Verified/Rejected)</text>
+  <path d="M 970,430 L 1450,430" fill="none" stroke="#d97706" stroke-width="1.8" marker-end="url(#arrow-out)"/>
+
+  <!-- 12 -->
+  <text x="1030" y="462" class="flow-text outbound">12. Customer Reviews & Average Rating Feed</text>
+  <path d="M 960,490 L 960,470 L 1450,470" fill="none" stroke="#d97706" stroke-width="1.8" marker-end="url(#arrow-out)"/>
+
+  <!-- 13 -->
+  <text x="1070" y="502" class="flow-text outbound">13. Direct Call Inquiries from Consumers</text>
+  <path d="M 940,525 L 940,510 L 1450,510" fill="none" stroke="#d97706" stroke-width="1.8" marker-end="url(#arrow-out)"/>
+
+
+  <!-- ==================== ENTITY: PLATFORM ADMINISTRATOR ==================== -->
+  <g transform="translate(680, 940)">
+    <rect width="340" height="80" rx="4" fill="#1e3a8a" stroke="#0f172a" stroke-width="2"/>
+    <text x="24" y="34" class="entity-title">PLATFORM ADMINISTRATOR</text>
+    <text x="24" y="56" class="entity-sub">Operations, Moderation & Audit Oversight</text>
+  </g>
+
+  <!-- Administrator Inbound Flows (14 - 17) -->
+  <!-- 14 -->
+  <text x="360" y="672" class="flow-text inbound">14. Admin Credentials & Authentication</text>
+  <path d="M 700,940 L 700,680 L 815,680 L 815,560" fill="none" stroke="#059669" stroke-width="1.8" marker-end="url(#arrow-in)"/>
+
+  <!-- 15 -->
+  <text x="320" y="712" class="flow-text inbound">15. Worker Verification Decision (Approve/Reject)</text>
+  <path d="M 730,940 L 730,720 L 830,720 L 830,560" fill="none" stroke="#059669" stroke-width="1.8" marker-end="url(#arrow-in)"/>
+
+  <!-- 16 -->
+  <text x="380" y="752" class="flow-text inbound">16. Offline Recommendation Moderation</text>
+  <path d="M 760,940 L 760,760 L 845,760 L 845,560" fill="none" stroke="#059669" stroke-width="1.8" marker-end="url(#arrow-in)"/>
+
+  <!-- 17 -->
+  <text x="390" y="792" class="flow-text inbound">17. Category Management (Add New Category)</text>
+  <path d="M 790,940 L 790,800 L 860,800 L 860,560" fill="none" stroke="#059669" stroke-width="1.8" marker-end="url(#arrow-in)"/>
+
+  <!-- Administrator Outbound Flows (18 - 20) -->
+  <!-- 18 -->
+  <text x="965" y="712" class="flow-text outbound">18. System Dashboard Metrics & Stats</text>
+  <path d="M 875,560 L 875,720 L 910,720 L 910,940" fill="none" stroke="#d97706" stroke-width="1.8" marker-end="url(#arrow-out)"/>
+
+  <!-- 19 -->
+  <text x="965" y="752" class="flow-text outbound">19. Pending Verification & Referral Queues</text>
+  <path d="M 890,560 L 890,760 L 940,760 L 940,940" fill="none" stroke="#d97706" stroke-width="1.8" marker-end="url(#arrow-out)"/>
+
+  <!-- 20 -->
+  <text x="965" y="792" class="flow-text outbound">20. Administrative Action Audit Trail Logs</text>
+  <path d="M 905,560 L 905,800 L 970,800 L 970,940" fill="none" stroke="#d97706" stroke-width="1.8" marker-end="url(#arrow-out)"/>
+
+</svg>
+</div>
+
+</body>
+</html>
