@@ -1,0 +1,206 @@
+%% ==============================================================================
+%% KajBazar Architecture Class Diagram
+%% API Controllers, Service Interfaces, EF Core Repository Implementations, and DbContext
+%% ==============================================================================
+
+classDiagram
+    %% API Controllers Layer
+    class AuthController {
+        -IUserRepository _userRepository
+        -IAuthService _authService
+        -IServiceProviderRepository _workerRepository
+        +Register(RegisterRequestDto dto) Task~IActionResult~
+        +Login(LoginRequestDto dto) Task~IActionResult~
+        +GetCurrentUser() Task~IActionResult~
+    }
+
+    class WorkersController {
+        -IServiceProviderRepository _workerRepository
+        -IUserRepository _userRepository
+        +SearchWorkers(WorkerSearchFilterDto filter) Task~IActionResult~
+        +GetWorkerById(Guid id) Task~IActionResult~
+        +GetMyProfile() Task~IActionResult~
+        +CreateOrUpdateProfile(CreateWorkerProfileDto dto) Task~IActionResult~
+    }
+
+    class ReviewsController {
+        -IReviewRepository _reviewRepository
+        -IServiceProviderRepository _workerRepository
+        +AddReview(CreateReviewDto dto) Task~IActionResult~
+        +GetWorkerReviews(Guid workerProfileId) Task~IActionResult~
+    }
+
+    class RecommendationsController {
+        -IRecommendationRepository _recommendationRepository
+        +SubmitRecommendation(CreateRecommendationDto dto) Task~IActionResult~
+        +GetMyRecommendations() Task~IActionResult~
+    }
+
+    class AdminController {
+        -IServiceProviderRepository _workerRepository
+        -IRecommendationRepository _recommendationRepository
+        -ICategoryRepository _categoryRepository
+        -IAdminAuditLogRepository _auditLogRepository
+        +GetDashboardStats() Task~IActionResult~
+        +GetPendingWorkers() Task~IActionResult~
+        +ApproveWorker(Guid profileId) Task~IActionResult~
+        +RejectWorker(Guid profileId, WorkerVerificationActionDto dto) Task~IActionResult~
+        +GetPendingRecommendations() Task~IActionResult~
+        +ApproveRecommendation(Guid id) Task~IActionResult~
+        +RejectRecommendation(Guid id, RecommendationActionDto dto) Task~IActionResult~
+        +GetAuditLogs(int count) Task~IActionResult~
+        +CreateCategory(CreateCategoryDto dto) Task~IActionResult~
+    }
+
+    class GeographyController {
+        -IGeographyRepository _geographyRepository
+        +GetDistricts() Task~IActionResult~
+        +GetUpazilas(int districtId) Task~IActionResult~
+    }
+
+    class CategoriesController {
+        -ICategoryRepository _categoryRepository
+        +GetCategories() Task~IActionResult~
+        +GetCategoryById(int id) Task~IActionResult~
+    }
+
+    %% Service & Repository Interfaces (Core Layer)
+    class IAuthService {
+        <<interface>>
+        +HashPassword(string password) string
+        +VerifyPassword(string password, string hash) bool
+        +GenerateJwtToken(User user, string role) string
+    }
+
+    class IUserRepository {
+        <<interface>>
+        +GetByIdAsync(Guid id) Task~User~
+        +GetByEmailAsync(string email) Task~User~
+        +GetByPhoneAsync(string phone) Task~User~
+        +GetWithRolesByEmailAsync(string email) Task~User~
+        +AddAsync(User user) Task
+        +AssignRoleAsync(Guid userId, string role) Task
+    }
+
+    class IServiceProviderRepository {
+        <<interface>>
+        +GetByIdAsync(Guid profileId) Task~ServiceProviderProfile~
+        +GetByUserIdAsync(Guid userId) Task~ServiceProviderProfile~
+        +SearchWorkersAsync(string cat, int? dId, int? uId, decimal? minR, int p, int s) Task
+        +GetPendingWorkersAsync() Task~IEnumerable~
+        +AddAsync(ServiceProviderProfile profile) Task
+        +UpdateStatusAsync(Guid profileId, VerificationStatus status) Task
+        +SetCategoriesAsync(Guid profileId, IEnumerable~int~ categoryIds) Task
+    }
+
+    class IReviewRepository {
+        <<interface>>
+        +GetByIdAsync(Guid id) Task~Review~
+        +GetByWorkerProfileIdAsync(Guid workerProfileId) Task~IEnumerable~
+        +GetByUserAndWorkerAsync(Guid consumerId, Guid workerProfileId) Task~Review~
+        +AddOrUpdateReviewAsync(Review review) Task
+    }
+
+    class IRecommendationRepository {
+        <<interface>>
+        +GetByIdAsync(Guid id) Task~CommunityRecommendation~
+        +GetPendingAsync() Task~IEnumerable~
+        +GetByUserIdAsync(Guid userId) Task~IEnumerable~
+        +AddAsync(CommunityRecommendation rec) Task
+        +UpdateStatusAsync(Guid id, RecommendationStatus status, Guid adminId) Task
+    }
+
+    class ICategoryRepository {
+        <<interface>>
+        +GetAllActiveAsync() Task~IEnumerable~
+        +GetByIdAsync(int id) Task~Category~
+        +AddAsync(Category cat) Task
+    }
+
+    class IGeographyRepository {
+        <<interface>>
+        +GetAllDistrictsAsync() Task~IEnumerable~
+        +GetUpazilasByDistrictIdAsync(int districtId) Task~IEnumerable~
+    }
+
+    class IAdminAuditLogRepository {
+        <<interface>>
+        +LogAsync(Guid adminId, string action, string entity, Guid? id, string details) Task
+        +GetRecentLogsAsync(int count) Task~IEnumerable~
+        +GetDashboardStatsAsync() Task~AdminDashboardStatsDto~
+    }
+
+    %% Concrete Implementations (Infrastructure Layer)
+    class AuthService {
+        -IConfiguration _configuration
+    }
+    class UserRepository {
+        -KajBazarDbContext _context
+    }
+    class ServiceProviderRepository {
+        -KajBazarDbContext _context
+    }
+    class ReviewRepository {
+        -KajBazarDbContext _context
+    }
+    class RecommendationRepository {
+        -KajBazarDbContext _context
+    }
+    class CategoryRepository {
+        -KajBazarDbContext _context
+    }
+    class GeographyRepository {
+        -KajBazarDbContext _context
+    }
+    class AdminAuditLogRepository {
+        -KajBazarDbContext _context
+    }
+
+    class KajBazarDbContext {
+        +DbSet~User~ Users
+        +DbSet~Role~ Roles
+        +DbSet~ServiceProviderProfile~ ServiceProviderProfiles
+        +DbSet~Review~ Reviews
+        +DbSet~CommunityRecommendation~ CommunityRecommendations
+        +DbSet~Category~ Categories
+        +DbSet~District~ Districts
+        +DbSet~AdminAuditLog~ AdminAuditLogs
+    }
+
+    %% Dependency Inversion & Realization
+    AuthController --> IUserRepository
+    AuthController --> IAuthService
+    AuthController --> IServiceProviderRepository
+
+    WorkersController --> IServiceProviderRepository
+    WorkersController --> IUserRepository
+
+    ReviewsController --> IReviewRepository
+    ReviewsController --> IServiceProviderRepository
+
+    RecommendationsController --> IRecommendationRepository
+
+    AdminController --> IServiceProviderRepository
+    AdminController --> IRecommendationRepository
+    AdminController --> ICategoryRepository
+    AdminController --> IAdminAuditLogRepository
+
+    GeographyController --> IGeographyRepository
+    CategoriesController --> ICategoryRepository
+
+    AuthService ..|> IAuthService
+    UserRepository ..|> IUserRepository
+    ServiceProviderRepository ..|> IServiceProviderRepository
+    ReviewRepository ..|> IReviewRepository
+    RecommendationRepository ..|> IRecommendationRepository
+    CategoryRepository ..|> ICategoryRepository
+    GeographyRepository ..|> IGeographyRepository
+    AdminAuditLogRepository ..|> IAdminAuditLogRepository
+
+    UserRepository --> KajBazarDbContext
+    ServiceProviderRepository --> KajBazarDbContext
+    ReviewRepository --> KajBazarDbContext
+    RecommendationRepository --> KajBazarDbContext
+    CategoryRepository --> KajBazarDbContext
+    GeographyRepository --> KajBazarDbContext
+    AdminAuditLogRepository --> KajBazarDbContext

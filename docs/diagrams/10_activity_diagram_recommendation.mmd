@@ -1,0 +1,59 @@
+%% ==============================================================================
+%% KajBazar Activity Diagram: Community Offline Worker Recommendation (BR-09)
+%% ==============================================================================
+
+stateDiagram-v2
+    [*] --> VisitRecommendPage: User Visits /recommend
+    VisitRecommendPage --> CheckLogin: Is User Authenticated?
+
+    CheckLogin --> PromptAuth: No
+    CheckLogin --> ShowForm: Yes
+
+    PromptAuth --> [*]: Navigate /login
+
+    state FillRecommendation {
+        [*] --> EnterWorkerInfo: Enter Offline Worker Full Name & Phone Number
+        EnterWorkerInfo --> SelectCategoryAndArea: Choose Skill Category, District & Upazila
+        SelectCategoryAndArea --> EnterWorkNotes: Add Workshop Location / Experience Notes
+        EnterWorkNotes --> ClickSubmit: Click "Submit Offline Worker Referral"
+    }
+
+    ShowForm --> FillRecommendation
+    FillRecommendation --> SendAPI: POST /api/recommendations
+
+    state StoreReferral {
+        [*] --> InsertReferral: INSERT INTO community_recommendations
+        InsertReferral --> SetStatus: status = 'PENDING'
+        SetStatus --> UserFeedback: Return 200 OK
+    }
+
+    SendAPI --> StoreReferral
+    StoreReferral --> ViewReferralHistory: Referral Appears in "My Submitted Recommendations"
+
+    state AdminModerationQueue {
+        [*] --> AdminChecksQueue: Admin views /admin -> Community Referrals Tab
+        AdminChecksQueue --> VerifyOfflineWorker: Admin Calls Offline Worker Phone & Confirms Skills
+        VerifyOfflineWorker --> AdminDecision: Decision?
+
+        AdminDecision --> ApproveReferral: Worker Legitimate & Willing
+        AdminDecision --> RejectReferral: Invalid Phone / Ineligible
+    }
+
+    StoreReferral --> AdminModerationQueue
+
+    state ApproveAction {
+        [*] --> UpdateApproved: UPDATE community_recommendations SET status = 'APPROVED'
+        UpdateApproved --> LogApprove: INSERT INTO admin_audit_logs ('APPROVE_COMMUNITY_RECOMMENDATION')
+        LogApprove --> OnboardWorker: Admin can provision official worker profile
+    }
+
+    state RejectAction {
+        [*] --> UpdateRejected: UPDATE community_recommendations SET status = 'REJECTED'
+        UpdateRejected --> LogReject: INSERT INTO admin_audit_logs ('REJECT_COMMUNITY_RECOMMENDATION')
+    }
+
+    ApproveReferral --> ApproveAction
+    RejectReferral --> RejectAction
+
+    ApproveAction --> [*]
+    RejectAction --> [*]

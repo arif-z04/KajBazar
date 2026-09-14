@@ -1,142 +1,164 @@
 # 🛠️ KajBazar: A Community-Driven Service Provider Directory Platform
 
-[![NET 8.0](https://img.shields.io/badge/.NET-8.0-512BD4?logo=dotnet)](https://dotnet.microsoft.com/)
+[![.NET 8.0](https://img.shields.io/badge/.NET-8.0%20LTS-512BD4?logo=dotnet)](https://dotnet.microsoft.com/)
 [![React 18](https://img.shields.io/badge/React-18.2-61DAFB?logo=react)](https://react.dev/)
-[![PostgreSQL 15](https://img.shields.io/badge/PostgreSQL-15+-4169E1?logo=postgresql)](https://www.postgresql.org/)
-[![Course](https://img.shields.io/badge/Course-CIT--222-orange)](file:///home/noir/Desktop/4th/Project/docs/KajBazar_Project_Proposal_Formatted.md)
+[![Vite](https://img.shields.io/badge/Vite-5.4-646CFF?logo=vite)](https://vitejs.dev/)
+[![PostgreSQL 15+](https://img.shields.io/badge/PostgreSQL-15+-4169E1?logo=postgresql)](https://www.postgresql.org/)
+[![Tests Passed](https://img.shields.io/badge/Tests-14%20Passed-brightgreen)](tests/KajBazar.Tests/)
+[![Course](https://img.shields.io/badge/Course-CIT--222-orange)](docs/KajBazar_Project_Proposal_Formatted.md)
 
-**KajBazar** is a web-based community service provider directory platform designed to connect consumers directly with verified local skilled workers (electricians, plumbers, carpenters, mechanics, painters, etc.). 
+**KajBazar** is an enterprise-grade, community-driven digital service provider directory platform designed to connect consumers directly with verified local skilled workers (electricians, plumbers, carpenters, mechanics, painters, etc.) across Bangladesh.
 
-Unlike traditional service marketplaces that enforce intermediary fees or handle bookings through third-party call centers, KajBazar functions as a trusted directory enabling consumers to search for professionals by location and category, view verified credentials, contact workers directly, and share experiences through ratings and reviews.
+Unlike traditional service marketplaces that enforce heavy commission cuts or act as strict booking middlemen, KajBazar empowers local tradespeople by functioning as a high-trust directory:
+- Consumers search for professionals by location (District & Upazila) and trade category.
+- Consumers view verified credentials, ratings, and experience.
+- Consumers directly contact workers via phone without platform cuts or booking fees (`BR-06`).
+- Community members can recommend skilled offline tradespeople who do not own smartphones (`BR-09`).
+- Consumers maintain accountability through transparent ratings and reviews (`BR-07`, `BR-08`).
 
 ---
 
-## 📌 Key Features
+## 📌 Key System Features & Business Rules
 
-- 🔍 **Location & Category Search (`BR-05`)**: Search skilled workers filtered by service category, district, and upazila (sub-district).
+- 🔍 **Location & Category Search (`BR-05`)**: Multi-criteria directory filter by Category, District, Upazila, and keyword.
 - ✅ **Verified Worker Profiles (`BR-02`, `BR-03`)**: Only administrator-verified service providers are visible in the public directory.
-- 📞 **Direct Contact System (`BR-06`)**: Direct phone communication between consumers and workers without platform commissions or intermediaries.
-- ⭐ **Ratings & Reviews (`BR-07`, `BR-08`)**: Transparent consumer feedback with automated aggregate score calculation and single-review enforcement per consumer per worker.
-- 🤝 **Community Recommendations (`BR-09`)**: Enables community members to submit recommendations for skilled offline workers not yet registered on the platform.
-- 🛡️ **Administrative Moderation & Audit Logging (`BR-10` to `BR-14`)**: Centralized admin dashboard for worker verification, policy moderation, category management, and audit tracking.
+- 📞 **Direct Contact System (`BR-06`)**: Direct phone communication between consumers and workers without platform fees.
+- ⭐ **Real-Time Ratings & Reviews (`BR-07`, `BR-08`)**: Automated PostgreSQL trigger functions calculate average rating and review counts in real time. Single review per consumer enforced.
+- 🤝 **Community Recommendations (`BR-09`)**: Community referral system for offline workers, reviewed and onboarded by admins.
+- 🛡️ **Administrative Moderation & Audit Logging (`BR-10` to `BR-14`)**: Dedicated dashboard for worker verification, taxonomy management, and immutable audit trails.
+- 🔒 **Security Hardening (`BR-15`)**: Salted BCrypt password encryption (cost factor 11), JWT Bearer tokens, and parameterized SQL queries.
 
 ---
 
-## 🏗️ System Architecture & Tech Stack
+## 🏗️ System Architecture
 
 ```mermaid
 flowchart LR
-    Client["React.js Single Page App (Port 3000)"] <-->|REST API / JWT| API["ASP.NET Core Web API .NET 8.0 (Port 5000)"]
-    API <-->|Entity Framework Core| DB[("PostgreSQL Database kajbazar_db (Port 5432)")]
+    Client["React 18 SPA + Vite (Port 5173)"] <-->|JSON over HTTPS / JWT| API["ASP.NET Core 8 Web API (Port 5000)"]
+    API <-->|Entity Framework Core 8| DB[("PostgreSQL Database kajbazar_db (Port 5432)")]
 ```
-
-### Technology Breakdown
 
 | Layer | Technology | Description |
 | :--- | :--- | :--- |
-| **Frontend** | React 18, React Router v6, Axios | Responsive Single Page Application with JWT authorization interceptor and Context API state management |
-| **Backend API** | ASP.NET Core (.NET 8.0) | Layered RESTful Web API architecture with dependency injection and controller endpoints |
-| **ORM** | Entity Framework Core 8 | Object-Relational Mapping with PostgreSQL provider (`Npgsql`) |
-| **Database** | PostgreSQL 15+ | Relational DBMS with custom B-Tree indexes, check constraints, UUIDs, and automated timestamp triggers |
-| **Security** | JWT & BCrypt | Role-Based Access Control (`Admin`, `Consumer`, `ServiceProvider`) with password hashing |
+| **Frontend** | React 18, Vite, React Router v6, Axios | Responsive Single Page Application with JWT authorization request interceptors and Context API global state |
+| **Backend API** | ASP.NET Core 8 Web API | Clean Layered Architecture (Core, Infrastructure, API) with Dependency Injection and JWT Bearer RBAC |
+| **ORM** | Entity Framework Core 8 | Object-Relational Mapping with PostgreSQL provider (`Npgsql`) and automatic snake_case naming |
+| **Database** | PostgreSQL 15+ | 12 relational tables, B-Tree composite indexes, check constraints, UUIDs, and automated rating triggers |
+| **Testing** | xUnit, In-Memory DbContext | 14 automated unit and integration tests covering authentication, search, reviews, and audit logs |
 
 ---
 
 ## 📁 Repository Structure
 
 ```
-Project/
-├── client/                                  # React.js Frontend Application
-│   ├── package.json                         # Node dependencies manifest
+Kajbazar/
+├── KajBazar.sln                  # Master .NET Solution
+├── client/                       # React 18 Frontend Application (Vite)
+│   ├── index.html                # Single Page Application HTML shell
+│   ├── package.json              # NPM dependencies & scripts
+│   ├── vite.config.js            # Vite build configuration
 │   └── src/
-│       ├── components/                      # Reusable UI components (WorkerCard, WorkerFilter, Navbar)
-│       ├── context/                         # AuthContext state provider
-│       ├── pages/                           # View pages (HomePage, Directory, Recommend, Admin, Auth)
-│       ├── services/                        # Axios API wrapper with JWT interceptor
-│       └── styles/                          # Responsive CSS stylesheets
-├── docs/                                    # Technical Documentation
-│   ├── KajBazar_Project_Proposal_Formatted.md # Original System Analysis & Design proposal
-│   ├── Database-details.md                  # Comprehensive DB data dictionary & schema specs
-│   ├── Class-diagrams.md                    # UML Class diagrams in Mermaid syntax
-│   ├── E-R-diagram.mmd                      # Entity-Relationship diagram
-│   ├── Frontend-guide.md                    # Step-by-step frontend building roadmap
-│   ├── Testing-procedure.md                 # Complete testing guide & business rules verification matrix
-│   ├── Project-running-and-publishing.md    # Local execution, hosting, and production deployment guide
-│   └── walkthrough.md                       # Task execution roadmap
-├── sql/                                     # PostgreSQL SQL Scripts
-│   ├── 01_schema_ddl.sql                    # Database DDL schema (12 tables, keys, triggers)
-│   ├── 02_seed_data.sql                     # Initial seed data (roles, categories, Bangladesh districts/upazilas)
-│   ├── 03_crud_queries.sql                  # Core operational CRUD SQL queries
-│   └── 04_complex_queries.sql               # Complex analytical queries (location search, DENSE_RANK rankings)
-└── src/                                     # ASP.NET Core Backend Solution
-    ├── KajBazar.API/                        # Web API Controllers & Program configuration
-    ├── KajBazar.Core/                       # Domain Entities, Enums, and Repository Interfaces
-    └── KajBazar.Infrastructure/             # EF Core DbContext and Data Access implementation
+│       ├── components/           # Navigation, WorkerCard, WorkerFilter, DetailModal
+│       ├── context/              # AuthContext session state & JWT persistence
+│       ├── pages/                # Home, Directory, Profile, Recommend, Admin, Auth
+│       ├── services/             # Axios API client with automatic Bearer headers
+│       └── styles/               # Responsive modern CSS design system (App.css)
+├── src/                          # ASP.NET Core 8 Backend Server
+│   ├── KajBazar.Core/            # Domain Entities, DTOs, Repository Interfaces
+│   ├── KajBazar.Infrastructure/  # EF Core DbContext, Repositories, AuthService
+│   └── KajBazar.API/             # Controllers, Exception Middleware, Program.cs
+├── sql/                          # Production PostgreSQL Engine Scripts
+│   ├── 01_schema_ddl.sql         # 12 Tables, constraints, triggers, indexes
+│   ├── 02_seed_data.sql          # Seed roles, districts, upazilas, categories, verified workers
+│   ├── 03_crud_queries.sql       # Tested CRUD queries
+│   └── 04_complex_queries.sql    # Analytical reporting and ranking queries
+├── tests/                        # Automated xUnit Test Suite
+│   └── KajBazar.Tests/           # 14 passing automated tests
+└── docs/                         # Technical Documentation & System Diagrams
+    ├── diagrams/                 # 15 Mermaid system architecture diagrams (.mmd)
+    └── development-guide/        # 10 comprehensive volumes (The "Dumb Person" Master Guide)
 ```
 
 ---
 
 ## 🚀 Quick Start Guide
 
-### 1. Database Initialization (PostgreSQL)
+### 1. Database Setup (PostgreSQL)
 
-Create database and execute schema DDL and seed data scripts:
 ```bash
-# Create database in PostgreSQL
+# Create database
 psql -U postgres -c "CREATE DATABASE kajbazar_db;"
 
-# Execute DDL schema script
+# Execute DDL schema script (12 tables, constraints, triggers, indexes)
 psql -U postgres -d kajbazar_db -f sql/01_schema_ddl.sql
 
-# Execute Seed Data script
+# Execute Seed Data script (districts, upazilas, categories, verified test accounts)
 psql -U postgres -d kajbazar_db -f sql/02_seed_data.sql
 ```
 
 ### 2. Backend Execution (.NET 8 Web API)
 
 ```bash
-# Navigate to API project directory
 cd src/KajBazar.API
-
-# Restore dependencies and run API server
 dotnet restore
 dotnet run
 ```
-Access Swagger API documentation at `http://localhost:5000/swagger`.
+- API listening on: `http://localhost:5000`
+- Interactive Swagger API Explorer: `http://localhost:5000/swagger`
 
-### 3. Frontend Execution (React.js)
+### 3. Frontend Execution (React + Vite)
 
 ```bash
-# Navigate to client directory
 cd client
-
-# Install Node modules and start development server
 npm install
-npm start
+npm run dev
 ```
-Access application at `http://localhost:3000`.
+- Frontend listening on: `http://localhost:5173`
+
+### 4. Running Automated Tests
+
+```bash
+dotnet test KajBazar.sln
+```
+*Result: 14 Passed, 0 Failed, 0 Skipped (duration: ~300ms)*
 
 ---
 
-## 📊 SQL Query Capabilities
+## 📚 Comprehensive Documentation & Guides
 
-The repository contains pre-built SQL scripts in the `sql/` directory:
-- **`sql/01_schema_ddl.sql`**: Full DDL schema with 12 tables, constraints, UUID primary keys, B-Tree indexes, and timestamp triggers.
-- **`sql/02_seed_data.sql`**: Default roles, Bangladesh regional geography (Districts & Upazilas), service categories, and sample verified worker profiles.
-- **`sql/03_crud_queries.sql`**: Operational queries for user registration, worker profile creation, review posting, and recommendation submission.
-- **`sql/04_complex_queries.sql`**:
-  - Multi-criteria location & category worker search with rating aggregates and pagination.
-  - Top-rated worker rankings per district & category using `DENSE_RANK()` window functions.
-  - 1-to-5 star rating breakdown percentages.
-  - Admin dashboard metric analytics.
+All technical documentation is organized in `docs/`:
 
----
+### 🎨 System Diagrams (`docs/diagrams/`)
+All 15 system diagrams are maintained in Mermaid syntax in [`docs/diagrams/`](docs/diagrams/):
+1. [`01_context_diagram.mmd`](docs/diagrams/01_context_diagram.mmd) - High-level system boundary
+2. [`02_dfd_level_0.mmd`](docs/diagrams/02_dfd_level_0.mmd) - Context level data flow
+3. [`03_dfd_level_1.mmd`](docs/diagrams/03_dfd_level_1.mmd) - Subsystem process decomposition
+4. [`04_dfd_level_2.mmd`](docs/diagrams/04_dfd_level_2.mmd) - Worker verification decomposition
+5. [`05_use_case_diagram.mmd`](docs/diagrams/05_use_case_diagram.mmd) - Actor interactions
+6. [`06_activity_diagram_registration.mmd`](docs/diagrams/06_activity_diagram_registration.mmd) - User registration workflow
+7. [`07_activity_diagram_worker_verification.mmd`](docs/diagrams/07_activity_diagram_worker_verification.mmd) - Admin verification workflow
+8. [`08_activity_diagram_search_and_contact.mmd`](docs/diagrams/08_activity_diagram_search_and_contact.mmd) - Consumer search & contact workflow
+9. [`09_activity_diagram_review_submission.mmd`](docs/diagrams/09_activity_diagram_review_submission.mmd) - Review & rating recalculation
+10. [`10_activity_diagram_recommendation.mmd`](docs/diagrams/10_activity_diagram_recommendation.mmd) - Offline worker nomination
+11. [`11_class_diagram_domain_model.mmd`](docs/diagrams/11_class_diagram_domain_model.mmd) - C# domain entities
+12. [`12_class_diagram_architecture.mmd`](docs/diagrams/12_class_diagram_architecture.mmd) - Clean Architecture layers
+13. [`13_er_diagram_conceptual.mmd`](docs/diagrams/13_er_diagram_conceptual.mmd) - Conceptual entities
+14. [`14_er_diagram_physical.mmd`](docs/diagrams/14_er_diagram_physical.mmd) - Physical 12-table PostgreSQL schema
+15. [`15_sequence_diagrams.mmd`](docs/diagrams/15_sequence_diagrams.mmd) - Detailed sequence interactions
 
-## 🧪 Testing & Production Publishing
-
-Detailed documentation for testing and deployment is available in `docs/`:
-- 🧪 **Testing Procedure**: Refer to [`docs/Testing-procedure.md`](file:///home/noir/Desktop/4th/Project/docs/Testing-procedure.md) for unit tests, Postman collection endpoints, and the Business Rules Compliance Audit matrix (`BR-01` to `BR-15`).
-- 🌐 **Deployment & Publishing**: Refer to [`docs/Project-running-and-publishing.md`](file:///home/noir/Desktop/4th/Project/docs/Project-running-and-publishing.md) for Linux systemd service unit setup, Nginx reverse proxy configuration, Certbot SSL setup, and GitHub Actions CI/CD pipeline.
+### 📖 Master Developer Guide (`docs/development-guide/`)
+The 10-Volume handbook explaining every detail step-by-step ("for a beginner / dumb person"):
+- [Volume 00: Master Overview & Table of Contents](docs/development-guide/00-master-overview-and-table-of-contents.md)
+- [Volume 01: Complete Architecture & Build From Scratch Guide](docs/development-guide/01-complete-architecture-and-build-from-scratch.md)
+- [Volume 02: Database Guide & Production Hardening](docs/development-guide/02-database-guide-and-production-hardening.md)
+- [Volume 03: Backend ASP.NET Core 8 Developer Guide](docs/development-guide/03-backend-aspnet-core-developer-guide.md)
+- [Volume 04: Frontend React.js & Vite Developer Guide](docs/development-guide/04-frontend-react-developer-guide.md)
+- [Volume 05: Testing Guide & Test Suites](docs/development-guide/05-testing-guide-and-test-suites.md)
+- [Volume 06: Production Deployment & DevOps Guide](docs/development-guide/06-deployment-and-devops-guide.md)
+- [Volume 07: Troubleshooting & FAQ Guide](docs/development-guide/07-troubleshooting-and-faq-guide.md)
+- [Volume 08: Maintenance & Evolution Guide](docs/development-guide/08-maintenance-and-evolution-guide.md)
+- [Volume 09: Security & Incident Response Guide](docs/development-guide/09-security-and-incident-response-guide.md)
+- [Volume 10: Performance Optimization & Scaling Guide](docs/development-guide/10-performance-optimization-and-scaling-guide.md)
 
 ---
 
@@ -145,7 +167,7 @@ Detailed documentation for testing and deployment is available in `docs/`:
 - **Course Title**: System Analysis and Design Sessional
 - **Course Code**: CIT - 222
 - **Session**: 2023-2024
-- **Faculty**: Faculty of Computer Science and Engineering, Patuakhali Science and Technology University
+- **Institution**: Faculty of Computer Science and Engineering, Patuakhali Science and Technology University (PSTU)
 
 ### Project Team
 | Name | Student ID |

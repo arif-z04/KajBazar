@@ -1,0 +1,44 @@
+%% ==============================================================================
+%% KajBazar Activity Diagram: Review & Rating Submission (BR-07, BR-08)
+%% ==============================================================================
+
+stateDiagram-v2
+    [*] --> ViewWorker: Consumer Views Worker Detail Modal
+    ViewWorker --> CheckAuth: Wants to Submit Review & Rating
+
+    state CheckAuth {
+        [*] --> IsLoggedIn: Is Consumer Authenticated? (BR-07)
+        IsLoggedIn --> PromptLogin: No
+        IsLoggedIn --> CheckSelfReview: Yes
+        CheckSelfReview --> IsOwnProfile: Is Consumer the Worker?
+        IsOwnProfile --> BlockSelfReview: Yes (Forbidden)
+        IsOwnProfile --> DisplayReviewForm: No
+    }
+
+    PromptLogin --> [*]: Redirect to /login
+    BlockSelfReview --> [*]: Show "Cannot review your own profile"
+
+    DisplayReviewForm --> FillReview: Select Star Rating (1 to 5) & Enter Feedback
+    FillReview --> SubmitReview: Click "Submit / Update Review"
+
+    state ProcessReview {
+        [*] --> CheckPreviousReview: SELECT * FROM reviews WHERE consumer_id AND worker_profile_id (BR-08)
+        CheckPreviousReview --> UpdateExisting: Previous Review Exists? (Yes)
+        CheckPreviousReview --> InsertNew: No Previous Review
+
+        UpdateExisting --> UpdateRow: UPDATE reviews SET rating, comment, updated_at = NOW()
+        InsertNew --> InsertRow: INSERT INTO reviews (consumer_id, worker_profile_id, rating, comment)
+    }
+
+    SubmitReview --> ProcessReview
+
+    state TriggerAggregation {
+        [*] --> RecalculateAggregate: Compute AVG(rating) & COUNT(*) for this worker
+        RecalculateAggregate --> SyncProfile: UPDATE service_provider_profiles SET average_rating, total_reviews
+    }
+
+    ProcessReview --> TriggerAggregation
+    TriggerAggregation --> ReturnUpdatedStats: API Returns 200 OK with fresh averageRating & totalReviews
+    ReturnUpdatedStats --> UpdateUI: Client modal re-renders new star score and review entry
+
+    UpdateUI --> [*]

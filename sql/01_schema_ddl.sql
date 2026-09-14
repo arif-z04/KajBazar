@@ -194,3 +194,41 @@ CREATE TRIGGER update_sp_profiles_updated_at
 CREATE TRIGGER update_reviews_updated_at
     BEFORE UPDATE ON reviews
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+-- ==============================================================================
+-- AUTOMATIC REVIEW RATING AGGREGATE TRIGGER
+-- Keeps average_rating and total_reviews in service_provider_profiles in sync
+-- ==============================================================================
+CREATE OR REPLACE FUNCTION update_worker_rating_stats()
+RETURNS TRIGGER AS $$
+DECLARE
+    target_profile_id UUID;
+    new_avg NUMERIC(3,2);
+    new_total INT;
+BEGIN
+    IF (TG_OP = 'DELETE') THEN
+        target_profile_id := OLD.worker_profile_id;
+    ELSE
+        target_profile_id := NEW.worker_profile_id;
+    END IF;
+
+    SELECT 
+        COALESCE(ROUND(AVG(rating)::numeric, 2), 0.00),
+        COUNT(*)
+    INTO new_avg, new_total
+    FROM reviews
+    WHERE worker_profile_id = target_profile_id;
+
+    UPDATE service_provider_profiles
+    SET average_rating = new_avg,
+        total_reviews = new_total,
+        updated_at = CURRENT_TIMESTAMP
+    WHERE profile_id = target_profile_id;
+
+    RETURN NULL;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_update_worker_rating_stats
+AFTER INSERT OR UPDATE OR DELETE ON reviews
+FOR EACH ROW EXECUTE FUNCTION update_worker_rating_stats();

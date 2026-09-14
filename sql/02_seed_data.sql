@@ -47,12 +47,12 @@ ON CONFLICT (category_name) DO NOTHING;
 -- ------------------------------------------------------------------------------
 -- Admin User
 INSERT INTO users (user_id, full_name, email, phone_number, password_hash) VALUES
-    ('a0000000-0000-0000-0000-000000000001', 'Admin System', 'admin@kajbazar.com', '01700000001', '$2a$11$e.fWwWbBq.v/4U7NlV.N9O1.11223344556677889900aa'),
-    ('b0000000-0000-0000-0000-000000000001', 'Leon Islam (Consumer)', 'leon@gmail.com', '01711111111', '$2a$11$e.fWwWbBq.v/4U7NlV.N9O1.11223344556677889900aa'),
-    ('b0000000-0000-0000-0000-000000000002', 'Tanvir Ishrak (Consumer)', 'tanvir@gmail.com', '01722222222', '$2a$11$e.fWwWbBq.v/4U7NlV.N9O1.11223344556677889900aa'),
-    ('c0000000-0000-0000-0000-000000000001', 'Karim Electrical (Worker)', 'karim@gmail.com', '01811111111', '$2a$11$e.fWwWbBq.v/4U7NlV.N9O1.11223344556677889900aa'),
-    ('c0000000-0000-0000-0000-000000000002', 'Rahim Plumbing (Worker)', 'rahim@gmail.com', '01822222222', '$2a$11$e.fWwWbBq.v/4U7NlV.N9O1.11223344556677889900aa')
-ON CONFLICT (email) DO NOTHING;
+    ('a0000000-0000-0000-0000-000000000001', 'Admin System', 'admin@kajbazar.com', '01700000001', '$2a$11$bRI6cgkzNa/xQbA.yLngd.I1FLEPmO4qxz.KOWf1kyi/./EmoUDRq'),
+    ('b0000000-0000-0000-0000-000000000001', 'Leon Islam (Consumer)', 'leon@gmail.com', '01711111111', '$2a$11$bRI6cgkzNa/xQbA.yLngd.I1FLEPmO4qxz.KOWf1kyi/./EmoUDRq'),
+    ('b0000000-0000-0000-0000-000000000002', 'Tanvir Ishrak (Consumer)', 'tanvir@gmail.com', '01722222222', '$2a$11$bRI6cgkzNa/xQbA.yLngd.I1FLEPmO4qxz.KOWf1kyi/./EmoUDRq'),
+    ('c0000000-0000-0000-0000-000000000001', 'Karim Electrical (Worker)', 'karim@gmail.com', '01811111111', '$2a$11$bRI6cgkzNa/xQbA.yLngd.I1FLEPmO4qxz.KOWf1kyi/./EmoUDRq'),
+    ('c0000000-0000-0000-0000-000000000002', 'Rahim Plumbing (Worker)', 'rahim@gmail.com', '01822222222', '$2a$11$bRI6cgkzNa/xQbA.yLngd.I1FLEPmO4qxz.KOWf1kyi/./EmoUDRq')
+ON CONFLICT (email) DO UPDATE SET password_hash = EXCLUDED.password_hash;
 
 -- Map User Roles
 INSERT INTO user_roles (user_id, role_id) VALUES

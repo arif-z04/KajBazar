@@ -1,0 +1,27 @@
+%% ==============================================================================
+%% KajBazar Sequence Diagrams
+%% Scenario 1: Worker Search & Direct Contact Flow (BR-05, BR-06)
+%% Scenario 2: Consumer Review Submission & Automatic Rating Update (BR-07, BR-08)
+%% Scenario 3: Admin Worker Profile Verification Flow (BR-03, BR-10, BR-14)
+%% ==============================================================================
+
+sequenceDiagram
+    autonumber
+    title Scenario 1: Multi-Criteria Search & Direct Contact (BR-05, BR-06)
+    actor C as 👤 Consumer
+    participant UI as 🖥️ React Frontend
+    participant API as ⚙️ WorkersController
+    participant Repo as 📦 ServiceProviderRepository
+    participant DB as 🗄️ PostgreSQL
+
+    C->>UI: Selects "Electrician", District "Patuakhali", Upazila "Dumki"
+    UI->>API: GET /api/workers/search?category=Electrician&districtId=1&upazilaId=1
+    API->>Repo: SearchWorkersAsync("Electrician", 1, 1, null, page=1, pageSize=12)
+    Repo->>DB: SELECT * FROM service_provider_profiles WHERE verification_status = 'VERIFIED' AND ...
+    DB-->>Repo: Returns verified worker records + total count
+    Repo-->>API: (WorkersList, TotalCount)
+    API-->>UI: 200 OK JSON { totalCount, totalPages, workers[] }
+    UI-->>C: Renders Worker Cards with Rating ⭐ 4.8 & Experience
+    C->>UI: Clicks "Contact Worker"
+    UI-->>C: Reveals Raw Phone Number "📞 01811111111" (tel:01811111111)
+    C->>C: Directly dials tradesperson on mobile phone without intermediary fees

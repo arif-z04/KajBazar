@@ -10,8 +10,8 @@ Before running or publishing the application, ensure the following runtimes and 
 
 | Component | Required Version | Download / Installation Link |
 | :--- | :--- | :--- |
-| **.NET SDK** | .NET 8.0 SDK | [dotnet.microsoft.com](https://dotnet.microsoft.com/download/dotnet/8.0) |
-| **Node.js runtime** | Node.js v18 LTS or v20 LTS | [nodejs.org](https://nodejs.org/) |
+| **.NET SDK** | .NET 8.0 SDK (or runtime compatible) | [dotnet.microsoft.com](https://dotnet.microsoft.com/download/dotnet/8.0) |
+| **Node.js runtime** | Node.js v18 LTS, v20 LTS, or v22 LTS | [nodejs.org](https://nodejs.org/) |
 | **PostgreSQL Database** | PostgreSQL v15 or higher | [postgresql.org](https://www.postgresql.org/download/) |
 | **Git Version Control** | Git 2.40+ | [git-scm.com](https://git-scm.com/) |
 | **Code Editor / IDE** | VS Code or Visual Studio 2022 | [code.visualstudio.com](https://code.visualstudio.com/) |
@@ -24,25 +24,25 @@ Follow these steps sequentially to get the application running on your local mac
 
 ```mermaid
 flowchart LR
-    StepA[1. Setup Database & Seed Data] --> StepB[2. Run ASP.NET Core API]
-    StepB --> StepC[3. Run React Frontend]
+    StepA["1. Setup Database & Seed Data"] --> StepB["2. Run ASP.NET Core API"]
+    StepB --> StepC["3. Run React Frontend (Vite)"]
 ```
 
 ### Step 2.1: PostgreSQL Database Setup
 
-1. **Start PostgreSQL Service** and connect using `psql` or pgAdmin:
+1. **Start PostgreSQL Service**:
    ```bash
-   sudo service postgresql start
+   sudo systemctl start postgresql
    ```
 
 2. **Create Database**:
    ```sql
-   CREATE DATABASE kajbazar_db;
+   psql -U postgres -c "CREATE DATABASE kajbazar_db;"
    ```
 
 3. **Run DDL Schema and Seed Scripts**:
    ```bash
-   # Create database tables, constraints, and indexes
+   # Create database tables, constraints, triggers, and indexes
    psql -U postgres -d kajbazar_db -f sql/01_schema_ddl.sql
 
    # Populate roles, districts, upazilas, categories, and test users
@@ -58,47 +58,33 @@ flowchart LR
    cd src/KajBazar.API
    ```
 
-2. **Configure Environment Connection Settings (`appsettings.Development.json`)**:
-   Create or update `appsettings.Development.json`:
+2. **Configure Environment Connection Settings (`appsettings.json`)**:
    ```json
    {
      "ConnectionStrings": {
-       "DefaultConnection": "Host=localhost;Port=5432;Database=kajbazar_db;Username=postgres;Password=YourPassword"
+       "DefaultConnection": "Host=localhost;Port=5432;Database=kajbazar_db;Username=postgres;Password=;"
      },
-     "JwtSettings": {
-       "SecretKey": "KajBazarSuperSecretKeyWhichIsAtLeast256BitsLongForSecurity#123",
-       "Issuer": "KajBazarAPI",
-       "Audience": "KajBazarApp",
-       "ExpiryInMinutes": 1440
-     },
-     "Logging": {
-       "LogLevel": {
-         "Default": "Information",
-         "Microsoft.AspNetCore": "Warning"
-       }
+     "Jwt": {
+       "Key": "KajBazarSuperSecretKeyForJwtAuthentication2026",
+       "Issuer": "KajBazarAPI"
      }
    }
    ```
 
 3. **Restore Packages & Run Web API**:
    ```bash
-   # Restore dependencies
    dotnet restore
-
-   # Build solution
    dotnet build
-
-   # Run API server
    dotnet run
    ```
 
 4. **Verify API Status**:
-   Open browser and navigate to Swagger UI documentation at:
-   `http://localhost:5000/swagger` or `https://localhost:5001/swagger`
+   - Web API: `http://localhost:5000`
+   - Interactive Swagger UI: `http://localhost:5000/swagger`
 
 ---
 
-### Step 2.3: Frontend Execution (React.js)
+### Step 2.3: Frontend Execution (React.js + Vite)
 
 1. **Navigate to client directory**:
    ```bash
@@ -110,18 +96,13 @@ flowchart LR
    npm install
    ```
 
-3. **Configure Environment Variables (`client/.env.development`)**:
-   ```env
-   REACT_APP_API_URL=http://localhost:5000/api
-   ```
-
-4. **Start Development Server**:
+3. **Start Development Server**:
    ```bash
-   npm start
+   npm run dev
    ```
 
-5. **Access Application**:
-   Open browser and navigate to: `http://localhost:3000`
+4. **Access Application**:
+   Open browser and navigate to: `http://localhost:5173`
 
 ---
 
@@ -129,9 +110,9 @@ flowchart LR
 
 ### Step 3.1: Production PostgreSQL Database Setup
 
-1. Provision a managed PostgreSQL instance (AWS RDS PostgreSQL, DigitalOcean Managed Database, or Ubuntu Server VM).
-2. Apply DDL schema [`sql/01_schema_ddl.sql`](file:///home/noir/Desktop/4th/Project/sql/01_schema_ddl.sql) and seed data [`sql/02_seed_data.sql`](file:///home/noir/Desktop/4th/Project/sql/02_seed_data.sql).
-3. Enable SSL connection enforcement and configure IP whitelisting for backend server access only.
+1. Provision a managed PostgreSQL instance or install PostgreSQL 15+ on Ubuntu Linux.
+2. Apply DDL schema [`sql/01_schema_ddl.sql`](file:///home/noir/Desktop/PROJECTS/Kajbazar/sql/01_schema_ddl.sql) and seed data [`sql/02_seed_data.sql`](file:///home/noir/Desktop/PROJECTS/Kajbazar/sql/02_seed_data.sql).
+3. Create a dedicated application user (`kajbazar_app`) with least privilege.
 
 ---
 
@@ -139,29 +120,28 @@ flowchart LR
 
 1. **Compile Optimized Release Binaries**:
    ```bash
-   dotnet publish src/KajBazar.API/KajBazar.API.csproj -c Release -o ./publish
+   dotnet publish src/KajBazar.API/KajBazar.API.csproj -c Release -o ./publish_api
    ```
 
-2. **Deploy to Production Linux Server (Ubuntu 22.04 LTS)**:
-   Transfer `./publish` folder contents to production server at `/var/www/kajbazar-api`.
+2. **Deploy to Production Linux Server**:
+   Transfer `./publish_api` folder contents to `/var/www/kajbazar/api`.
 
 3. **Configure Systemd Service Unit (`/etc/systemd/system/kajbazar-api.service`)**:
    ```ini
    [Unit]
    Description=KajBazar Web API (.NET 8)
-   After=network.target
+   After=network.target postgresql.service
 
    [Service]
-   WorkingDirectory=/var/www/kajbazar-api
-   ExecStart=/usr/bin/dotnet /var/www/kajbazar-api/KajBazar.API.dll
+   WorkingDirectory=/var/www/kajbazar/api
+   ExecStart=/usr/bin/dotnet /var/www/kajbazar/api/KajBazar.API.dll
    Restart=always
-   RestartSec=10
+   RestartSec=5
    KillSignal=SIGINT
    SyslogIdentifier=kajbazar-api
-   User=www-data
+   User=deploy
    Environment=ASPNETCORE_ENVIRONMENT=Production
-   Environment=ConnectionStrings__DefaultConnection="Host=prod-db-host;Database=kajbazar_db;Username=kajadmin;Password=STRONG_PASSWORD;SSL Mode=Require;"
-   Environment=JwtSettings__SecretKey="PRODUCTION_256BIT_SECRET_KEY_NEVER_SHARE"
+   Environment=ASPNETCORE_URLS=http://127.0.0.1:5000
 
    [Install]
    WantedBy=multi-user.target
@@ -169,110 +149,66 @@ flowchart LR
 
    Enable and start service:
    ```bash
-   sudo systemctl enable kajbazar-api.service
-   sudo systemctl start kajbazar-api.service
-   ```
-
-4. **Configure Nginx Reverse Proxy (`/etc/nginx/sites-available/kajbazar-api`)**:
-   ```nginx
-   server {
-       listen 80;
-       server_name api.kajbazar.com;
-
-       location / {
-           proxy_pass http://localhost:5000;
-           proxy_http_version 1.1;
-           proxy_set_header Upgrade $http_upgrade;
-           proxy_set_header Connection keep-alive;
-           proxy_set_header Host $host;
-           proxy_cache_bypass $http_upgrade;
-           proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-           proxy_set_header X-Forwarded-Proto $scheme;
-       }
-   }
-   ```
-
-5. **Enable HTTPS / SSL via Certbot**:
-   ```bash
-   sudo certbot --nginx -d api.kajbazar.com
+   sudo systemctl daemon-reload
+   sudo systemctl enable --now kajbazar-api.service
    ```
 
 ---
 
 ### Step 3.3: Production React Frontend Publishing
 
-1. **Configure Production Environment (`client/.env.production`)**:
-   ```env
-   REACT_APP_API_URL=https://api.kajbazar.com/api
-   ```
-
-2. **Generate Static Build Assets**:
+1. **Compile Optimized Production Bundle**:
    ```bash
    cd client
    npm run build
    ```
-   This creates an optimized, minified `build/` directory.
-
-3. **Deploy Options**:
-   - **Option A (Nginx Server)**: Copy `build/` files to `/var/www/kajbazar-frontend` and serve static files with fallback to `index.html` for client-side routing.
-   - **Option B (Firebase Hosting / Vercel)**:
-     ```bash
-     npx firebase-tools deploy
-     ```
-
-4. **Configure CORS in ASP.NET Core API**:
-   Ensure `Program.cs` specifies:
-   ```csharp
-   builder.Services.AddCors(options =>
-   {
-       options.AddPolicy("AllowFrontend", policy =>
-       {
-           policy.WithOrigins("https://kajbazar.com")
-                 .AllowAnyHeader()
-                 .AllowAnyMethod();
-       });
-   });
-   ```
+2. Transfer `./client/dist` contents to `/var/www/kajbazar/client`.
+3. Set file ownership: `sudo chown -R www-data:www-data /var/www/kajbazar/client`.
 
 ---
 
-## 🔄 4. Automated CI/CD Deployment Pipeline (GitHub Actions)
+### Step 3.4: Production Nginx Reverse Proxy Configuration
 
-Create `.github/workflows/deploy.yml` for continuous integration and publishing on `push` to `main`:
+In `/etc/nginx/sites-available/kajbazar.conf`:
+```nginx
+server {
+    listen 80;
+    server_name kajbazar.com www.kajbazar.com;
 
-```yaml
-name: KajBazar Build & Deploy Pipeline
+    root /var/www/kajbazar/client;
+    index index.html;
 
-on:
-  push:
-    branches: [ "main" ]
+    # React Router SPA fallback
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
 
-jobs:
-  backend-build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Setup .NET 8
-        uses: actions/setup-dotnet@v3
-        with:
-          dotnet-version: 8.0.x
-      - name: Restore dependencies
-        run: dotnet restore
-      - name: Build solution
-        run: dotnet build --no-restore -c Release
-      - name: Test solution
-        run: dotnet test --no-build -c Release
-
-  frontend-build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18
-      - name: Install dependencies
-        run: cd client && npm ci
-      - name: Build static React package
-        run: cd client && npm run build
+    # API Reverse Proxy
+    location /api/ {
+        proxy_pass http://127.0.0.1:5000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection keep-alive;
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
 ```
+
+Enable site and test:
+```bash
+sudo ln -s /etc/nginx/sites-available/kajbazar.conf /etc/nginx/sites-enabled/
+sudo nginx -t
+sudo systemctl reload nginx
+```
+
+---
+
+### Step 3.5: Free SSL Certificate via Certbot
+
+```bash
+sudo certbot --nginx -d kajbazar.com -d www.kajbazar.com
+```
+Certbot automatically installs trusted SSL certificates and configures automatic renewal.

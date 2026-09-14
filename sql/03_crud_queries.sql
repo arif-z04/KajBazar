@@ -7,14 +7,23 @@
 -- 1. USER AUTHENTICATION & MANAGEMENT (BR-01, BR-13)
 -- ------------------------------------------------------------------------------
 
--- 1.1 Register New Consumer User Account
-INSERT INTO users (full_name, email, phone_number, password_hash)
-VALUES ('Asif Sourav', 'asif@gmail.com', '01733333333', '$2a$11$e.fWwWbBq.v/4U7NlV.N9O1.11223344556677889900aa')
-RETURNING user_id, full_name, email;
-
--- Assign Consumer Role
+-- 1.1 Register New Consumer User Account with Role Assignment
+WITH new_consumer AS (
+    INSERT INTO users (user_id, full_name, email, phone_number, password_hash)
+    VALUES (
+        'b0000000-0000-0000-0000-000000000003',
+        'Asif Sourav',
+        'asif@gmail.com',
+        '01733333333',
+        '$2a$11$bRI6cgkzNa/xQbA.yLngd.I1FLEPmO4qxz.KOWf1kyi/./EmoUDRq'
+    )
+    ON CONFLICT (email) DO UPDATE SET full_name = EXCLUDED.full_name
+    RETURNING user_id, full_name, email
+)
 INSERT INTO user_roles (user_id, role_id)
-VALUES ('<user_id_here>', (SELECT role_id FROM roles WHERE role_name = 'Consumer'));
+SELECT user_id, (SELECT role_id FROM roles WHERE role_name = 'Consumer')
+FROM new_consumer
+ON CONFLICT DO NOTHING;
 
 -- 1.2 User Login Lookup
 SELECT u.user_id, u.full_name, u.email, u.password_hash, u.is_active, r.role_name
@@ -28,21 +37,44 @@ WHERE u.email = 'leon@gmail.com' AND u.is_active = TRUE;
 -- 2. WORKER PROFILE MANAGEMENT (BR-02, BR-04)
 -- ------------------------------------------------------------------------------
 
--- 2.1 Worker Profile Creation (Initial Status = PENDING)
-INSERT INTO service_provider_profiles (user_id, district_id, upazila_id, bio, experience_years, hourly_rate)
-VALUES (
-    '<worker_user_id>',
-    (SELECT district_id FROM districts WHERE district_name = 'Patuakhali'),
-    (SELECT upazila_id FROM upazilas WHERE upazila_name = 'Dumki'),
-    'Professional mechanic specializing in 4-stroke generator and motorcycle engine repair.',
-    6,
-    400.00
+-- 2.1 Worker User Creation & Profile Creation (Initial Status = PENDING)
+WITH new_worker_user AS (
+    INSERT INTO users (user_id, full_name, email, phone_number, password_hash)
+    VALUES (
+        'c0000000-0000-0000-0000-000000000003',
+        'Kamal Hossain (Mechanic)',
+        'kamal@gmail.com',
+        '01833333333',
+        '$2a$11$bRI6cgkzNa/xQbA.yLngd.I1FLEPmO4qxz.KOWf1kyi/./EmoUDRq'
+    )
+    ON CONFLICT (email) DO UPDATE SET full_name = EXCLUDED.full_name
+    RETURNING user_id
+),
+new_worker_role AS (
+    INSERT INTO user_roles (user_id, role_id)
+    SELECT user_id, (SELECT role_id FROM roles WHERE role_name = 'ServiceProvider')
+    FROM new_worker_user
+    ON CONFLICT DO NOTHING
+),
+new_worker_profile AS (
+    INSERT INTO service_provider_profiles (profile_id, user_id, district_id, upazila_id, bio, experience_years, hourly_rate, verification_status)
+    SELECT 
+        'd0000000-0000-0000-0000-000000000003',
+        user_id,
+        (SELECT district_id FROM districts WHERE district_name = 'Patuakhali'),
+        (SELECT upazila_id FROM upazilas WHERE upazila_name = 'Dumki'),
+        'Professional mechanic specializing in 4-stroke generator and motorcycle engine repair.',
+        6,
+        400.00,
+        'PENDING'
+    FROM new_worker_user
+    ON CONFLICT (user_id) DO UPDATE SET hourly_rate = EXCLUDED.hourly_rate
+    RETURNING profile_id, verification_status
 )
-RETURNING profile_id, verification_status;
-
--- Map Worker to Categories
 INSERT INTO worker_categories (profile_id, category_id)
-VALUES ('<worker_profile_id>', (SELECT category_id FROM categories WHERE category_name = 'Mechanic'));
+SELECT profile_id, (SELECT category_id FROM categories WHERE category_name = 'Mechanic')
+FROM new_worker_profile
+ON CONFLICT DO NOTHING;
 
 -- 2.2 Read Public Worker Profile Detail
 SELECT 
@@ -156,4 +188,5 @@ VALUES (
 
 -- 5.2 Admin Creates New Service Category (BR-11)
 INSERT INTO categories (category_name, description, icon_url)
-VALUES ('Mason', 'Brickwork, concrete plastering, and stone building construction.', '/icons/mason.png');
+VALUES ('Mason', 'Brickwork, concrete plastering, and stone building construction.', '/icons/mason.png')
+ON CONFLICT (category_name) DO NOTHING;

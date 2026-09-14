@@ -1,0 +1,129 @@
+%% ==============================================================================
+%% KajBazar Physical Relational Database Schema ERD (PostgreSQL)
+%% Complete 12 Tables, Column Types, Primary Keys, Foreign Keys, and Constraints
+%% ==============================================================================
+
+erDiagram
+    users ||--o{ user_roles : "assigned"
+    roles ||--o{ user_roles : "belongs"
+    users ||--o| service_provider_profiles : "owns"
+    districts ||--o{ upazilas : "contains"
+    districts ||--o{ service_provider_profiles : "region"
+    upazilas ||--o{ service_provider_profiles : "sub_region"
+    service_provider_profiles ||--o{ worker_categories : "specializes"
+    categories ||--o{ worker_categories : "includes"
+    users ||--o{ reviews : "authors"
+    service_provider_profiles ||--o{ reviews : "subject_of"
+    users ||--o{ community_recommendations : "submits"
+    categories ||--o{ community_recommendations : "skill_type"
+    districts ||--o{ community_recommendations : "location_district"
+    upazilas ||--o{ community_recommendations : "location_upazila"
+    users ||--o{ reports : "reported_by"
+    users ||--o{ reports : "target_of"
+    users ||--o{ admin_audit_logs : "performed_by"
+
+    users {
+        uuid user_id PK "DEFAULT gen_random_uuid()"
+        varchar_100 full_name "NOT NULL"
+        varchar_150 email "NOT NULL, UNIQUE"
+        varchar_20 phone_number "NOT NULL, UNIQUE"
+        varchar_255 password_hash "NOT NULL (BCrypt)"
+        boolean is_active "NOT NULL, DEFAULT TRUE"
+        timestamptz created_at "NOT NULL, DEFAULT NOW()"
+        timestamptz updated_at "NOT NULL, DEFAULT NOW()"
+    }
+
+    roles {
+        int role_id PK "IDENTITY"
+        varchar_50 role_name "NOT NULL, UNIQUE"
+        timestamptz created_at "NOT NULL, DEFAULT NOW()"
+    }
+
+    user_roles {
+        uuid user_id PK,FK "REFERENCES users(user_id) ON DELETE CASCADE"
+        int role_id PK,FK "REFERENCES roles(role_id) ON DELETE CASCADE"
+    }
+
+    districts {
+        int district_id PK "IDENTITY"
+        varchar_100 district_name "NOT NULL, UNIQUE"
+    }
+
+    upazilas {
+        int upazila_id PK "IDENTITY"
+        int district_id FK "REFERENCES districts(district_id) ON DELETE CASCADE"
+        varchar_100 upazila_name "NOT NULL"
+    }
+
+    categories {
+        int category_id PK "IDENTITY"
+        varchar_100 category_name "NOT NULL, UNIQUE"
+        text description "NULL"
+        varchar_255 icon_url "NULL"
+        boolean is_active "NOT NULL, DEFAULT TRUE"
+        timestamptz created_at "NOT NULL, DEFAULT NOW()"
+    }
+
+    service_provider_profiles {
+        uuid profile_id PK "DEFAULT gen_random_uuid()"
+        uuid user_id FK "NOT NULL, UNIQUE, REFERENCES users(user_id)"
+        int district_id FK "NOT NULL, REFERENCES districts(district_id)"
+        int upazila_id FK "NOT NULL, REFERENCES upazilas(upazila_id)"
+        text bio "NULL"
+        int experience_years "NOT NULL, DEFAULT 0, CHECK >= 0"
+        numeric_10_2 hourly_rate "NULL, CHECK >= 0"
+        varchar_20 verification_status "NOT NULL, DEFAULT 'PENDING'"
+        timestamptz verified_at "NULL"
+        numeric_3_2 average_rating "NOT NULL, DEFAULT 0.00, CHECK 0.00-5.00"
+        int total_reviews "NOT NULL, DEFAULT 0, CHECK >= 0"
+        timestamptz created_at "NOT NULL, DEFAULT NOW()"
+        timestamptz updated_at "NOT NULL, DEFAULT NOW()"
+    }
+
+    worker_categories {
+        uuid profile_id PK,FK "REFERENCES service_provider_profiles(profile_id)"
+        int category_id PK,FK "REFERENCES categories(category_id)"
+    }
+
+    reviews {
+        uuid review_id PK "DEFAULT gen_random_uuid()"
+        uuid consumer_id FK "NOT NULL, REFERENCES users(user_id)"
+        uuid worker_profile_id FK "NOT NULL, REFERENCES service_provider_profiles(profile_id)"
+        int rating "NOT NULL, CHECK (rating BETWEEN 1 AND 5)"
+        text comment "NULL"
+        timestamptz created_at "NOT NULL, DEFAULT NOW()"
+        timestamptz updated_at "NOT NULL, DEFAULT NOW()"
+    }
+
+    community_recommendations {
+        uuid recommendation_id PK "DEFAULT gen_random_uuid()"
+        uuid recommended_by_user_id FK "NOT NULL, REFERENCES users(user_id)"
+        varchar_100 worker_name "NOT NULL"
+        varchar_20 phone_number "NOT NULL"
+        int category_id FK "NOT NULL, REFERENCES categories(category_id)"
+        int district_id FK "NOT NULL, REFERENCES districts(district_id)"
+        int upazila_id FK "NOT NULL, REFERENCES upazilas(upazila_id)"
+        text notes "NULL"
+        varchar_20 status "NOT NULL, DEFAULT 'PENDING'"
+        uuid reviewed_by_admin_id FK "NULL, REFERENCES users(user_id)"
+        timestamptz created_at "NOT NULL, DEFAULT NOW()"
+    }
+
+    reports {
+        uuid report_id PK "DEFAULT gen_random_uuid()"
+        uuid reported_by_user_id FK "NOT NULL, REFERENCES users(user_id)"
+        uuid target_user_id FK "NOT NULL, REFERENCES users(user_id)"
+        text reason "NOT NULL"
+        varchar_20 status "NOT NULL, DEFAULT 'OPEN'"
+        timestamptz created_at "NOT NULL, DEFAULT NOW()"
+    }
+
+    admin_audit_logs {
+        uuid log_id PK "DEFAULT gen_random_uuid()"
+        uuid admin_user_id FK "NOT NULL, REFERENCES users(user_id)"
+        varchar_100 action "NOT NULL"
+        varchar_50 entity_name "NOT NULL"
+        uuid entity_id "NULL"
+        text details "NULL"
+        timestamptz timestamp "NOT NULL, DEFAULT NOW()"
+    }

@@ -1,0 +1,112 @@
+%% ==============================================================================
+%% KajBazar Level 1 Data Flow Diagram (DFD)
+%% Subsystem Decomposition: Processes P1 - P5, Data Stores D1 - D6, and Entities
+%% ==============================================================================
+
+flowchart TD
+    %% External Entities
+    Consumer["👤 Consumer"]
+    Worker["👷 Service Provider"]
+    Admin["🛡️ Administrator"]
+
+    %% Data Stores
+    D1[("<b>D1: users & user_roles</b>")]
+    D2[("<b>D2: service_provider_profiles & worker_categories</b>")]
+    D3[("<b>D3: categories</b>")]
+    D4[("<b>D4: districts & upazilas</b>")]
+    D5[("<b>D5: reviews</b>")]
+    D6[("<b>D6: community_recommendations</b>")]
+    D7[("<b>D7: admin_audit_logs</b>")]
+
+    %% Subsystems / Processes
+    subgraph P1_Auth ["1.0 User Authentication & RBAC (BR-01, BR-13)"]
+        P1_1(("1.1 Register Account<br/>(BCrypt Hash)"))
+        P1_2(("1.2 Authenticate &<br/>Issue JWT Bearer"))
+    end
+
+    subgraph P2_Worker ["2.0 Worker Profile Management (BR-02, BR-04)"]
+        P2_1(("2.1 Submit Professional<br/>Bio & Rates"))
+        P2_2(("2.2 Map Service<br/>Categories"))
+    end
+
+    subgraph P3_Search ["3.0 Directory Search & Direct Contact (BR-03, BR-05, BR-06)"]
+        P3_1(("3.1 Filter by Category,<br/>District & Upazila"))
+        P3_2(("3.2 Reveal Direct Phone<br/>(tel:01xxx)"))
+    end
+
+    subgraph P4_Reviews ["4.0 Ratings & Reviews Management (BR-07, BR-08)"]
+        P4_1(("4.1 Validate & Submit<br/>1-to-5 Star Review"))
+        P4_2(("4.2 Recalculate Worker<br/>Average Rating Stats"))
+    end
+
+    subgraph P5_Admin ["5.0 Community Referral & Admin Moderation (BR-09, BR-10, BR-11, BR-14)"]
+        P5_1(("5.1 Submit Offline<br/>Worker Recommendation"))
+        P5_2(("5.2 Moderate & Verify<br/>Worker Profiles"))
+        P5_3(("5.3 Review Community<br/>Referrals"))
+        P5_4(("5.4 Manage Service<br/>Taxonomy & Log Audit"))
+    end
+
+    %% Process 1 Flows
+    Consumer -->|"Registration Details"| P1_1
+    Worker -->|"Registration Details"| P1_1
+    P1_1 -->|"Create User & Role"| D1
+
+    Consumer -->|"Login (Email & Password)"| P1_2
+    Worker -->|"Login (Email & Password)"| P1_2
+    Admin -->|"Login (Email & Password)"| P1_2
+    P1_2 <-->|"Verify PasswordHash & Role"| D1
+    P1_2 -->|"JWT Token"| Consumer
+    P1_2 -->|"JWT Token"| Worker
+    P1_2 -->|"JWT Token"| Admin
+
+    %% Process 2 Flows
+    Worker -->|"Bio, Years, Hourly Rate"| P2_1
+    P2_1 -->|"Save Profile (Status = PENDING)"| D2
+    P2_1 -->|"Check Valid Location"| D4
+
+    Worker -->|"Select Category IDs"| P2_2
+    P2_2 -->|"Validate Categories"| D3
+    P2_2 -->|"Link Worker to Categories"| D2
+
+    %% Process 3 Flows
+    Consumer -->|"Query: Category, District, Upazila, MinRating"| P3_1
+    P3_1 -->|"Lookup Verified Workers Only (BR-03)"| D2
+    P3_1 -->|"Lookup Categories & Taxonomy"| D3
+    P3_1 -->|"Lookup District / Upazila Hierarchy"| D4
+    P3_1 -->|"Return Filtered Worker Cards"| Consumer
+
+    Consumer -->|"Click Contact Worker"| P3_2
+    P3_2 <-->|"Fetch Raw Phone Number"| D1
+    P3_2 -->|"Display Direct Contact (BR-06)"| Consumer
+
+    %% Process 4 Flows
+    Consumer -->|"Submit Rating & Feedback"| P4_1
+    P4_1 <-->|"Enforce Single Review per Worker (BR-08)"| D5
+    P4_1 -->|"Trigger Aggregate Update"| P4_2
+    P4_2 <-->|"Recalculate AVG(rating) & COUNT(*)"| D5
+    P4_2 -->|"Update average_rating & total_reviews"| D2
+    P4_2 -->|"Confirmation"| Consumer
+
+    %% Process 5 Flows
+    Consumer -->|"Offline Worker Name, Phone, Skill, Location"| P5_1
+    P5_1 -->|"Save Referral (Status = PENDING)"| D6
+
+    Admin -->|"Fetch Pending Verifications Queue"| P5_2
+    P5_2 <-->|"Read / Update verification_status"| D2
+    P5_2 -->|"Record Admin Action"| D7
+
+    Admin -->|"Fetch Pending Recommendations Queue"| P5_3
+    P5_3 <-->|"Read / Update status (APPROVED/REJECTED)"| D6
+    P5_3 -->|"Record Admin Action"| D7
+
+    Admin -->|"Create Category (Name, Description)"| P5_4
+    P5_4 -->|"Insert Category"| D3
+    P5_4 -->|"Record Admin Action"| D7
+
+    classDef entity fill:#1e3a8a,stroke:#0f172a,stroke-width:2px,color:#ffffff,font-weight:bold;
+    classDef process fill:#059669,stroke:#065f46,stroke-width:2px,color:#ffffff;
+    classDef datastore fill:#d97706,stroke:#92400e,stroke-width:2px,color:#ffffff,font-weight:bold;
+
+    class Consumer,Worker,Admin entity;
+    class P1_1,P1_2,P2_1,P2_2,P3_1,P3_2,P4_1,P4_2,P5_1,P5_2,P5_3,P5_4 process;
+    class D1,D2,D3,D4,D5,D6,D7 datastore;

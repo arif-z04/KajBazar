@@ -1,0 +1,181 @@
+%% ==============================================================================
+%% KajBazar Domain Model Class Diagram
+%% Domain Entities, Value Objects, Enums, and Entity Relationships
+%% ==============================================================================
+
+classDiagram
+    class User {
+        +Guid UserId
+        +string FullName
+        +string Email
+        +string PhoneNumber
+        +string PasswordHash
+        +bool IsActive
+        +DateTime CreatedAt
+        +DateTime UpdatedAt
+        +ICollection~UserRole~ UserRoles
+        +ServiceProviderProfile? ServiceProviderProfile
+        +ICollection~Review~ ReviewsWritten
+        +ICollection~CommunityRecommendation~ SubmittedRecommendations
+    }
+
+    class Role {
+        +int RoleId
+        +string RoleName
+        +DateTime CreatedAt
+        +ICollection~UserRole~ UserRoles
+    }
+
+    class UserRole {
+        +Guid UserId
+        +User User
+        +int RoleId
+        +Role Role
+    }
+
+    class ServiceProviderProfile {
+        +Guid ProfileId
+        +Guid UserId
+        +User User
+        +int DistrictId
+        +District District
+        +int UpazilaId
+        +Upazila Upazila
+        +string? Bio
+        +int ExperienceYears
+        +decimal? HourlyRate
+        +VerificationStatus VerificationStatus
+        +DateTime? VerifiedAt
+        +decimal AverageRating
+        +int TotalReviews
+        +DateTime CreatedAt
+        +DateTime UpdatedAt
+        +ICollection~WorkerCategory~ WorkerCategories
+        +ICollection~Review~ Reviews
+    }
+
+    class Category {
+        +int CategoryId
+        +string CategoryName
+        +string? Description
+        +string? IconUrl
+        +bool IsActive
+        +DateTime CreatedAt
+        +ICollection~WorkerCategory~ WorkerCategories
+    }
+
+    class WorkerCategory {
+        +Guid ProfileId
+        +ServiceProviderProfile Profile
+        +int CategoryId
+        +Category Category
+    }
+
+    class District {
+        +int DistrictId
+        +string DistrictName
+        +ICollection~Upazila~ Upazilas
+        +ICollection~ServiceProviderProfile~ Profiles
+    }
+
+    class Upazila {
+        +int UpazilaId
+        +int DistrictId
+        +District District
+        +string UpazilaName
+        +ICollection~ServiceProviderProfile~ Profiles
+    }
+
+    class Review {
+        +Guid ReviewId
+        +Guid ConsumerId
+        +User Consumer
+        +Guid WorkerProfileId
+        +ServiceProviderProfile WorkerProfile
+        +int Rating
+        +string? Comment
+        +DateTime CreatedAt
+        +DateTime UpdatedAt
+    }
+
+    class CommunityRecommendation {
+        +Guid RecommendationId
+        +Guid RecommendedByUserId
+        +User RecommendedByUser
+        +string WorkerName
+        +string PhoneNumber
+        +int CategoryId
+        +Category Category
+        +int DistrictId
+        +District District
+        +int UpazilaId
+        +Upazila Upazila
+        +string? Notes
+        +RecommendationStatus Status
+        +Guid? ReviewedByAdminId
+        +User? ReviewedByAdmin
+        +DateTime CreatedAt
+    }
+
+    class Report {
+        +Guid ReportId
+        +Guid ReportedByUserId
+        +User ReportedByUser
+        +Guid TargetUserId
+        +User TargetUser
+        +string Reason
+        +ReportStatus Status
+        +DateTime CreatedAt
+    }
+
+    class AdminAuditLog {
+        +Guid LogId
+        +Guid AdminUserId
+        +User AdminUser
+        +string Action
+        +string EntityName
+        +Guid? EntityId
+        +string? Details
+        +DateTime Timestamp
+    }
+
+    class VerificationStatus {
+        <<enumeration>>
+        Pending
+        Verified
+        Rejected
+        Suspended
+    }
+
+    class RecommendationStatus {
+        <<enumeration>>
+        Pending
+        Approved
+        Rejected
+    }
+
+    class ReportStatus {
+        <<enumeration>>
+        Open
+        UnderReview
+        Resolved
+        Dismissed
+    }
+
+    %% Entity Cardinalities and Navigations
+    User "1" <--> "0..1" ServiceProviderProfile : has
+    User "1" <--> "1..*" UserRole : assigned
+    Role "1" <--> "0..*" UserRole : groups
+    ServiceProviderProfile "1" <--> "1..*" WorkerCategory : categorized_by
+    Category "1" <--> "0..*" WorkerCategory : classifies
+    District "1" <--> "1..*" Upazila : contains
+    District "1" <--> "0..*" ServiceProviderProfile : operates_in
+    Upazila "1" <--> "0..*" ServiceProviderProfile : located_in
+    User "1" <--> "0..*" Review : writes
+    ServiceProviderProfile "1" <--> "0..*" Review : evaluates
+    User "1" <--> "0..*" CommunityRecommendation : refers
+    Category "1" <--> "0..*" CommunityRecommendation : skill_for
+    District "1" <--> "0..*" CommunityRecommendation : base_district
+    Upazila "1" <--> "0..*" CommunityRecommendation : base_upazila
+    User "1" <--> "0..*" AdminAuditLog : executes
+    User "1" <--> "0..*" Report : files

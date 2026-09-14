@@ -1,0 +1,73 @@
+%% ==============================================================================
+%% KajBazar Use Case Diagram
+%% Actors: Guest Visitor, Consumer, Service Provider, Administrator
+%% Use Cases: Registration, Directory Search, Direct Contact, Reviews, Referrals, Moderation
+%% ==============================================================================
+
+graph TD
+    %% Actors
+    subgraph Actors_List [System Actors]
+        Guest["👤 Guest Visitor"]
+        Consumer["👤 Consumer (Registered)"]
+        Worker["👷 Service Provider"]
+        Admin["🛡️ Administrator"]
+    end
+
+    %% Use Cases
+    subgraph KajBazar_System [KajBazar Platform Boundary]
+        UC_Reg(["UC-01: Register Account (Consumer / Worker)"])
+        UC_Login(["UC-02: Login & Obtain JWT Token"])
+        UC_Search(["UC-03: Search Workers by Category & Location (BR-05)"])
+        UC_ViewDetail(["UC-04: View Worker Profile & Past Reviews"])
+        UC_Contact(["UC-05: Direct Contact Worker via Phone (BR-06)"])
+        UC_Review(["UC-06: Submit / Update Worker Rating & Review (BR-07, BR-08)"])
+        UC_Recommend(["UC-07: Recommend Offline Skilled Worker (BR-09)"])
+        UC_TrackRec(["UC-08: Track Status of My Referrals"])
+        
+        UC_ManageProfile(["UC-09: Create / Update Worker Profile & Rates (BR-02)"])
+        UC_SelectCategories(["UC-10: Select Multi-Category Specializations (BR-04)"])
+        UC_ViewStatus(["UC-11: Check Verification & Rating Status"])
+
+        UC_VerifyWorker(["UC-12: Approve / Reject Worker Verification (BR-03, BR-10)"])
+        UC_ModerateRec(["UC-13: Approve / Reject Offline Recommendations (BR-09)"])
+        UC_ManageCat(["UC-14: Manage Service Categories & Taxonomy (BR-11)"])
+        UC_ViewStats(["UC-15: View System Analytics & Metrics Dashboard"])
+        UC_AuditLogs(["UC-16: Review Administrative Action Audit Logs (BR-14)"])
+    end
+
+    %% Guest Relationships
+    Guest --> UC_Reg
+    Guest --> UC_Login
+    Guest --> UC_Search
+    Guest --> UC_ViewDetail
+
+    %% Consumer Relationships
+    Consumer --> UC_Search
+    Consumer --> UC_ViewDetail
+    Consumer --> UC_Contact
+    Consumer --> UC_Review
+    Consumer --> UC_Recommend
+    Consumer --> UC_TrackRec
+
+    %% Service Provider Relationships
+    Worker --> UC_ManageProfile
+    Worker --> UC_SelectCategories
+    Worker --> UC_ViewStatus
+    Worker --> UC_ViewDetail
+
+    %% Admin Relationships
+    Admin --> UC_VerifyWorker
+    Admin --> UC_ModerateRec
+    Admin --> UC_ManageCat
+    Admin --> UC_ViewStats
+    Admin --> UC_AuditLogs
+
+    %% Includes & Extends
+    UC_Contact -.->|<<includes>>| UC_ViewDetail
+    UC_Review -.->|<<includes>>| UC_ViewDetail
+    UC_ManageProfile -.->|<<includes>>| UC_SelectCategories
+
+    classDef actor fill:#1e3a8a,stroke:#0f172a,stroke-width:2px,color:#ffffff,font-weight:bold;
+    classDef usecase fill:#ffffff,stroke:#059669,stroke-width:2px,color:#0f172a,font-weight:bold;
+    class Guest,Consumer,Worker,Admin actor;
+    class UC_Reg,UC_Login,UC_Search,UC_ViewDetail,UC_Contact,UC_Review,UC_Recommend,UC_TrackRec,UC_ManageProfile,UC_SelectCategories,UC_ViewStatus,UC_VerifyWorker,UC_ModerateRec,UC_ManageCat,UC_ViewStats,UC_AuditLogs usecase;

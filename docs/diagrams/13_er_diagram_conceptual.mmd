@@ -1,0 +1,75 @@
+%% ==============================================================================
+%% KajBazar Conceptual Entity-Relationship Diagram (ERD)
+%% High-level business concepts, entities, and relationships
+%% ==============================================================================
+
+erDiagram
+    CONSUMER ||--o{ REVIEW : "writes"
+    CONSUMER ||--o{ RECOMMENDATION : "submits"
+    CONSUMER ||--o{ REPORT : "files"
+
+    WORKER ||--o{ REVIEW : "receives"
+    WORKER }o--|{ CATEGORY : "operates_under"
+    WORKER }|--|| DISTRICT : "located_in"
+    WORKER }|--|| UPAZILA : "operates_in"
+
+    RECOMMENDATION }|--|| CATEGORY : "classified_in"
+    RECOMMENDATION }|--|| DISTRICT : "origin_district"
+    RECOMMENDATION }|--|| UPAZILA : "origin_upazila"
+
+    ADMIN ||--o{ AUDIT_LOG : "performs"
+    ADMIN ||--o{ RECOMMENDATION : "moderates"
+    ADMIN ||--o{ WORKER : "verifies"
+    ADMIN ||--o{ CATEGORY : "manages"
+
+    DISTRICT ||--|{ UPAZILA : "contains"
+
+    CONSUMER {
+        string FullName
+        string Email
+        string PhoneNumber
+    }
+
+    WORKER {
+        string WorkerName
+        int ExperienceYears
+        decimal HourlyRate
+        string VerificationStatus
+        decimal AverageRating
+    }
+
+    CATEGORY {
+        string CategoryName
+        string Description
+    }
+
+    DISTRICT {
+        string DistrictName
+    }
+
+    UPAZILA {
+        string UpazilaName
+    }
+
+    REVIEW {
+        int Rating
+        string Comment
+        date SubmissionDate
+    }
+
+    RECOMMENDATION {
+        string OfflineWorkerName
+        string PhoneNumber
+        string Status
+    }
+
+    ADMIN {
+        string AdminName
+        string Email
+    }
+
+    AUDIT_LOG {
+        string Action
+        string TargetEntity
+        timestamp ExecutedAt
+    }

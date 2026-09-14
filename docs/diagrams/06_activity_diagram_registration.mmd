@@ -1,0 +1,43 @@
+%% ==============================================================================
+%% KajBazar Activity Diagram: User Registration & Authentication (BR-01, BR-13)
+%% ==============================================================================
+
+stateDiagram-v2
+    [*] --> SelectRole: User Visits /register
+
+    state SelectRole {
+        [*] --> ChooseRole: Select Account Type
+        ChooseRole --> ConsumerRole: Consumer (Find Workers)
+        ChooseRole --> WorkerRole: Service Provider (Skilled Worker)
+    }
+
+    SelectRole --> EnterDetails: Fill Full Name, Email, Phone, Password
+    EnterDetails --> SubmitForm: Click "Register Account"
+
+    SubmitForm --> ValidateInput: Client & Server Validation
+
+    state ValidateInput {
+        [*] --> CheckEmail: Is Email Valid & Unique?
+        CheckEmail --> CheckPhone: Yes
+        CheckEmail --> ValidationError: No (Duplicate / Invalid)
+
+        CheckPhone --> CheckPassword: Is Phone Valid BD Number (01xxxxxxxxx)?
+        CheckPhone --> ValidationError: No (Invalid Format)
+
+        CheckPassword --> HashSecret: Password >= 6 Chars?
+        CheckPassword --> ValidationError: No (Too Short)
+    }
+
+    ValidationError --> EnterDetails: Display Error Toast
+
+    HashSecret --> HashBCrypt: Execute BCrypt.HashPassword(password, 11)
+    HashBCrypt --> PersistUser: INSERT INTO users & user_roles
+    PersistUser --> GenerateJWT: Generate Signed JWT Token (Claims: id, role, email)
+    GenerateJWT --> StoreSession: Client stores Token & User in localStorage
+
+    StoreSession --> RouteUser: Check User Role
+    RouteUser --> NavigateDirectory: Role == 'Consumer'
+    RouteUser --> NavigateProfileSetup: Role == 'ServiceProvider'
+
+    NavigateDirectory --> [*]
+    NavigateProfileSetup --> [*]

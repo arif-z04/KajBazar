@@ -4,6 +4,7 @@ import { AuthProvider } from './context/AuthContext';
 import { Navbar, Footer } from './components/Navigation';
 import { HomePage } from './pages/HomePage';
 import { WorkerDirectoryPage } from './pages/WorkerDirectoryPage';
+import { WorkerProfilePage } from './pages/WorkerProfilePage';
 import { RecommendWorkerPage } from './pages/RecommendWorkerPage';
 import { AdminDashboardPage, LoginPage, RegisterPage } from './pages/AuthAndAdminPages';
 
@@ -17,6 +18,7 @@ function App() {
             <Routes>
               <Route path="/" element={<HomePage />} />
               <Route path="/directory" element={<WorkerDirectoryPage />} />
+              <Route path="/my-profile" element={<WorkerProfilePage />} />
               <Route path="/recommend" element={<RecommendWorkerPage />} />
               <Route path="/admin" element={<AdminDashboardPage />} />
               <Route path="/login" element={<LoginPage />} />

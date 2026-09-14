@@ -1,0 +1,47 @@
+%% ==============================================================================
+%% KajBazar Level 0 Data Flow Diagram (DFD)
+%% High-level interaction between Actors, Major Processes, and Central Data Stores
+%% ==============================================================================
+
+graph TD
+    %% External Entities
+    Consumer["👤 Consumer"]
+    Worker["👷 Service Provider"]
+    Admin["🛡️ Administrator"]
+
+    %% Core Level 0 System Process
+    SystemProcess(("<b>0.0<br/>KajBazar Service Provider<br/>Directory Platform</b>"))
+
+    %% Data Stores
+    D_Users[("<b>D1: Users & Roles Store</b>")]
+    D_Profiles[("<b>D2: Worker Profiles & Categories Store</b>")]
+    D_Geography[("<b>D3: Geography Store (Districts & Upazilas)</b>")]
+    D_Reviews[("<b>D4: Ratings & Reviews Store</b>")]
+    D_Recs[("<b>D5: Community Recommendations Store</b>")]
+    D_Logs[("<b>D6: Admin Audit Trail Store</b>")]
+
+    %% External Entity to System Flows
+    Consumer -->|"Auth Request, Search Criteria, Reviews, Referrals"| SystemProcess
+    SystemProcess -->|"JWT Token, Filtered Worker Profiles, Contact Info"| Consumer
+
+    Worker -->|"Profile Details, Skills, Rates, Location"| SystemProcess
+    SystemProcess -->|"Verification Status, Reviews, Rating Scores"| Worker
+
+    Admin -->|"Moderation Approvals/Rejections, Taxonomy Config"| SystemProcess
+    SystemProcess -->|"Analytics Metrics, Verification Queues, Logs"| Admin
+
+    %% System Process to Data Store Flows
+    SystemProcess <-->|"Read / Write Credentials & Roles"| D_Users
+    SystemProcess <-->|"Read / Write Worker Data & Categories"| D_Profiles
+    SystemProcess -->|"Lookup District & Upazila Boundaries"| D_Geography
+    SystemProcess <-->|"Store & Aggregate Star Ratings"| D_Reviews
+    SystemProcess <-->|"Store & Update Referral Status"| D_Recs
+    SystemProcess -->|"Append Administrative Actions"| D_Logs
+
+    classDef entity fill:#1e3a8a,stroke:#0f172a,stroke-width:2px,color:#ffffff,font-weight:bold;
+    classDef process fill:#059669,stroke:#065f46,stroke-width:3px,color:#ffffff,font-weight:bold;
+    classDef datastore fill:#d97706,stroke:#92400e,stroke-width:2px,color:#ffffff,font-weight:bold;
+
+    class Consumer,Worker,Admin entity;
+    class SystemProcess process;
+    class D_Users,D_Profiles,D_Geography,D_Reviews,D_Recs,D_Logs datastore;

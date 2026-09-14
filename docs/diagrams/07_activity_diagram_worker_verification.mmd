@@ -1,0 +1,57 @@
+%% ==============================================================================
+%% KajBazar Activity Diagram: Worker Profile Creation & Admin Verification (BR-02, BR-03, BR-10)
+%% ==============================================================================
+
+stateDiagram-v2
+    [*] --> WorkerLogin: Service Provider Authenticates
+    WorkerLogin --> NavigateDashboard: Visits /my-profile
+
+    state ProfileCreation {
+        [*] --> SelectLocation: Select District & Upazila
+        SelectLocation --> SelectSkills: Choose Categories (Electrician, Plumber...) (BR-04)
+        SelectSkills --> SetDetails: Enter Bio, Experience Years & Hourly Rate
+        SetDetails --> SubmitProfile: Click "Save & Submit for Verification"
+    }
+
+    NavigateDashboard --> ProfileCreation
+    ProfileCreation --> SaveDatabase: POST /api/workers/profile
+
+    state SaveDatabase {
+        [*] --> UpsertProfile: INSERT/UPDATE service_provider_profiles
+        UpsertProfile --> SetStatusPending: Set verification_status = 'PENDING' (BR-02)
+        SetStatusPending --> MapCategories: INSERT worker_categories
+    }
+
+    SaveDatabase --> AdminQueue: Profile Added to Admin Verification Queue
+    SaveDatabase --> DisplayPending: Worker Sees "⏳ Pending Verification" Badge
+
+    state AdminReview {
+        [*] --> OpenAdminDashboard: Admin Navigates to /admin
+        OpenAdminDashboard --> ViewPendingList: Selects "Pending Worker Verifications"
+        ViewPendingList --> InspectWorker: Reviews Skills, Experience, Location & Bio
+        InspectWorker --> Decision: Meets Platform Standards?
+
+        Decision --> Approve: Yes
+        Decision --> Reject: No (With Reason)
+    }
+
+    AdminQueue --> AdminReview
+
+    state ApproveProcess {
+        [*] --> UpdateVerified: UPDATE verification_status = 'VERIFIED'
+        UpdateVerified --> SetVerifiedAt: verified_at = CURRENT_TIMESTAMP
+        SetVerifiedAt --> AppendAuditApprove: INSERT INTO admin_audit_logs ('VERIFY_WORKER_PROFILE')
+        AppendAuditApprove --> MakePublic: Worker Profile Appears in Public Directory (BR-03)
+    }
+
+    state RejectProcess {
+        [*] --> UpdateRejected: UPDATE verification_status = 'REJECTED'
+        UpdateRejected --> AppendAuditReject: INSERT INTO admin_audit_logs ('REJECT_WORKER_PROFILE')
+        AppendAuditReject --> RemainHidden: Worker Profile Kept Hidden from Directory
+    }
+
+    Approve --> ApproveProcess
+    Reject --> RejectProcess
+
+    MakePublic --> [*]
+    RemainHidden --> [*]

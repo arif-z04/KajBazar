@@ -1,0 +1,49 @@
+%% ==============================================================================
+%% KajBazar Activity Diagram: Worker Search & Direct Contact (BR-05, BR-06)
+%% ==============================================================================
+
+stateDiagram-v2
+    [*] --> VisitDirectory: Consumer Visits /directory
+
+    state SearchAndFilter {
+        [*] --> LoadMetadata: Fetch Categories & Districts
+        LoadMetadata --> SelectCategory: Choose Service Category (e.g. Electrician)
+        SelectCategory --> SelectDistrict: Choose District (e.g. Patuakhali)
+        SelectDistrict --> PopulateUpazilas: Dynamic Sub-district Filter Loaded
+        PopulateUpazilas --> SelectUpazila: Choose Upazila (e.g. Dumki)
+        SelectUpazila --> SelectRating: Optional (e.g. 4.0+ Stars)
+    }
+
+    VisitDirectory --> SearchAndFilter
+    SearchAndFilter --> ExecuteQuery: Client triggers searchWorkersApi()
+
+    state BackendSearch {
+        [*] --> FilterVerified: WHERE verification_status = 'VERIFIED' (BR-03)
+        FilterVerified --> FilterCategory: AND category_name = requested
+        FilterCategory --> FilterLocation: AND district_id = d AND upazila_id = u (BR-05)
+        FilterLocation --> FilterRating: AND average_rating >= minRating
+        FilterRating --> SortResults: ORDER BY average_rating DESC, total_reviews DESC
+        SortResults --> Paginate: Take 9 Profiles (Skip = (page-1)*9)
+    }
+
+    ExecuteQuery --> BackendSearch
+    BackendSearch --> DisplayResults: Render Worker Cards Grid
+
+    state ConsumerInteraction {
+        [*] --> InspectCards: Browse Experience, Rating Badge & Hourly Rate
+        InspectCards --> Choice: Choose Action
+
+        Choice --> ClickCard: Click "Reviews & Details"
+        Choice --> ClickContact: Click "Contact Worker"
+    }
+
+    DisplayResults --> ConsumerInteraction
+
+    ClickCard --> OpenModal: Render WorkerDetailModal (Full Bio, All Reviews & Rating Form)
+    ClickContact --> RevealPhone: Toggle Phone View -> Show "tel:017xxxxxxxx" (BR-06)
+
+    RevealPhone --> DirectCall: Consumer Dials Worker Directly (No Platform Fee / Middleman)
+    OpenModal --> InspectReviews: Reads Feedback & Ratings
+    InspectReviews --> DirectCall
+
+    DirectCall --> [*]

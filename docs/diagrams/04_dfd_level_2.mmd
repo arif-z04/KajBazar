@@ -1,0 +1,60 @@
+%% ==============================================================================
+%% KajBazar Level 2 Data Flow Diagram (DFD)
+%% Detailed Decomposition of Process 3.0 (Directory Search & Direct Contact)
+%% ==============================================================================
+
+flowchart TD
+    %% Entities
+    Consumer["👤 Consumer"]
+
+    %% Data Stores
+    D2_Profiles[("<b>D2: service_provider_profiles</b>")]
+    D2_Cats[("<b>D2b: worker_categories</b>")]
+    D3_Categories[("<b>D3: categories</b>")]
+    D4_Geography[("<b>D4: districts & upazilas</b>")]
+    D1_Users[("<b>D1: users</b>")]
+    D5_Reviews[("<b>D5: reviews</b>")]
+
+    %% Process 3.0 Functional Breakdown
+    subgraph P3_Decomposition ["3.0 Directory Search & Direct Contact Functional Breakdown"]
+        P3_1_Parse(("3.1.1 Parse Query<br/>Parameters & Validate"))
+        P3_1_Enforce(("3.1.2 Enforce Verification<br/>Constraint (BR-03)"))
+        P3_1_CatFilter(("3.1.3 Apply Category Filter<br/>& Taxonomy Match"))
+        P3_1_GeoFilter(("3.1.4 Apply District &<br/>Upazila Location Filter"))
+        P3_1_RatingFilter(("3.1.5 Apply Minimum<br/>Rating & Sort Order"))
+        P3_1_Paginate(("3.1.6 Slice Paginated<br/>Window (LIMIT/OFFSET)"))
+        P3_2_Contact(("3.2.1 Reveal Phone<br/>Number (BR-06)"))
+    end
+
+    %% Flow steps
+    Consumer -->|"1. HTTP GET /workers/search (category, districtId, upazilaId, minRating, page)"| P3_1_Parse
+    P3_1_Parse -->|"Validated Filter DTO"| P3_1_Enforce
+
+    P3_1_Enforce <-->|"Filter: verification_status = 'VERIFIED' AND is_active = TRUE"| D2_Profiles
+    P3_1_Enforce -->|"Verified Candidate Profiles"| P3_1_CatFilter
+
+    P3_1_CatFilter <-->|"Join worker_categories & categories ON category_name"| D2_Cats
+    D2_Cats <--> D3_Categories
+    P3_1_CatFilter -->|"Category-Filtered Workers"| P3_1_GeoFilter
+
+    P3_1_GeoFilter <-->|"Filter: district_id AND upazila_id"| D4_Geography
+    P3_1_GeoFilter -->|"Location-Filtered Workers"| P3_1_RatingFilter
+
+    P3_1_RatingFilter -->|"Filter: average_rating >= minRating & ORDER BY rating DESC"| P3_1_Paginate
+
+    P3_1_Paginate <-->|"COUNT(*) total & Fetch Page Window"| D2_Profiles
+    P3_1_Paginate <-->|"Join user name, phone & email"| D1_Users
+    P3_1_Paginate -->|"2. Return JSON { totalCount, totalPages, currentPage, workers[] }"| Consumer
+
+    %% Direct Contact Sub-flow
+    Consumer -->|"3. Click 'Contact Worker' on WorkerCard"| P3_2_Contact
+    P3_2_Contact <-->|"Read user.phone_number without payment barrier (BR-06)"| D1_Users
+    P3_2_Contact -->|"4. Render 'tel:017xxxxxxxx' Direct Call Link"| Consumer
+
+    classDef entity fill:#1e3a8a,stroke:#0f172a,stroke-width:2px,color:#ffffff,font-weight:bold;
+    classDef process fill:#059669,stroke:#065f46,stroke-width:2px,color:#ffffff;
+    classDef datastore fill:#d97706,stroke:#92400e,stroke-width:2px,color:#ffffff,font-weight:bold;
+
+    class Consumer entity;
+    class P3_1_Parse,P3_1_Enforce,P3_1_CatFilter,P3_1_GeoFilter,P3_1_RatingFilter,P3_1_Paginate,P3_2_Contact process;
+    class D2_Profiles,D2_Cats,D3_Categories,D4_Geography,D1_Users,D5_Reviews datastore;

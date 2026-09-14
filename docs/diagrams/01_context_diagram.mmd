@@ -1,0 +1,47 @@
+%% ==============================================================================
+%% KajBazar Context Diagram (Level 0 DFD)
+%% Process: KajBazar Community-Driven Service Provider Directory
+%% External Entities: Consumer, Service Provider, Platform Administrator
+%% ==============================================================================
+
+graph LR
+    subgraph External_Entities [External Actors]
+        C["👤 Consumer"]
+        SP["👷 Service Provider"]
+        ADM["🛡️ Administrator"]
+    end
+
+    subgraph System_Boundary [KajBazar System]
+        KB(("0.0<br/><b>KajBazar Platform</b><br/>(Core Directory System)"))
+    end
+
+    %% Consumer Data Flows
+    C -->|"1. Registration / Login Credentials"| KB
+    C -->|"2. Search Filters (Category, District, Upazila)"| KB
+    C -->|"3. Worker Review & Star Rating (1-5)"| KB
+    C -->|"4. Offline Worker Recommendation"| KB
+    KB -->|"5. Search Results & Verified Worker Profiles"| C
+    KB -->|"6. Direct Phone Contact Number (tel:01xxx)"| C
+    KB -->|"7. Authentication JWT Token & Profile Info"| C
+
+    %% Service Provider Data Flows
+    SP -->|"8. Profile Registration & Experience Bio"| KB
+    SP -->|"9. Service Categories Selection & Hourly Rate"| KB
+    SP -->|"10. Location Details (District, Upazila)"| KB
+    KB -->|"11. Verification Status (Pending/Verified/Rejected)"| SP
+    KB -->|"12. Customer Reviews & Average Rating Feed"| SP
+    KB -->|"13. Direct Call Inquiries from Consumers"| SP
+
+    %% Administrator Data Flows
+    ADM -->|"14. Admin Credentials & Authentication"| KB
+    ADM -->|"15. Worker Verification Decision (Approve/Reject)"| KB
+    ADM -->|"16. Offline Recommendation Moderation"| KB
+    ADM -->|"17. Category Management (Add New Category)"| KB
+    KB -->|"18. System Dashboard Metrics & Stats"| ADM
+    KB -->|"19. Pending Verification & Referral Queues"| ADM
+    KB -->|"20. Administrative Action Audit Trail Logs"| ADM
+
+    classDef entity fill:#1e3a8a,stroke:#0f172a,stroke-width:2px,color:#ffffff,font-weight:bold;
+    classDef system fill:#059669,stroke:#065f46,stroke-width:3px,color:#ffffff,font-weight:bold;
+    class C,SP,ADM entity;
+    class KB system;

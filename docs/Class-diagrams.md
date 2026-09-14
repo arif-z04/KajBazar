@@ -9,174 +9,216 @@ This document contains UML Class Diagrams for **KajBazar**, illustrating domain 
 ```mermaid
 classDiagram
     class User {
-        +Guid UserId
+        +Guid Id
         +string FullName
         +string Email
         +string PhoneNumber
         +string PasswordHash
+        +int RoleId
+        +Role Role
+        +int? DistrictId
+        +int? UpazilaId
         +bool IsActive
         +DateTime CreatedAt
         +DateTime UpdatedAt
-        +ICollection~UserRole~ UserRoles
-        +ServiceProviderProfile Profile
+        +ServiceProviderProfile? ServiceProvider
+        +ICollection~Review~ Reviews
     }
 
     class Role {
-        +int RoleId
-        +string RoleName
-        +ICollection~UserRole~ UserRoles
-    }
-
-    class UserRole {
-        +Guid UserId
-        +User User
-        +int RoleId
-        +Role Role
+        +int Id
+        +string Name
+        +string? Description
+        +DateTime CreatedAt
+        +ICollection~User~ Users
     }
 
     class ServiceProviderProfile {
-        +Guid ProfileId
+        +Guid Id
         +Guid UserId
-        +User User
+        +User? User
+        +string? Bio
+        +int YearsExperience
+        +decimal HourlyRate
+        +string AvailabilityStatus
+        +string VerificationStatus
+        +string? NationalIdNumber
         +int DistrictId
-        +District District
+        +District? District
         +int UpazilaId
-        +Upazila Upazila
-        +string Bio
-        +int ExperienceYears
-        +decimal? HourlyRate
-        +VerificationStatus VerificationStatus
-        +DateTime? VerifiedAt
+        +Upazila? Upazila
+        +string? AddressLine
         +decimal AverageRating
         +int TotalReviews
+        +DateTime? VerifiedAt
+        +Guid? VerifiedByAdminId
+        +DateTime CreatedAt
+        +DateTime UpdatedAt
         +ICollection~WorkerCategory~ WorkerCategories
         +ICollection~Review~ Reviews
     }
 
     class Category {
-        +int CategoryId
-        +string CategoryName
-        +string Description
-        +string IconUrl
+        +int Id
+        +string Name
+        +string Slug
+        +string? Description
+        +string IconName
         +bool IsActive
+        +DateTime CreatedAt
         +ICollection~WorkerCategory~ WorkerCategories
     }
 
     class WorkerCategory {
-        +Guid ProfileId
-        +ServiceProviderProfile Profile
+        +int Id
+        +Guid WorkerId
+        +ServiceProviderProfile? Worker
         +int CategoryId
-        +Category Category
+        +Category? Category
+        +bool IsPrimary
+        +DateTime CreatedAt
     }
 
     class District {
-        +int DistrictId
-        +string DistrictName
+        +int Id
+        +string Name
+        +string Division
+        +DateTime CreatedAt
         +ICollection~Upazila~ Upazilas
     }
 
     class Upazila {
-        +int UpazilaId
+        +int Id
         +int DistrictId
-        +District District
-        +string UpazilaName
+        +District? District
+        +string Name
+        +DateTime CreatedAt
     }
 
     class Review {
-        +Guid ReviewId
+        +Guid Id
+        +Guid WorkerId
+        +ServiceProviderProfile? Worker
         +Guid ConsumerId
-        +User Consumer
-        +Guid WorkerProfileId
-        +ServiceProviderProfile WorkerProfile
+        +User? Consumer
         +int Rating
-        +string Comment
+        +string? Comment
+        +bool IsFlagged
         +DateTime CreatedAt
+        +DateTime UpdatedAt
     }
 
-    class CommunityRecommendation {
-        +Guid RecommendationId
-        +Guid RecommendedByUserId
-        +User RecommendedByUser
+    class Recommendation {
+        +Guid Id
+        +Guid? RecommenderUserId
+        +User? RecommenderUser
         +string WorkerName
         +string PhoneNumber
-        +int CategoryId
-        +Category Category
-        +int DistrictId
-        +int UpazilaId
-        +string Notes
-        +RecommendationStatus Status
+        +string Trade
+        +int? DistrictId
+        +int? UpazilaId
+        +string? Notes
+        +string Status
         +Guid? ReviewedByAdminId
+        +string? ReviewNotes
+        +DateTime CreatedAt
+        +DateTime UpdatedAt
+    }
+
+    class AdminAuditLog {
+        +Guid Id
+        +Guid AdminUserId
+        +User? AdminUser
+        +string Action
+        +string EntityName
+        +string EntityId
+        +string? OldValues
+        +string? NewValues
+        +string? IpAddress
+        +string? UserAgent
         +DateTime CreatedAt
     }
 
-    User "1" <--> "0..1" ServiceProviderProfile : has
-    User "1" <--> "0..*" UserRole : belongs
-    Role "1" <--> "0..*" UserRole : assigned
-    ServiceProviderProfile "1" <--> "0..*" WorkerCategory : operates
-    Category "1" <--> "0..*" WorkerCategory : includes
-    District "1" <--> "0..*" Upazila : contains
-    ServiceProviderProfile "1" <--> "0..*" Review : receives
-    User "1" <--> "0..*" Review : writes
-    User "1" <--> "0..*" CommunityRecommendation : submits
+    User "1" --> "1" Role : Has
+    User "1" --> "0..1" ServiceProviderProfile : Has Profile
+    ServiceProviderProfile "1" --> "*" WorkerCategory : Specializes
+    Category "1" --> "*" WorkerCategory : Mapped
+    District "1" --> "*" Upazila : Contains
+    ServiceProviderProfile "*" --> "1" District : Located In
+    ServiceProviderProfile "*" --> "1" Upazila : Operating In
+    ServiceProviderProfile "1" --> "*" Review : Receives
+    User "1" --> "*" Review : Writes
+    User "1" --> "*" Recommendation : Submits
+    User "1" --> "*" AdminAuditLog : Audits
 ```
 
 ---
 
-## 2. API Controllers & Repository Architecture Diagram
+## 2. Architecture & Service Layer Class Diagram
 
 ```mermaid
 classDiagram
-    class AuthController {
-        -IUserRepository _userRepository
-        -IJwtService _jwtService
-        +Register(RegisterDto dto) Task~IActionResult~
-        +Login(LoginDto dto) Task~IActionResult~
-    }
-
-    class WorkersController {
-        -IServiceProviderRepository _workerRepository
-        +SearchWorkers(WorkerSearchFilterDto filter) Task~IActionResult~
-        +GetWorkerById(Guid id) Task~IActionResult~
-        +UpdateProfile(Guid id, UpdateProfileDto dto) Task~IActionResult~
-    }
-
-    class ReviewsController {
-        -IReviewRepository _reviewRepository
-        +AddReview(CreateReviewDto dto) Task~IActionResult~
-        +GetWorkerReviews(Guid workerProfileId) Task~IActionResult~
-    }
-
-    class AdminController {
-        -IServiceProviderRepository _workerRepository
-        -IRecommendationRepository _recommendationRepository
-        +ApproveWorker(Guid profileId) Task~IActionResult~
-        +RejectWorker(Guid profileId, string reason) Task~IActionResult~
-        +ApproveRecommendation(Guid recommendationId) Task~IActionResult~
-    }
-
     class IUserRepository {
         <<interface>>
-        +GetByIdAsync(Guid id) Task~User~
-        +GetByEmailAsync(string email) Task~User~
-        +AddAsync(User user) Task
+        +GetByIdAsync(id) Task~User?~
+        +GetByEmailAsync(email) Task~User?~
+        +CreateAsync(user) Task~User~
+        +UpdateAsync(user) Task
     }
 
     class IServiceProviderRepository {
         <<interface>>
-        +SearchAsync(WorkerSearchFilter filter) Task~IEnumerable~ServiceProviderProfile~~
-        +GetByIdAsync(Guid id) Task~ServiceProviderProfile~
-        +UpdateVerificationStatusAsync(Guid id, VerificationStatus status) Task
+        +GetByIdAsync(id) Task~ServiceProviderProfile?~
+        +GetByUserIdAsync(userId) Task~ServiceProviderProfile?~
+        +SearchWorkersAsync(filter) Task~List~WorkerSummaryDto~~
+        +CreateOrUpdateProfileAsync(profile, categoryIds) Task~ServiceProviderProfile~
+        +VerifyWorkerAsync(id, adminId) Task~bool~
+        +RejectWorkerAsync(id, adminId, reason) Task~bool~
+        +SuspendWorkerAsync(id, adminId, reason) Task~bool~
     }
 
     class IReviewRepository {
         <<interface>>
-        +AddReviewAsync(Review review) Task
-        +GetByWorkerProfileIdAsync(Guid profileId) Task~IEnumerable~Review~~
-        +ExistsAsync(Guid consumerId, Guid workerProfileId) Task~bool~
+        +GetByWorkerIdAsync(workerId) Task~List~ReviewDto~~
+        +CreateOrUpdateReviewAsync(workerId, consumerId, rating, comment) Task~Review~
+        +DeleteReviewAsync(reviewId) Task~bool~
     }
 
-    AuthController --> IUserRepository
+    class IRecommendationRepository {
+        <<interface>>
+        +CreateAsync(recommendation) Task~Recommendation~
+        +GetAllAsync(status) Task~List~RecommendationDto~~
+        +UpdateStatusAsync(id, status, adminId, notes) Task~bool~
+    }
+
+    class IAuthService {
+        <<interface>>
+        +RegisterAsync(dto) Task~AuthResponseDto~
+        +LoginAsync(dto) Task~AuthResponseDto~
+    }
+
+    class AuthService {
+        -IUserRepository _userRepo
+        -IConfiguration _config
+        +RegisterAsync(dto) Task~AuthResponseDto~
+        +LoginAsync(dto) Task~AuthResponseDto~
+    }
+
+    class WorkersController {
+        -IServiceProviderRepository _workerRepo
+        +GetWorkers(filter) Task~IActionResult~
+        +GetWorkerById(id) Task~IActionResult~
+        +CreateOrUpdateProfile(dto) Task~IActionResult~
+    }
+
+    class ReviewsController {
+        -IReviewRepository _reviewRepo
+        +CreateReview(dto) Task~IActionResult~
+        +GetWorkerReviews(workerId) Task~IActionResult~
+        +DeleteReview(id) Task~IActionResult~
+    }
+
+    IAuthService <|.. AuthService
     WorkersController --> IServiceProviderRepository
     ReviewsController --> IReviewRepository
-    AdminController --> IServiceProviderRepository
 ```
