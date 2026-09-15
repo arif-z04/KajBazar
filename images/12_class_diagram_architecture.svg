@@ -1,0 +1,295 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2000 1400" width="100%" height="100%" style="background-color: #ffffff;">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#4b5563" />
+    </marker>
+    <marker id="hollow-arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#ffffff" stroke="#4b5563" stroke-width="1" />
+    </marker>
+    
+    <style>
+      .layer-bg { fill: #f8fafc; rx: 10px; ry: 10px; stroke: #e2e8f0; stroke-width: 2; }
+      .layer-text { font-family: sans-serif; font-size: 24px; font-weight: bold; fill: #64748b; transform: rotate(-90deg); text-anchor: middle; }
+      .title { font-family: sans-serif; font-size: 32px; font-weight: bold; fill: #0f172a; text-anchor: middle; }
+      
+      .box-bg { fill: white; stroke: #cbd5e1; stroke-width: 1.5; rx: 5px; ry: 5px; }
+      .header-text { font-family: sans-serif; font-size: 14px; font-weight: bold; fill: white; text-anchor: middle; }
+      .stereotype { font-family: sans-serif; font-size: 12px; font-style: italic; fill: rgba(255,255,255,0.9); text-anchor: middle; }
+      .attr-text { font-family: monospace; font-size: 10px; fill: #334155; }
+      .method-text { font-family: monospace; font-size: 10px; fill: #0f172a; }
+      .divider { stroke: #cbd5e1; stroke-width: 1; }
+      
+      .dep-line { stroke: #4b5563; stroke-width: 1.5; fill: none; marker-end: url(#arrow); }
+      .impl-line { stroke: #4b5563; stroke-width: 1.5; stroke-dasharray: 5,5; fill: none; marker-end: url(#hollow-arrow); }
+    </style>
+  </defs>
+  <text x="1000" y="50" class="title">KajBazar Clean Architecture Class Diagram</text>
+  <rect x="50" y="80" width="1900" height="250" class="layer-bg" />
+  <text x="80" y="205.0" class="layer-text">API Layer</text>
+  <rect x="50" y="350" width="1900" height="280" class="layer-bg" />
+  <text x="80" y="490.0" class="layer-text">Core/Abstractions</text>
+  <rect x="50" y="650" width="1900" height="160" class="layer-bg" />
+  <text x="80" y="730.0" class="layer-text">Infrastructure</text>
+  <rect x="50" y="830" width="1900" height="220" class="layer-bg" />
+  <text x="80" y="940.0" class="layer-text">Data</text>
+  <g transform="translate(120.0,100)">
+    <rect x="0" y="0" width="240" height="134" class="box-bg" />
+    <path d="M 0 5 Q 0 0 5 0 L 235 0 Q 240 0 240 5 L 240 30 L 0 30 Z" fill="#1e3a8a" />
+    <text x="120.0" y="20" class="header-text">AuthController</text>
+    <line x1="0" y1="30" x2="240" y2="30" class="divider" />
+    <text x="10" y="44" class="attr-text">-_userRepository</text>
+    <text x="10" y="58" class="attr-text">-_authService</text>
+    <text x="10" y="72" class="attr-text">-_workerRepository</text>
+    <line x1="0" y1="82" x2="240" y2="82" class="divider" />
+    <text x="10" y="96" class="method-text">+Register()</text>
+    <text x="10" y="110" class="method-text">+Login()</text>
+    <text x="10" y="124" class="method-text">+GetCurrentUser()</text>
+  </g>
+  <g transform="translate(380.0,100)">
+    <rect x="0" y="0" width="240" height="134" class="box-bg" />
+    <path d="M 0 5 Q 0 0 5 0 L 235 0 Q 240 0 240 5 L 240 30 L 0 30 Z" fill="#1e3a8a" />
+    <text x="120.0" y="20" class="header-text">WorkersController</text>
+    <line x1="0" y1="30" x2="240" y2="30" class="divider" />
+    <text x="10" y="44" class="attr-text">-_workerRepository</text>
+    <text x="10" y="58" class="attr-text">-_userRepository</text>
+    <line x1="0" y1="68" x2="240" y2="68" class="divider" />
+    <text x="10" y="82" class="method-text">+SearchWorkers()</text>
+    <text x="10" y="96" class="method-text">+GetWorkerById()</text>
+    <text x="10" y="110" class="method-text">+GetMyProfile()</text>
+    <text x="10" y="124" class="method-text">+CreateOrUpdateProfile()</text>
+  </g>
+  <g transform="translate(640.0,100)">
+    <rect x="0" y="0" width="240" height="106" class="box-bg" />
+    <path d="M 0 5 Q 0 0 5 0 L 235 0 Q 240 0 240 5 L 240 30 L 0 30 Z" fill="#1e3a8a" />
+    <text x="120.0" y="20" class="header-text">ReviewsController</text>
+    <line x1="0" y1="30" x2="240" y2="30" class="divider" />
+    <text x="10" y="44" class="attr-text">-_reviewRepository</text>
+    <text x="10" y="58" class="attr-text">-_workerRepository</text>
+    <line x1="0" y1="68" x2="240" y2="68" class="divider" />
+    <text x="10" y="82" class="method-text">+AddReview()</text>
+    <text x="10" y="96" class="method-text">+GetWorkerReviews()</text>
+  </g>
+  <g transform="translate(900.0,100)">
+    <rect x="0" y="0" width="240" height="92" class="box-bg" />
+    <path d="M 0 5 Q 0 0 5 0 L 235 0 Q 240 0 240 5 L 240 30 L 0 30 Z" fill="#1e3a8a" />
+    <text x="120.0" y="20" class="header-text">RecommendationsController</text>
+    <line x1="0" y1="30" x2="240" y2="30" class="divider" />
+    <text x="10" y="44" class="attr-text">-_recommendationRepository</text>
+    <line x1="0" y1="54" x2="240" y2="54" class="divider" />
+    <text x="10" y="68" class="method-text">+SubmitRecommendation()</text>
+    <text x="10" y="82" class="method-text">+GetMyRecommendations()</text>
+  </g>
+  <g transform="translate(1160.0,100)">
+    <rect x="0" y="0" width="240" height="162" class="box-bg" />
+    <path d="M 0 5 Q 0 0 5 0 L 235 0 Q 240 0 240 5 L 240 30 L 0 30 Z" fill="#1e3a8a" />
+    <text x="120.0" y="20" class="header-text">AdminController</text>
+    <line x1="0" y1="30" x2="240" y2="30" class="divider" />
+    <text x="10" y="44" class="attr-text">-_workerRepo</text>
+    <text x="10" y="58" class="attr-text">-_recommendationRepo</text>
+    <text x="10" y="72" class="attr-text">-_categoryRepo</text>
+    <text x="10" y="86" class="attr-text">-_auditLogRepo</text>
+    <line x1="0" y1="96" x2="240" y2="96" class="divider" />
+    <text x="10" y="110" class="method-text">+GetDashboardStats()</text>
+    <text x="10" y="124" class="method-text">+GetPendingWorkers()</text>
+    <text x="10" y="138" class="method-text">+ApproveWorker()</text>
+    <text x="10" y="152" class="method-text">+RejectWorker()</text>
+  </g>
+  <g transform="translate(1420.0,100)">
+    <rect x="0" y="0" width="240" height="92" class="box-bg" />
+    <path d="M 0 5 Q 0 0 5 0 L 235 0 Q 240 0 240 5 L 240 30 L 0 30 Z" fill="#1e3a8a" />
+    <text x="120.0" y="20" class="header-text">GeographyController</text>
+    <line x1="0" y1="30" x2="240" y2="30" class="divider" />
+    <text x="10" y="44" class="attr-text">-_geographyRepository</text>
+    <line x1="0" y1="54" x2="240" y2="54" class="divider" />
+    <text x="10" y="68" class="method-text">+GetDistricts()</text>
+    <text x="10" y="82" class="method-text">+GetUpazilas()</text>
+  </g>
+  <g transform="translate(1680.0,100)">
+    <rect x="0" y="0" width="240" height="92" class="box-bg" />
+    <path d="M 0 5 Q 0 0 5 0 L 235 0 Q 240 0 240 5 L 240 30 L 0 30 Z" fill="#1e3a8a" />
+    <text x="120.0" y="20" class="header-text">CategoriesController</text>
+    <line x1="0" y1="30" x2="240" y2="30" class="divider" />
+    <text x="10" y="44" class="attr-text">-_categoryRepository</text>
+    <line x1="0" y1="54" x2="240" y2="54" class="divider" />
+    <text x="10" y="68" class="method-text">+GetCategories()</text>
+    <text x="10" y="82" class="method-text">+GetCategoryById()</text>
+  </g>
+  <g transform="translate(120.0,380)">
+    <rect x="0" y="0" width="210" height="92" class="box-bg" />
+    <path d="M 0 5 Q 0 0 5 0 L 205 0 Q 210 0 210 5 L 210 40 L 0 40 Z" fill="#059669" />
+    <text x="105.0" y="15" class="stereotype">&lt;&lt;interface&gt;&gt;</text>
+    <text x="105.0" y="30" class="header-text">IAuthService</text>
+    <line x1="0" y1="40" x2="210" y2="40" class="divider" />
+    <text x="10" y="54" class="method-text">+HashPassword()</text>
+    <text x="10" y="68" class="method-text">+VerifyPassword()</text>
+    <text x="10" y="82" class="method-text">+GenerateJwtToken()</text>
+  </g>
+  <g transform="translate(347.1428571428571,380)">
+    <rect x="0" y="0" width="210" height="106" class="box-bg" />
+    <path d="M 0 5 Q 0 0 5 0 L 205 0 Q 210 0 210 5 L 210 40 L 0 40 Z" fill="#059669" />
+    <text x="105.0" y="15" class="stereotype">&lt;&lt;interface&gt;&gt;</text>
+    <text x="105.0" y="30" class="header-text">IUserRepository</text>
+    <line x1="0" y1="40" x2="210" y2="40" class="divider" />
+    <text x="10" y="54" class="method-text">+GetByIdAsync()</text>
+    <text x="10" y="68" class="method-text">+GetByEmailAsync()</text>
+    <text x="10" y="82" class="method-text">+AddAsync()</text>
+    <text x="10" y="96" class="method-text">+AssignRoleAsync()</text>
+  </g>
+  <g transform="translate(574.2857142857142,380)">
+    <rect x="0" y="0" width="210" height="106" class="box-bg" />
+    <path d="M 0 5 Q 0 0 5 0 L 205 0 Q 210 0 210 5 L 210 40 L 0 40 Z" fill="#059669" />
+    <text x="105.0" y="15" class="stereotype">&lt;&lt;interface&gt;&gt;</text>
+    <text x="105.0" y="30" class="header-text">IServiceProviderRepo</text>
+    <line x1="0" y1="40" x2="210" y2="40" class="divider" />
+    <text x="10" y="54" class="method-text">+GetByIdAsync()</text>
+    <text x="10" y="68" class="method-text">+SearchWorkersAsync()</text>
+    <text x="10" y="82" class="method-text">+GetPendingWorkersAsync()</text>
+    <text x="10" y="96" class="method-text">+UpdateStatusAsync()</text>
+  </g>
+  <g transform="translate(801.4285714285714,380)">
+    <rect x="0" y="0" width="210" height="92" class="box-bg" />
+    <path d="M 0 5 Q 0 0 5 0 L 205 0 Q 210 0 210 5 L 210 40 L 0 40 Z" fill="#059669" />
+    <text x="105.0" y="15" class="stereotype">&lt;&lt;interface&gt;&gt;</text>
+    <text x="105.0" y="30" class="header-text">IReviewRepository</text>
+    <line x1="0" y1="40" x2="210" y2="40" class="divider" />
+    <text x="10" y="54" class="method-text">+GetByIdAsync()</text>
+    <text x="10" y="68" class="method-text">+GetByWorkerProfileIdAsync()</text>
+    <text x="10" y="82" class="method-text">+AddOrUpdateReviewAsync()</text>
+  </g>
+  <g transform="translate(1028.5714285714284,380)">
+    <rect x="0" y="0" width="210" height="106" class="box-bg" />
+    <path d="M 0 5 Q 0 0 5 0 L 205 0 Q 210 0 210 5 L 210 40 L 0 40 Z" fill="#059669" />
+    <text x="105.0" y="15" class="stereotype">&lt;&lt;interface&gt;&gt;</text>
+    <text x="105.0" y="30" class="header-text">IRecommendationRepo</text>
+    <line x1="0" y1="40" x2="210" y2="40" class="divider" />
+    <text x="10" y="54" class="method-text">+GetByIdAsync()</text>
+    <text x="10" y="68" class="method-text">+GetPendingAsync()</text>
+    <text x="10" y="82" class="method-text">+AddAsync()</text>
+    <text x="10" y="96" class="method-text">+UpdateStatusAsync()</text>
+  </g>
+  <g transform="translate(1255.7142857142858,380)">
+    <rect x="0" y="0" width="210" height="92" class="box-bg" />
+    <path d="M 0 5 Q 0 0 5 0 L 205 0 Q 210 0 210 5 L 210 40 L 0 40 Z" fill="#059669" />
+    <text x="105.0" y="15" class="stereotype">&lt;&lt;interface&gt;&gt;</text>
+    <text x="105.0" y="30" class="header-text">ICategoryRepository</text>
+    <line x1="0" y1="40" x2="210" y2="40" class="divider" />
+    <text x="10" y="54" class="method-text">+GetAllActiveAsync()</text>
+    <text x="10" y="68" class="method-text">+GetByIdAsync()</text>
+    <text x="10" y="82" class="method-text">+AddAsync()</text>
+  </g>
+  <g transform="translate(1482.857142857143,380)">
+    <rect x="0" y="0" width="210" height="78" class="box-bg" />
+    <path d="M 0 5 Q 0 0 5 0 L 205 0 Q 210 0 210 5 L 210 40 L 0 40 Z" fill="#059669" />
+    <text x="105.0" y="15" class="stereotype">&lt;&lt;interface&gt;&gt;</text>
+    <text x="105.0" y="30" class="header-text">IGeographyRepository</text>
+    <line x1="0" y1="40" x2="210" y2="40" class="divider" />
+    <text x="10" y="54" class="method-text">+GetAllDistrictsAsync()</text>
+    <text x="10" y="68" class="method-text">+GetUpazilasByDistrictIdAsync()</text>
+  </g>
+  <g transform="translate(1710.0,380)">
+    <rect x="0" y="0" width="210" height="92" class="box-bg" />
+    <path d="M 0 5 Q 0 0 5 0 L 205 0 Q 210 0 210 5 L 210 40 L 0 40 Z" fill="#059669" />
+    <text x="105.0" y="15" class="stereotype">&lt;&lt;interface&gt;&gt;</text>
+    <text x="105.0" y="30" class="header-text">IAdminAuditLogRepo</text>
+    <line x1="0" y1="40" x2="210" y2="40" class="divider" />
+    <text x="10" y="54" class="method-text">+LogAsync()</text>
+    <text x="10" y="68" class="method-text">+GetRecentLogsAsync()</text>
+    <text x="10" y="82" class="method-text">+GetDashboardStatsAsync()</text>
+  </g>
+  <g transform="translate(120.0,680)">
+    <rect x="0" y="0" width="210" height="54" class="box-bg" />
+    <path d="M 0 5 Q 0 0 5 0 L 205 0 Q 210 0 210 5 L 210 30 L 0 30 Z" fill="#0d9488" />
+    <text x="105.0" y="20" class="header-text">AuthService</text>
+    <line x1="0" y1="30" x2="210" y2="30" class="divider" />
+    <text x="10" y="44" class="attr-text">-_context</text>
+  </g>
+  <g transform="translate(347.1428571428571,680)">
+    <rect x="0" y="0" width="210" height="54" class="box-bg" />
+    <path d="M 0 5 Q 0 0 5 0 L 205 0 Q 210 0 210 5 L 210 30 L 0 30 Z" fill="#0d9488" />
+    <text x="105.0" y="20" class="header-text">UserRepository</text>
+    <line x1="0" y1="30" x2="210" y2="30" class="divider" />
+    <text x="10" y="44" class="attr-text">-_context</text>
+  </g>
+  <g transform="translate(574.2857142857142,680)">
+    <rect x="0" y="0" width="210" height="54" class="box-bg" />
+    <path d="M 0 5 Q 0 0 5 0 L 205 0 Q 210 0 210 5 L 210 30 L 0 30 Z" fill="#0d9488" />
+    <text x="105.0" y="20" class="header-text">ServiceProviderRepository</text>
+    <line x1="0" y1="30" x2="210" y2="30" class="divider" />
+    <text x="10" y="44" class="attr-text">-_context</text>
+  </g>
+  <g transform="translate(801.4285714285714,680)">
+    <rect x="0" y="0" width="210" height="54" class="box-bg" />
+    <path d="M 0 5 Q 0 0 5 0 L 205 0 Q 210 0 210 5 L 210 30 L 0 30 Z" fill="#0d9488" />
+    <text x="105.0" y="20" class="header-text">ReviewRepository</text>
+    <line x1="0" y1="30" x2="210" y2="30" class="divider" />
+    <text x="10" y="44" class="attr-text">-_context</text>
+  </g>
+  <g transform="translate(1028.5714285714284,680)">
+    <rect x="0" y="0" width="210" height="54" class="box-bg" />
+    <path d="M 0 5 Q 0 0 5 0 L 205 0 Q 210 0 210 5 L 210 30 L 0 30 Z" fill="#0d9488" />
+    <text x="105.0" y="20" class="header-text">RecommendationRepository</text>
+    <line x1="0" y1="30" x2="210" y2="30" class="divider" />
+    <text x="10" y="44" class="attr-text">-_context</text>
+  </g>
+  <g transform="translate(1255.7142857142858,680)">
+    <rect x="0" y="0" width="210" height="54" class="box-bg" />
+    <path d="M 0 5 Q 0 0 5 0 L 205 0 Q 210 0 210 5 L 210 30 L 0 30 Z" fill="#0d9488" />
+    <text x="105.0" y="20" class="header-text">CategoryRepository</text>
+    <line x1="0" y1="30" x2="210" y2="30" class="divider" />
+    <text x="10" y="44" class="attr-text">-_context</text>
+  </g>
+  <g transform="translate(1482.857142857143,680)">
+    <rect x="0" y="0" width="210" height="54" class="box-bg" />
+    <path d="M 0 5 Q 0 0 5 0 L 205 0 Q 210 0 210 5 L 210 30 L 0 30 Z" fill="#0d9488" />
+    <text x="105.0" y="20" class="header-text">GeographyRepository</text>
+    <line x1="0" y1="30" x2="210" y2="30" class="divider" />
+    <text x="10" y="44" class="attr-text">-_context</text>
+  </g>
+  <g transform="translate(1710.0,680)">
+    <rect x="0" y="0" width="210" height="54" class="box-bg" />
+    <path d="M 0 5 Q 0 0 5 0 L 205 0 Q 210 0 210 5 L 210 30 L 0 30 Z" fill="#0d9488" />
+    <text x="105.0" y="20" class="header-text">AdminAuditLogRepository</text>
+    <line x1="0" y1="30" x2="210" y2="30" class="divider" />
+    <text x="10" y="44" class="attr-text">-_context</text>
+  </g>
+  <g transform="translate(800.0,860)">
+    <rect x="0" y="0" width="400" height="152" class="box-bg" />
+    <path d="M 0 5 Q 0 0 5 0 L 395 0 Q 400 0 400 5 L 400 30 L 0 30 Z" fill="#d97706" />
+    <text x="200.0" y="20" class="header-text">KajBazarDbContext</text>
+    <line x1="0" y1="30" x2="400" y2="30" class="divider" />
+    <text x="10" y="44" class="method-text">+DbSet&lt;User&gt; Users</text>
+    <text x="10" y="58" class="method-text">+DbSet&lt;Role&gt; Roles</text>
+    <text x="10" y="72" class="method-text">+DbSet&lt;ServiceProviderProfile&gt; ServiceProviderProfiles</text>
+    <text x="10" y="86" class="method-text">+DbSet&lt;Review&gt; Reviews</text>
+    <text x="10" y="100" class="method-text">+DbSet&lt;CommunityRecommendation&gt; CommunityRecommendations</text>
+    <text x="10" y="114" class="method-text">+DbSet&lt;Category&gt; Categories</text>
+    <text x="10" y="128" class="method-text">+DbSet&lt;District&gt; Districts</text>
+    <text x="10" y="142" class="method-text">+DbSet&lt;AdminAuditLog&gt; AdminAuditLogs</text>
+  </g>
+  <!-- Controller -> Interface arrows -->
+  <path d="M 240.0 234 L 240.0 380" class="dep-line" />
+  <path d="M 500.0 234 L 500.0 380" class="dep-line" />
+  <path d="M 760.0 206 L 760.0 380" class="dep-line" />
+  <path d="M 1020.0 192 L 1020.0 380" class="dep-line" />
+  <path d="M 1280.0 262 L 1280.0 380" class="dep-line" />
+  <path d="M 1540.0 192 L 1540.0 380" class="dep-line" />
+  <path d="M 1800.0 192 L 1800.0 380" class="dep-line" />
+  <!-- Impl -> Interface arrows -->
+  <path d="M 225.0 680 L 225.0 472" class="impl-line" />
+  <path d="M 452.1428571428571 680 L 452.1428571428571 486" class="impl-line" />
+  <path d="M 679.2857142857142 680 L 679.2857142857142 486" class="impl-line" />
+  <path d="M 906.4285714285714 680 L 906.4285714285714 472" class="impl-line" />
+  <path d="M 1133.5714285714284 680 L 1133.5714285714284 486" class="impl-line" />
+  <path d="M 1360.7142857142858 680 L 1360.7142857142858 472" class="impl-line" />
+  <path d="M 1587.857142857143 680 L 1587.857142857143 458" class="impl-line" />
+  <path d="M 1815.0 680 L 1815.0 472" class="impl-line" />
+  <!-- Impl -> DbContext arrows -->
+  <path d="M 225.0 734 Q 225.0 830 1000.0 860" class="dep-line" />
+  <path d="M 452.1428571428571 734 Q 452.1428571428571 830 1000.0 860" class="dep-line" />
+  <path d="M 679.2857142857142 734 Q 679.2857142857142 830 1000.0 860" class="dep-line" />
+  <path d="M 906.4285714285714 734 Q 906.4285714285714 830 1000.0 860" class="dep-line" />
+  <path d="M 1133.5714285714284 734 Q 1133.5714285714284 830 1000.0 860" class="dep-line" />
+  <path d="M 1360.7142857142858 734 Q 1360.7142857142858 830 1000.0 860" class="dep-line" />
+  <path d="M 1587.857142857143 734 Q 1587.857142857143 830 1000.0 860" class="dep-line" />
+  <path d="M 1815.0 734 Q 1815.0 830 1000.0 860" class="dep-line" />
+</svg>

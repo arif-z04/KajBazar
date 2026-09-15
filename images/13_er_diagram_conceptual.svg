@@ -1,0 +1,173 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 1000" style="background-color: white; font-family: sans-serif;">
+  <defs>
+    <!-- Markers for Crow's Foot Notation -->
+    <!-- 1 (Mandatory One) -->
+    <marker id="one" viewBox="0 0 20 20" refX="20" refY="10" markerWidth="15" markerHeight="15" orient="auto">
+      <line x1="12" y1="2" x2="12" y2="18" stroke="#6b7280" stroke-width="2"/>
+      <line x1="6" y1="2" x2="6" y2="18" stroke="#6b7280" stroke-width="2"/>
+    </marker>
+    <!-- 1..* (Mandatory Many) -->
+    <marker id="many-one" viewBox="0 0 20 20" refX="20" refY="10" markerWidth="15" markerHeight="15" orient="auto">
+      <line x1="8" y1="2" x2="8" y2="18" stroke="#6b7280" stroke-width="2"/>
+      <path d="M 20 10 L 0 0 M 20 10 L 0 20" stroke="#6b7280" stroke-width="2" fill="none"/>
+    </marker>
+    <!-- 0..* (Optional Many) -->
+    <marker id="many-zero" viewBox="0 0 20 20" refX="20" refY="10" markerWidth="15" markerHeight="15" orient="auto">
+      <circle cx="8" cy="10" r="4" stroke="#6b7280" stroke-width="2" fill="white"/>
+      <path d="M 20 10 L 0 0 M 20 10 L 0 20" stroke="#6b7280" stroke-width="2" fill="none"/>
+    </marker>
+  </defs>
+
+  <text x="700" y="40" font-size="24" font-weight="bold" text-anchor="middle" fill="#111827">KajBazar Conceptual ER Diagram</text>
+
+  <!-- LINES / RELATIONSHIPS -->
+  <g stroke="#6b7280" stroke-width="2" fill="none">
+    <!-- CONSUMER 1 ~~o{ REVIEW: "writes" -->
+    <path d="M 750 215 L 750 670 L 670 670" marker-start="url(#one)" marker-end="url(#many-zero)" />
+    <text x="690" y="450" font-size="14" fill="#374151" stroke="none" font-style="italic">writes</text>
+    
+    <!-- CONSUMER 1 ~~o{ RECOMMENDATION: "submits" -->
+    <path d="M 870 215 L 870 650" marker-start="url(#one)" marker-end="url(#many-zero)" />
+    <text x="880" y="450" font-size="14" fill="#374151" stroke="none" font-style="italic">submits</text>
+    
+    <!-- CONSUMER 1 ~~o{ REPORT: "files" -->
+    <path d="M 970 150 L 1000 150" marker-start="url(#one)" marker-end="url(#many-zero)" />
+    <text x="965" y="145" font-size="14" fill="#374151" stroke="none" font-style="italic">files</text>
+
+    <!-- WORKER 1 ~~o{ REVIEW: "receives" -->
+    <path d="M 370 250 L 370 670 L 450 670" marker-start="url(#one)" marker-end="url(#many-zero)" />
+    <text x="320" y="450" font-size="14" fill="#374151" stroke="none" font-style="italic">receives</text>
+    
+    <!-- WORKER }o~~1{ CATEGORY: "operates_under" -->
+    <path d="M 260 250 L 260 380" marker-start="url(#many-zero)" marker-end="url(#many-one)" />
+    <text x="160" y="320" font-size="14" fill="#374151" stroke="none" font-style="italic">operates_under</text>
+    
+    <!-- WORKER }1~~1| DISTRICT: "located_in" -->
+    <path d="M 460 250 L 460 380" marker-start="url(#many-one)" marker-end="url(#one)" />
+    <text x="470" y="320" font-size="14" fill="#374151" stroke="none" font-style="italic">located_in</text>
+    
+    <!-- WORKER }1~~1| UPAZILA: "operates_in" -->
+    <path d="M 470 200 L 710 200 L 710 380" marker-start="url(#many-one)" marker-end="url(#one)" />
+    <text x="640" y="280" font-size="14" fill="#374151" stroke="none" font-style="italic">operates_in</text>
+    
+    <!-- RECOMMENDATION }1~~1| CATEGORY: "classified_in" -->
+    <path d="M 800 700 L 210 700 L 210 505" marker-start="url(#many-one)" marker-end="url(#one)" />
+    <text x="450" y="720" font-size="14" fill="#374151" stroke="none" font-style="italic">classified_in</text>
+
+    <!-- RECOMMENDATION }1~~1| DISTRICT: "origin_district" -->
+    <path d="M 800 720 L 460 720 L 460 505" marker-start="url(#many-one)" marker-end="url(#one)" />
+    <text x="550" y="740" font-size="14" fill="#374151" stroke="none" font-style="italic">origin_district</text>
+
+    <!-- RECOMMENDATION }1~~1| UPAZILA: "origin_upazila" -->
+    <path d="M 870 650 L 870 505" marker-start="url(#many-one)" marker-end="url(#one)" />
+    <text x="880" y="580" font-size="14" fill="#374151" stroke="none" font-style="italic">origin_upazila</text>
+    
+    <!-- ADMIN 1 ~~o{ AUDIT_LOG: "performs" -->
+    <path d="M 1210 230 L 1210 430" marker-start="url(#one)" marker-end="url(#many-zero)" />
+    <text x="1220" y="330" font-size="14" fill="#374151" stroke="none" font-style="italic">performs</text>
+    
+    <!-- ADMIN 1 ~~o{ RECOMMENDATION: "moderates" -->
+    <path d="M 1150 230 L 1150 720 L 1020 720" marker-start="url(#one)" marker-end="url(#many-zero)" />
+    <text x="1050" y="710" font-size="14" fill="#374151" stroke="none" font-style="italic">moderates</text>
+
+    <!-- ADMIN 1 ~~o{ WORKER: "verifies" -->
+    <path d="M 1100 120 L 470 120" marker-start="url(#one)" marker-end="url(#many-zero)" />
+    <text x="800" y="110" font-size="14" fill="#374151" stroke="none" font-style="italic">verifies</text>
+
+    <!-- ADMIN 1 ~~o{ CATEGORY: "manages" -->
+    <path d="M 1100 170 L 60 170 L 60 440 L 100 440" marker-start="url(#one)" marker-end="url(#many-zero)" />
+    <text x="550" y="160" font-size="14" fill="#374151" stroke="none" font-style="italic">manages</text>
+
+    <!-- DISTRICT 1 ~~|{ UPAZILA: "contains" -->
+    <path d="M 570 440 L 600 440" marker-start="url(#one)" marker-end="url(#many-one)" />
+    <text x="575" y="430" font-size="14" fill="#374151" stroke="none" font-style="italic">contains</text>
+  </g>
+
+  <!-- ENTITY BOXES -->
+  <g>
+    <!-- WORKER -->
+    <rect x="250" y="100" width="220" height="150" rx="8" fill="white" stroke="#e5e7eb" stroke-width="2"/>
+    <path d="M 250 135 L 470 135" stroke="#e5e7eb" stroke-width="2"/>
+    <path d="M 250 108 Q 250 100 258 100 L 462 100 Q 470 100 470 108 L 470 135 L 250 135 Z" fill="#1e3a8a"/>
+    <text x="360" y="122" font-size="16" font-weight="bold" fill="white" text-anchor="middle">WORKER</text>
+    <text x="260" y="155" font-size="14" fill="#111827">WorkerName: <tspan fill="#6b7280">string</tspan></text>
+    <text x="260" y="175" font-size="14" fill="#111827">ExperienceYears: <tspan fill="#6b7280">int</tspan></text>
+    <text x="260" y="195" font-size="14" fill="#111827">HourlyRate: <tspan fill="#6b7280">decimal</tspan></text>
+    <text x="260" y="215" font-size="14" fill="#111827">VerificationStatus: <tspan fill="#6b7280">string</tspan></text>
+    <text x="260" y="235" font-size="14" fill="#111827">AverageRating: <tspan fill="#6b7280">decimal</tspan></text>
+
+    <!-- CONSUMER -->
+    <rect x="750" y="100" width="220" height="115" rx="8" fill="white" stroke="#e5e7eb" stroke-width="2"/>
+    <path d="M 750 135 L 970 135" stroke="#e5e7eb" stroke-width="2"/>
+    <path d="M 750 108 Q 750 100 758 100 L 962 100 Q 970 100 970 108 L 970 135 L 750 135 Z" fill="#1e3a8a"/>
+    <text x="860" y="122" font-size="16" font-weight="bold" fill="white" text-anchor="middle">CONSUMER</text>
+    <text x="760" y="155" font-size="14" fill="#111827">FullName: <tspan fill="#6b7280">string</tspan></text>
+    <text x="760" y="175" font-size="14" fill="#111827">Email: <tspan fill="#6b7280">string</tspan></text>
+    <text x="760" y="195" font-size="14" fill="#111827">PhoneNumber: <tspan fill="#6b7280">string</tspan></text>
+    
+    <!-- CATEGORY -->
+    <rect x="100" y="380" width="220" height="125" rx="8" fill="white" stroke="#e5e7eb" stroke-width="2"/>
+    <path d="M 100 415 L 320 415" stroke="#e5e7eb" stroke-width="2"/>
+    <path d="M 100 388 Q 100 380 108 380 L 312 380 Q 320 380 320 388 L 320 415 L 100 415 Z" fill="#059669"/>
+    <text x="210" y="402" font-size="16" font-weight="bold" fill="white" text-anchor="middle">CATEGORY</text>
+    <text x="110" y="435" font-size="14" fill="#111827">CategoryName: <tspan fill="#6b7280">string</tspan></text>
+    <text x="110" y="455" font-size="14" fill="#111827">Description: <tspan fill="#6b7280">string</tspan></text>
+
+    <!-- DISTRICT -->
+    <rect x="350" y="380" width="220" height="125" rx="8" fill="white" stroke="#e5e7eb" stroke-width="2"/>
+    <path d="M 350 415 L 570 415" stroke="#e5e7eb" stroke-width="2"/>
+    <path d="M 350 388 Q 350 380 358 380 L 562 380 Q 570 380 570 388 L 570 415 L 350 415 Z" fill="#059669"/>
+    <text x="460" y="402" font-size="16" font-weight="bold" fill="white" text-anchor="middle">DISTRICT</text>
+    <text x="360" y="435" font-size="14" fill="#111827">DistrictName: <tspan fill="#6b7280">string</tspan></text>
+
+    <!-- UPAZILA -->
+    <rect x="600" y="380" width="220" height="125" rx="8" fill="white" stroke="#e5e7eb" stroke-width="2"/>
+    <path d="M 600 415 L 820 415" stroke="#e5e7eb" stroke-width="2"/>
+    <path d="M 600 388 Q 600 380 608 380 L 812 380 Q 820 380 820 388 L 820 415 L 600 415 Z" fill="#059669"/>
+    <text x="710" y="402" font-size="16" font-weight="bold" fill="white" text-anchor="middle">UPAZILA</text>
+    <text x="610" y="435" font-size="14" fill="#111827">UpazilaName: <tspan fill="#6b7280">string</tspan></text>
+
+    <!-- REVIEW -->
+    <rect x="450" y="650" width="220" height="125" rx="8" fill="white" stroke="#e5e7eb" stroke-width="2"/>
+    <path d="M 450 685 L 670 685" stroke="#e5e7eb" stroke-width="2"/>
+    <path d="M 450 658 Q 450 650 458 650 L 662 650 Q 670 650 670 658 L 670 685 L 450 685 Z" fill="#d97706"/>
+    <text x="560" y="672" font-size="16" font-weight="bold" fill="white" text-anchor="middle">REVIEW</text>
+    <text x="460" y="705" font-size="14" fill="#111827">Rating: <tspan fill="#6b7280">int</tspan></text>
+    <text x="460" y="725" font-size="14" fill="#111827">Comment: <tspan fill="#6b7280">string</tspan></text>
+    <text x="460" y="745" font-size="14" fill="#111827">SubmissionDate: <tspan fill="#6b7280">date</tspan></text>
+
+    <!-- RECOMMENDATION -->
+    <rect x="800" y="650" width="220" height="125" rx="8" fill="white" stroke="#e5e7eb" stroke-width="2"/>
+    <path d="M 800 685 L 1020 685" stroke="#e5e7eb" stroke-width="2"/>
+    <path d="M 800 658 Q 800 650 808 650 L 1012 650 Q 1020 650 1020 658 L 1020 685 L 800 685 Z" fill="#d97706"/>
+    <text x="910" y="672" font-size="16" font-weight="bold" fill="white" text-anchor="middle">RECOMMENDATION</text>
+    <text x="810" y="705" font-size="14" fill="#111827">OfflineWorkerName: <tspan fill="#6b7280">string</tspan></text>
+    <text x="810" y="725" font-size="14" fill="#111827">PhoneNumber: <tspan fill="#6b7280">string</tspan></text>
+    <text x="810" y="745" font-size="14" fill="#111827">Status: <tspan fill="#6b7280">string</tspan></text>
+
+    <!-- ADMIN -->
+    <rect x="1100" y="150" width="220" height="100" rx="8" fill="white" stroke="#e5e7eb" stroke-width="2"/>
+    <path d="M 1100 185 L 1320 185" stroke="#e5e7eb" stroke-width="2"/>
+    <path d="M 1100 158 Q 1100 150 1108 150 L 1312 150 Q 1320 150 1320 158 L 1320 185 L 1100 185 Z" fill="#7c3aed"/>
+    <text x="1210" y="172" font-size="16" font-weight="bold" fill="white" text-anchor="middle">ADMIN</text>
+    <text x="1110" y="205" font-size="14" fill="#111827">AdminName: <tspan fill="#6b7280">string</tspan></text>
+    <text x="1110" y="225" font-size="14" fill="#111827">Email: <tspan fill="#6b7280">string</tspan></text>
+
+    <!-- AUDIT_LOG -->
+    <rect x="1100" y="430" width="220" height="125" rx="8" fill="white" stroke="#e5e7eb" stroke-width="2"/>
+    <path d="M 1100 465 L 1320 465" stroke="#e5e7eb" stroke-width="2"/>
+    <path d="M 1100 438 Q 1100 430 1108 430 L 1312 430 Q 1320 430 1320 438 L 1320 465 L 1100 465 Z" fill="#7c3aed"/>
+    <text x="1210" y="452" font-size="16" font-weight="bold" fill="white" text-anchor="middle">AUDIT_LOG</text>
+    <text x="1110" y="485" font-size="14" fill="#111827">Action: <tspan fill="#6b7280">string</tspan></text>
+    <text x="1110" y="505" font-size="14" fill="#111827">TargetEntity: <tspan fill="#6b7280">string</tspan></text>
+    <text x="1110" y="525" font-size="14" fill="#111827">ExecutedAt: <tspan fill="#6b7280">timestamp</tspan></text>
+
+    <!-- REPORT (added to satisfy relationship) -->
+    <rect x="1000" y="100" width="160" height="80" rx="8" fill="white" stroke="#e5e7eb" stroke-width="2"/>
+    <path d="M 1000 135 L 1160 135" stroke="#e5e7eb" stroke-width="2"/>
+    <path d="M 1000 108 Q 1000 100 1008 100 L 1152 100 Q 1160 100 1160 108 L 1160 135 L 1000 135 Z" fill="#ef4444"/>
+    <text x="1080" y="122" font-size="16" font-weight="bold" fill="white" text-anchor="middle">REPORT</text>
+    <text x="1010" y="155" font-size="14" fill="#111827">Reason: <tspan fill="#6b7280">string</tspan></text>
+
+  </g>
+</svg>

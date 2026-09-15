@@ -1,0 +1,172 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 1200" width="100%" height="100%">
+  <defs>
+    <!-- Arrowhead Marker -->
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#1e3a8a" />
+    </marker>
+    <marker id="arrow-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#059669" />
+    </marker>
+    <marker id="arrow-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#dc2626" />
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1400" height="1200" fill="#ffffff" />
+
+  <!-- Title -->
+  <text x="700" y="40" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="#111827" text-anchor="middle">
+    Worker Profile Creation &amp; Admin Verification Flow
+  </text>
+
+  <!-- Swimlanes -->
+  <!-- Left Lane: Worker -->
+  <rect x="50" y="70" width="650" height="1100" fill="none" stroke="#1e3a8a" stroke-width="2" />
+  <rect x="50" y="70" width="650" height="40" fill="#1e3a8a" />
+  <text x="375" y="96" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#ffffff" text-anchor="middle">
+    Service Provider (Worker)
+  </text>
+
+  <!-- Right Lane: Admin -->
+  <rect x="700" y="70" width="650" height="1100" fill="none" stroke="#1e3a8a" stroke-width="2" />
+  <rect x="700" y="70" width="650" height="40" fill="#1e3a8a" />
+  <text x="1025" y="96" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#ffffff" text-anchor="middle">
+    Administrator
+  </text>
+
+  <g font-family="Arial, sans-serif" font-size="14">
+
+    <!-- Worker Start -->
+    <circle cx="375" cy="140" r="15" fill="#000000" />
+    <path d="M 375 155 L 375 180" stroke="#1e3a8a" stroke-width="2" fill="none" marker-end="url(#arrow)" />
+
+    <!-- WorkerLogin -->
+    <rect x="255" y="180" width="240" height="40" rx="8" fill="#3b82f6" />
+    <text x="375" y="205" fill="#ffffff" text-anchor="middle">Service Provider Authenticates</text>
+    <path d="M 375 220 L 375 245" stroke="#1e3a8a" stroke-width="2" fill="none" marker-end="url(#arrow)" />
+
+    <!-- NavigateDashboard -->
+    <rect x="255" y="245" width="240" height="40" rx="8" fill="#3b82f6" />
+    <text x="375" y="270" fill="#ffffff" text-anchor="middle">Visits /my-profile</text>
+    <path d="M 375 285 L 375 330" stroke="#1e3a8a" stroke-width="2" fill="none" marker-end="url(#arrow)" />
+
+    <!-- ProfileCreation Composite -->
+    <rect x="100" y="305" width="550" height="205" fill="#f0f9ff" stroke="#60a5fa" stroke-width="2" stroke-dasharray="6,6" rx="8" />
+    <text x="115" y="325" font-size="14" font-weight="bold" fill="#1e3a8a">Profile Creation</text>
+    
+    <rect x="125" y="340" width="240" height="40" rx="8" fill="#3b82f6" />
+    <text x="245" y="365" fill="#ffffff" text-anchor="middle">Select District &amp; Upazila</text>
+    
+    <rect x="385" y="340" width="240" height="40" rx="8" fill="#3b82f6" />
+    <text x="505" y="365" fill="#ffffff" text-anchor="middle">Choose Categories</text>
+
+    <!-- Connect top items to SetDetails -->
+    <path d="M 245 380 L 245 395 L 375 395 L 375 405" stroke="#1e3a8a" stroke-width="2" fill="none" marker-end="url(#arrow)" />
+    <path d="M 505 380 L 505 395 L 375 395 L 375 405" stroke="#1e3a8a" stroke-width="2" fill="none" marker-end="url(#arrow)" />
+
+    <rect x="125" y="405" width="500" height="40" rx="8" fill="#3b82f6" />
+    <text x="375" y="430" fill="#ffffff" text-anchor="middle">Enter Bio, Experience Years &amp; Hourly Rate</text>
+    <path d="M 375 445 L 375 460" stroke="#1e3a8a" stroke-width="2" fill="none" marker-end="url(#arrow)" />
+
+    <rect x="255" y="460" width="240" height="40" rx="8" fill="#3b82f6" />
+    <text x="375" y="485" fill="#ffffff" text-anchor="middle">Click "Save &amp; Submit"</text>
+    <path d="M 375 500 L 375 555" stroke="#1e3a8a" stroke-width="2" fill="none" marker-end="url(#arrow)" />
+
+    <!-- SaveDatabase Composite -->
+    <rect x="100" y="530" width="550" height="145" fill="#f0f9ff" stroke="#60a5fa" stroke-width="2" stroke-dasharray="6,6" rx="8" />
+    <text x="115" y="550" font-size="14" font-weight="bold" fill="#1e3a8a">Save Database</text>
+
+    <rect x="125" y="565" width="240" height="40" rx="8" fill="#3b82f6" />
+    <text x="245" y="590" fill="#ffffff" text-anchor="middle">INSERT/UPDATE profiles</text>
+
+    <rect x="385" y="565" width="240" height="40" rx="8" fill="#3b82f6" />
+    <text x="505" y="590" fill="#ffffff" text-anchor="middle">status = 'PENDING'</text>
+
+    <path d="M 245 605 L 245 615 L 375 615 L 375 620" stroke="#1e3a8a" stroke-width="2" fill="none" marker-end="url(#arrow)" />
+    <path d="M 505 605 L 505 615 L 375 615 L 375 620" stroke="#1e3a8a" stroke-width="2" fill="none" marker-end="url(#arrow)" />
+
+    <rect x="255" y="620" width="240" height="40" rx="8" fill="#3b82f6" />
+    <text x="375" y="645" fill="#ffffff" text-anchor="middle">INSERT worker_categories</text>
+    <path d="M 375 660 L 375 700" stroke="#1e3a8a" stroke-width="2" fill="none" marker-end="url(#arrow)" />
+
+    <!-- DisplayPending -->
+    <rect x="255" y="700" width="240" height="40" rx="8" fill="#3b82f6" />
+    <text x="375" y="725" fill="#ffffff" text-anchor="middle">Sees "Pending" Badge</text>
+    
+    <!-- Worker End -->
+    <circle cx="375" cy="775" r="15" fill="#ffffff" stroke="#000000" stroke-width="3" />
+    <circle cx="375" cy="775" r="8" fill="#000000" />
+    <path d="M 375 740 L 375 760" stroke="#1e3a8a" stroke-width="2" fill="none" marker-end="url(#arrow)" />
+
+    <!-- Cross-Lane Arrow -->
+    <path d="M 495 640 L 650 640 L 650 490 L 905 490" stroke="#1e3a8a" stroke-width="2" fill="none" stroke-dasharray="4,4" marker-end="url(#arrow)" />
+    <rect x="525" y="615" width="280" height="20" fill="#ffffff" fill-opacity="0.9" />
+    <text x="665" y="630" font-size="12" fill="#1e3a8a" text-anchor="middle">Profile Added to Admin Verification Queue</text>
+
+
+    <!-- Admin Review Composite -->
+    <rect x="750" y="380" width="550" height="205" fill="#f0f9ff" stroke="#60a5fa" stroke-width="2" stroke-dasharray="6,6" rx="8" />
+    <text x="765" y="400" font-size="14" font-weight="bold" fill="#1e3a8a">Admin Review</text>
+
+    <rect x="905" y="415" width="240" height="40" rx="8" fill="#3b82f6" />
+    <text x="1025" y="440" fill="#ffffff" text-anchor="middle">Admin Navigates to /admin</text>
+    <path d="M 1025 455 L 1025 470" stroke="#1e3a8a" stroke-width="2" fill="none" marker-end="url(#arrow)" />
+
+    <rect x="905" y="470" width="240" height="40" rx="8" fill="#3b82f6" />
+    <text x="1025" y="495" fill="#ffffff" text-anchor="middle">"Pending Worker Verifications"</text>
+    <path d="M 1025 510 L 1025 525" stroke="#1e3a8a" stroke-width="2" fill="none" marker-end="url(#arrow)" />
+
+    <rect x="905" y="525" width="240" height="40" rx="8" fill="#3b82f6" />
+    <text x="1025" y="550" fill="#ffffff" text-anchor="middle">Reviews Skills, Location, Bio</text>
+    <path d="M 1025 565 L 1025 620" stroke="#1e3a8a" stroke-width="2" fill="none" marker-end="url(#arrow)" />
+
+    <!-- Decision Diamond -->
+    <polygon points="1025,620 1165,670 1025,720 885,670" fill="#fbbf24" stroke="#d97706" stroke-width="2" />
+    <text x="1025" y="675" font-weight="bold" fill="#111827" text-anchor="middle">Meets Standards?</text>
+
+    <!-- Approve Path (Yes) -->
+    <path d="M 885 670 L 825 670 L 825 725" stroke="#059669" stroke-width="2" fill="none" marker-end="url(#arrow-green)" />
+    <text x="855" y="660" fill="#059669" font-weight="bold">Yes</text>
+    
+    <rect x="715" y="725" width="220" height="40" rx="8" fill="#059669" fill-opacity="0.8" />
+    <text x="825" y="750" fill="#ffffff" text-anchor="middle">status = 'VERIFIED'</text>
+    <path d="M 825 765 L 825 790" stroke="#059669" stroke-width="2" fill="none" marker-end="url(#arrow-green)" />
+
+    <rect x="715" y="790" width="220" height="40" rx="8" fill="#059669" fill-opacity="0.8" />
+    <text x="825" y="815" fill="#ffffff" text-anchor="middle">verified_at = CURRENT_TIME</text>
+    <path d="M 825 830 L 825 855" stroke="#059669" stroke-width="2" fill="none" marker-end="url(#arrow-green)" />
+
+    <rect x="715" y="855" width="220" height="40" rx="8" fill="#059669" fill-opacity="0.8" />
+    <text x="825" y="880" fill="#ffffff" text-anchor="middle">INSERT admin_audit_logs</text>
+    <path d="M 825 895 L 825 920" stroke="#059669" stroke-width="2" fill="none" marker-end="url(#arrow-green)" />
+
+    <rect x="715" y="920" width="220" height="40" rx="8" fill="#059669" fill-opacity="0.8" />
+    <text x="825" y="945" fill="#ffffff" text-anchor="middle">Profile Appears in Public</text>
+    <path d="M 825 960 L 825 1000" stroke="#059669" stroke-width="2" fill="none" marker-end="url(#arrow-green)" />
+
+    <circle cx="825" cy="1015" r="15" fill="#ffffff" stroke="#000000" stroke-width="3" />
+    <circle cx="825" cy="1015" r="8" fill="#000000" />
+
+
+    <!-- Reject Path (No) -->
+    <path d="M 1165 670 L 1225 670 L 1225 725" stroke="#dc2626" stroke-width="2" fill="none" marker-end="url(#arrow-red)" />
+    <text x="1195" y="660" fill="#dc2626" font-weight="bold">No</text>
+    
+    <rect x="1115" y="725" width="220" height="40" rx="8" fill="#dc2626" fill-opacity="0.8" />
+    <text x="1225" y="750" fill="#ffffff" text-anchor="middle">status = 'REJECTED'</text>
+    <path d="M 1225 765 L 1225 790" stroke="#dc2626" stroke-width="2" fill="none" marker-end="url(#arrow-red)" />
+
+    <rect x="1115" y="790" width="220" height="40" rx="8" fill="#dc2626" fill-opacity="0.8" />
+    <text x="1225" y="815" fill="#ffffff" text-anchor="middle">INSERT admin_audit_logs</text>
+    <path d="M 1225 830 L 1225 855" stroke="#dc2626" stroke-width="2" fill="none" marker-end="url(#arrow-red)" />
+
+    <rect x="1115" y="855" width="220" height="40" rx="8" fill="#dc2626" fill-opacity="0.8" />
+    <text x="1225" y="880" fill="#ffffff" text-anchor="middle">Profile Kept Hidden</text>
+    <path d="M 1225 895 L 1225 935" stroke="#dc2626" stroke-width="2" fill="none" marker-end="url(#arrow-red)" />
+
+    <circle cx="1225" cy="950" r="15" fill="#ffffff" stroke="#000000" stroke-width="3" />
+    <circle cx="1225" cy="950" r="8" fill="#000000" />
+
+  </g>
+</svg>

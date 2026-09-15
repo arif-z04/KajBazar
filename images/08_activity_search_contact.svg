@@ -1,0 +1,164 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1120" width="100%" height="100%" style="background-color: #ffffff; font-family: sans-serif;">
+  <defs>
+    <!-- Arrowhead definition -->
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#4b5563" />
+    </marker>
+    <marker id="arrow-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#3b82f6" />
+    </marker>
+    <marker id="arrow-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#059669" />
+    </marker>
+    
+    <!-- Filters for shadow -->
+    <filter id="drop-shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="1" dy="2" stdDeviation="2" flood-opacity="0.1" />
+    </filter>
+  </defs>
+
+  <!-- Title -->
+  <text x="600" y="30" font-size="22" font-weight="bold" fill="#1f2937" text-anchor="middle">Worker Search &amp; Direct Contact Flow</text>
+
+  <!-- 1. Start -->
+  <circle cx="600" cy="65" r="12" fill="#000000" />
+  <path d="M 600 77 L 600 95" stroke="#4b5563" stroke-width="2" marker-end="url(#arrow)" />
+
+  <!-- 2. VisitDirectory -->
+  <rect x="450" y="100" width="300" height="34" rx="8" fill="#3b82f6" filter="url(#drop-shadow)" />
+  <text x="600" y="122" font-size="14" fill="#ffffff" text-anchor="middle" font-weight="bold">Consumer Visits /directory</text>
+  <path d="M 600 134 L 600 152" stroke="#4b5563" stroke-width="2" marker-end="url(#arrow)" />
+
+  <!-- 3. SearchAndFilter Composite State -->
+  <rect x="380" y="157" width="440" height="270" rx="8" fill="#f0f9ff" stroke="#3b82f6" stroke-width="2" stroke-dasharray="6,4" />
+  <text x="390" y="177" font-size="12" font-weight="bold" fill="#3b82f6">Search &amp; Filter (Client-Side)</text>
+
+  <!-- SearchAndFilter Nodes -->
+  <!-- LoadMetadata -->
+  <rect x="420" y="190" width="360" height="30" rx="6" fill="#3b82f6" />
+  <text x="600" y="210" font-size="13" fill="#ffffff" text-anchor="middle">Fetch Categories &amp; Districts</text>
+  <path d="M 600 220 L 600 231" stroke="#4b5563" stroke-width="2" marker-end="url(#arrow)" />
+
+  <!-- SelectCategory -->
+  <rect x="420" y="236" width="360" height="30" rx="6" fill="#3b82f6" />
+  <text x="600" y="256" font-size="13" fill="#ffffff" text-anchor="middle">Choose Service Category (e.g. Electrician)</text>
+  <path d="M 600 266 L 600 277" stroke="#4b5563" stroke-width="2" marker-end="url(#arrow)" />
+
+  <!-- SelectDistrict -->
+  <rect x="420" y="282" width="360" height="30" rx="6" fill="#3b82f6" />
+  <text x="600" y="302" font-size="13" fill="#ffffff" text-anchor="middle">Choose District (e.g. Patuakhali)</text>
+  <path d="M 600 312 L 600 323" stroke="#4b5563" stroke-width="2" marker-end="url(#arrow)" />
+
+  <!-- PopulateUpazilas -->
+  <rect x="420" y="328" width="360" height="30" rx="6" fill="#3b82f6" />
+  <text x="600" y="348" font-size="13" fill="#ffffff" text-anchor="middle">Dynamic Sub-district Filter Loaded</text>
+  <path d="M 600 358 L 600 369" stroke="#4b5563" stroke-width="2" marker-end="url(#arrow)" />
+
+  <!-- SelectUpazila -->
+  <rect x="420" y="374" width="360" height="30" rx="6" fill="#3b82f6" />
+  <text x="600" y="394" font-size="13" fill="#ffffff" text-anchor="middle">Choose Upazila (e.g. Dumki)</text>
+  <path d="M 600 404 L 600 415" stroke="#4b5563" stroke-width="2" marker-end="url(#arrow)" />
+
+  <!-- SelectRating -->
+  <rect x="420" y="420" width="360" height="30" rx="6" fill="#3b82f6" />
+  <text x="600" y="440" font-size="13" fill="#ffffff" text-anchor="middle">Optional (e.g. 4.0+ Stars)</text>
+
+  <!-- Arrow from SearchAndFilter to ExecuteQuery -->
+  <path d="M 600 450 L 600 472" stroke="#4b5563" stroke-width="2" marker-end="url(#arrow)" />
+
+  <!-- 4. ExecuteQuery -->
+  <rect x="450" y="477" width="300" height="34" rx="8" fill="#3b82f6" filter="url(#drop-shadow)" />
+  <text x="600" y="499" font-size="14" fill="#ffffff" text-anchor="middle" font-weight="bold">Client triggers searchWorkersApi()</text>
+  <path d="M 600 511 L 600 528" stroke="#4b5563" stroke-width="2" marker-end="url(#arrow)" />
+
+  <!-- 5. BackendSearch Composite State -->
+  <rect x="380" y="533" width="440" height="270" rx="8" fill="#ecfdf5" stroke="#059669" stroke-width="2" stroke-dasharray="6,4" />
+  <text x="390" y="553" font-size="12" font-weight="bold" fill="#059669">Backend Search (Server-Side)</text>
+
+  <!-- BackendSearch Nodes -->
+  <!-- FilterVerified -->
+  <rect x="420" y="566" width="360" height="30" rx="6" fill="#059669" />
+  <text x="600" y="586" font-size="13" fill="#ffffff" text-anchor="middle">WHERE verification_status = 'VERIFIED'</text>
+  <path d="M 600 596 L 600 607" stroke="#4b5563" stroke-width="2" marker-end="url(#arrow)" />
+
+  <!-- FilterCategory -->
+  <rect x="420" y="612" width="360" height="30" rx="6" fill="#059669" />
+  <text x="600" y="632" font-size="13" fill="#ffffff" text-anchor="middle">AND category_name = requested</text>
+  <path d="M 600 642 L 600 653" stroke="#4b5563" stroke-width="2" marker-end="url(#arrow)" />
+
+  <!-- FilterLocation -->
+  <rect x="420" y="658" width="360" height="30" rx="6" fill="#059669" />
+  <text x="600" y="678" font-size="13" fill="#ffffff" text-anchor="middle">AND district_id = d AND upazila_id = u</text>
+  <path d="M 600 688 L 600 699" stroke="#4b5563" stroke-width="2" marker-end="url(#arrow)" />
+
+  <!-- FilterRating -->
+  <rect x="420" y="704" width="360" height="30" rx="6" fill="#059669" />
+  <text x="600" y="724" font-size="13" fill="#ffffff" text-anchor="middle">AND average_rating &gt;= minRating</text>
+  <path d="M 600 734 L 600 745" stroke="#4b5563" stroke-width="2" marker-end="url(#arrow)" />
+
+  <!-- SortResults -->
+  <rect x="420" y="750" width="360" height="30" rx="6" fill="#059669" />
+  <text x="600" y="770" font-size="13" fill="#ffffff" text-anchor="middle">ORDER BY average_rating DESC</text>
+  <path d="M 600 780 L 600 791" stroke="#4b5563" stroke-width="2" marker-end="url(#arrow)" />
+
+  <!-- Paginate -->
+  <rect x="420" y="796" width="360" height="30" rx="6" fill="#059669" />
+  <text x="600" y="816" font-size="13" fill="#ffffff" text-anchor="middle">Take 9 Profiles (Skip = (page-1)*9)</text>
+
+  <!-- Arrow from BackendSearch to DisplayResults -->
+  <path d="M 600 826 L 600 848" stroke="#4b5563" stroke-width="2" marker-end="url(#arrow)" />
+
+  <!-- 6. DisplayResults -->
+  <rect x="450" y="853" width="300" height="34" rx="8" fill="#3b82f6" filter="url(#drop-shadow)" />
+  <text x="600" y="875" font-size="14" fill="#ffffff" text-anchor="middle" font-weight="bold">Render Worker Cards Grid</text>
+  <path d="M 600 887 L 600 904" stroke="#4b5563" stroke-width="2" marker-end="url(#arrow)" />
+
+  <!-- 7. ConsumerInteraction Composite State -->
+  <rect x="150" y="909" width="900" height="135" rx="8" fill="#f8fafc" stroke="#9ca3af" stroke-width="2" stroke-dasharray="6,4" />
+  <text x="160" y="929" font-size="12" font-weight="bold" fill="#6b7280">Consumer Interaction</text>
+
+  <!-- InspectCards -->
+  <rect x="450" y="915" width="300" height="30" rx="6" fill="#3b82f6" />
+  <text x="600" y="935" font-size="13" fill="#ffffff" text-anchor="middle">Browse Experience, Rating &amp; Hourly Rate</text>
+  <path d="M 600 945 L 600 955" stroke="#4b5563" stroke-width="2" marker-end="url(#arrow)" />
+
+  <!-- Choice Diamond -->
+  <polygon points="600,960 660,980 600,1000 540,980" fill="#fbbf24" stroke="#d97706" stroke-width="2" />
+  <text x="600" y="984" font-size="11" font-weight="bold" fill="#78350f" text-anchor="middle">Action</text>
+
+  <!-- Left Branch (ClickCard) -->
+  <path d="M 540 980 L 320 980" stroke="#4b5563" stroke-width="2" marker-end="url(#arrow)" />
+  <text x="430" y="974" font-size="12" fill="#4b5563" text-anchor="middle">Click "Reviews &amp; Details"</text>
+  
+  <!-- OpenModal -->
+  <rect x="180" y="965" width="230" height="30" rx="6" fill="#3b82f6" />
+  <text x="295" y="985" font-size="13" fill="#ffffff" text-anchor="middle">Render WorkerDetailModal</text>
+  <path d="M 295 995 L 295 1010" stroke="#4b5563" stroke-width="2" marker-end="url(#arrow)" />
+  
+  <!-- InspectReviews -->
+  <rect x="180" y="1015" width="230" height="30" rx="6" fill="#3b82f6" />
+  <text x="295" y="1035" font-size="13" fill="#ffffff" text-anchor="middle">Inspect Reviews</text>
+
+  <!-- Right Branch (ClickContact) -->
+  <path d="M 660 980 L 820 980" stroke="#4b5563" stroke-width="2" marker-end="url(#arrow)" />
+  <text x="740" y="974" font-size="12" fill="#4b5563" text-anchor="middle">Click "Contact Worker"</text>
+
+  <!-- RevealPhone -->
+  <rect x="830" y="965" width="220" height="30" rx="6" fill="#3b82f6" />
+  <text x="940" y="985" font-size="13" fill="#ffffff" text-anchor="middle">Show tel:017xxxxxxxx</text>
+  
+  <!-- Connections from branches to DirectCall -->
+  <!-- Left to DirectCall -->
+  <path d="M 295 1045 L 295 1070 L 420 1070" stroke="#059669" stroke-width="2" marker-end="url(#arrow-green)" />
+  <!-- Right to DirectCall -->
+  <path d="M 940 995 L 940 1070 L 780 1070" stroke="#059669" stroke-width="2" marker-end="url(#arrow-green)" />
+
+  <!-- 8. DirectCall -->
+  <rect x="430" y="1053" width="340" height="34" rx="8" fill="#059669" filter="url(#drop-shadow)" />
+  <text x="600" y="1075" font-size="14" fill="#ffffff" text-anchor="middle" font-weight="bold">Consumer Dials Worker Directly (No Fees)</text>
+  <path d="M 600 1087 L 600 1102" stroke="#4b5563" stroke-width="2" marker-end="url(#arrow)" />
+
+  <!-- 9. End -->
+  <circle cx="600" cy="1112" r="10" fill="#ffffff" stroke="#000000" stroke-width="3" />
+  <circle cx="600" cy="1112" r="5" fill="#000000" />
+</svg>

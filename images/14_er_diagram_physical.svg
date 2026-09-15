@@ -1,0 +1,406 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2000 1400" width="100%" height="100%">
+    <defs>
+        <!-- Gradients and Patterns -->
+        <filter id="drop-shadow" x="-10%" y="-10%" width="120%" height="120%">
+            <feDropShadow dx="3" dy="3" stdDeviation="4" flood-color="#000000" flood-opacity="0.1"/>
+        </filter>
+        
+        <!-- Crow's foot markers -->
+        <marker id="one" viewBox="0 0 20 20" refX="20" refY="10" markerWidth="15" markerHeight="15" orient="auto">
+            <line x1="10" y1="2" x2="10" y2="18" stroke="#6b7280" stroke-width="1.5"/>
+            <line x1="15" y1="2" x2="15" y2="18" stroke="#6b7280" stroke-width="1.5"/>
+            <line x1="0" y1="10" x2="20" y2="10" stroke="#6b7280" stroke-width="1.5"/>
+        </marker>
+
+        <marker id="many" viewBox="0 0 20 20" refX="20" refY="10" markerWidth="15" markerHeight="15" orient="auto">
+            <line x1="10" y1="10" x2="0" y2="2" stroke="#6b7280" stroke-width="1.5"/>
+            <line x1="10" y1="10" x2="0" y2="18" stroke="#6b7280" stroke-width="1.5"/>
+            <circle cx="15" cy="10" r="3" fill="white" stroke="#6b7280" stroke-width="1.5"/>
+            <line x1="0" y1="10" x2="12" y2="10" stroke="#6b7280" stroke-width="1.5"/>
+        </marker>
+
+        <marker id="zero-many" viewBox="0 0 20 20" refX="20" refY="10" markerWidth="15" markerHeight="15" orient="auto">
+            <circle cx="6" cy="10" r="3" fill="white" stroke="#6b7280" stroke-width="1.5"/>
+            <line x1="12" y1="10" x2="20" y2="2" stroke="#6b7280" stroke-width="1.5"/>
+            <line x1="12" y1="10" x2="20" y2="18" stroke="#6b7280" stroke-width="1.5"/>
+            <line x1="9" y1="10" x2="12" y2="10" stroke="#6b7280" stroke-width="1.5"/>
+            <line x1="0" y1="10" x2="3" y2="10" stroke="#6b7280" stroke-width="1.5"/>
+        </marker>
+
+        <marker id="zero-one" viewBox="0 0 20 20" refX="20" refY="10" markerWidth="15" markerHeight="15" orient="auto">
+            <circle cx="8" cy="10" r="3" fill="white" stroke="#6b7280" stroke-width="1.5"/>
+            <line x1="15" y1="2" x2="15" y2="18" stroke="#6b7280" stroke-width="1.5"/>
+            <line x1="0" y1="10" x2="5" y2="10" stroke="#6b7280" stroke-width="1.5"/>
+            <line x1="11" y1="10" x2="20" y2="10" stroke="#6b7280" stroke-width="1.5"/>
+        </marker>
+
+        <marker id="one-start" viewBox="0 0 20 20" refX="0" refY="10" markerWidth="15" markerHeight="15" orient="auto">
+            <line x1="10" y1="2" x2="10" y2="18" stroke="#6b7280" stroke-width="1.5"/>
+            <line x1="5" y1="2" x2="5" y2="18" stroke="#6b7280" stroke-width="1.5"/>
+            <line x1="0" y1="10" x2="20" y2="10" stroke="#6b7280" stroke-width="1.5"/>
+        </marker>
+        
+        <style>
+            .title { font-family: sans-serif; font-size: 24px; font-weight: bold; fill: #111827; }
+            .table-box { fill: #ffffff; stroke: #d1d5db; stroke-width: 1; filter: url(#drop-shadow); }
+            .header-text { font-family: sans-serif; font-size: 14px; font-weight: bold; fill: #ffffff; }
+            .col-text { font-family: monospace; font-size: 11px; fill: #374151; }
+            .col-type { font-family: monospace; font-size: 10px; fill: #6b7280; }
+            .col-pk { font-family: monospace; font-size: 11px; font-weight: bold; fill: #b91c1c; }
+            .col-fk { font-family: monospace; font-size: 11px; font-style: italic; fill: #047857; }
+            .line { fill: none; stroke: #9ca3af; stroke-width: 1.5; }
+            .row-bg:nth-child(even) { fill: #f9fafb; }
+            .row-bg:nth-child(odd) { fill: #ffffff; }
+            .line-divider { stroke: #e5e7eb; stroke-width: 1; }
+        </style>
+    </defs>
+
+    <!-- Background -->
+    <rect width="100%" height="100%" fill="#ffffff" />
+    <text x="1000" y="50" class="title" text-anchor="middle">KajBazar Physical Database Schema (PostgreSQL)</text>
+
+    <!-- RELATIONSHIPS -->
+    <!-- users 1..o{ user_roles -->
+    <path d="M1000 200 L950 200 L950 142 L900 142" class="line" marker-start="url(#one-start)" marker-end="url(#zero-many)" />
+    
+    <!-- roles 1..o{ user_roles -->
+    <path d="M500 142 L650 142" class="line" marker-start="url(#one-start)" marker-end="url(#zero-many)" />
+    
+    <!-- users 1..o| service_provider_profiles -->
+    <path d="M1000 235 L950 235 L950 450 L900 450" class="line" marker-start="url(#one-start)" marker-end="url(#zero-one)" />
+
+    <!-- districts 1..o{ upazilas -->
+    <path d="M250 492 L300 492 L300 642 L250 642" class="line" marker-start="url(#one-start)" marker-end="url(#zero-many)" />
+    
+    <!-- districts 1..o{ service_provider_profiles -->
+    <path d="M250 475 L550 475" class="line" marker-start="url(#one-start)" marker-end="url(#zero-many)" />
+    
+    <!-- upazilas 1..o{ service_provider_profiles -->
+    <path d="M250 625 L450 625 L450 500 L550 500" class="line" marker-start="url(#one-start)" marker-end="url(#zero-many)" />
+    
+    <!-- service_provider_profiles 1..o{ worker_categories -->
+    <path d="M900 475 L1100 475" class="line" marker-start="url(#one-start)" marker-end="url(#zero-many)" />
+    
+    <!-- categories 1..o{ worker_categories -->
+    <path d="M1450 475 L1350 475" class="line" marker-start="url(#one-start)" marker-end="url(#zero-many)" />
+    
+    <!-- users 1..o{ reviews -->
+    <path d="M1175 320 L1175 800 L700 800 L700 900" class="line" marker-start="url(#one-start)" marker-end="url(#zero-many)" />
+    
+    <!-- service_provider_profiles 1..o{ reviews -->
+    <path d="M725 760 L725 850 L700 850 L700 900" class="line" marker-start="url(#one-start)" marker-end="url(#zero-many)" />
+
+    <!-- users 1..o{ community_recommendations -->
+    <path d="M1250 320 L1250 850 L1150 850 L1150 900" class="line" marker-start="url(#one-start)" marker-end="url(#zero-many)" />
+
+    <!-- categories 1..o{ community_recommendations -->
+    <path d="M1600 585 L1600 850 L1250 850 L1250 900" class="line" marker-start="url(#one-start)" marker-end="url(#zero-many)" />
+    
+    <!-- districts 1..o{ community_recommendations -->
+    <path d="M150 535 L150 850 L1050 850 L1050 900" class="line" marker-start="url(#one-start)" marker-end="url(#zero-many)" />
+    
+    <!-- upazilas 1..o{ community_recommendations -->
+    <path d="M150 710 L150 830 L1080 830 L1080 900" class="line" marker-start="url(#one-start)" marker-end="url(#zero-many)" />
+
+    <!-- users 1..o{ reports (reported_by) -->
+    <path d="M1000 270 L400 270 L400 900" class="line" marker-start="url(#one-start)" marker-end="url(#zero-many)" />
+    
+    <!-- users 1..o{ reports (target) -->
+    <path d="M1000 290 L420 290 L420 900" class="line" marker-start="url(#one-start)" marker-end="url(#zero-many)" />
+
+    <!-- users 1..o{ admin_audit_logs -->
+    <path d="M1350 200 L1650 200 L1650 900" class="line" marker-start="url(#one-start)" marker-end="url(#zero-many)" />
+
+
+    <!-- TABLES -->
+
+    <!-- roles Table -->
+    <g transform="translate(250, 100)">
+        <rect x="0" y="0" width="250" height="110" class="table-box" rx="6" />
+        <path d="M0 6 Q0 0 6 0 L244 0 Q250 0 250 6 L250 35 L0 35 Z" fill="#4b5563" />
+        <text x="125" y="23" class="header-text" text-anchor="middle">roles</text>
+        <rect x="0" y="35" width="250" height="25" class="row-bg" />
+        <text x="10" y="52" class="col-pk">PK role_id</text><text x="120" y="52" class="col-type">int IDENTITY</text>
+        <rect x="0" y="60" width="250" height="25" class="row-bg" />
+        <text x="10" y="77" class="col-text">role_name</text><text x="120" y="77" class="col-type">varchar(50) UNQ</text>
+        <rect x="0" y="85" width="250" height="25" class="row-bg" />
+        <text x="10" y="102" class="col-text">created_at</text><text x="120" y="102" class="col-type">timestamptz</text>
+    </g>
+
+    <!-- user_roles Table -->
+    <g transform="translate(650, 100)">
+        <rect x="0" y="0" width="250" height="85" class="table-box" rx="6" />
+        <path d="M0 6 Q0 0 6 0 L244 0 Q250 0 250 6 L250 35 L0 35 Z" fill="#6b7280" />
+        <text x="125" y="23" class="header-text" text-anchor="middle">user_roles</text>
+        <rect x="0" y="35" width="250" height="25" class="row-bg" />
+        <text x="10" y="52" class="col-pk">PK,FK user_id</text><text x="130" y="52" class="col-type">uuid</text>
+        <rect x="0" y="60" width="250" height="25" class="row-bg" />
+        <text x="10" y="77" class="col-pk">PK,FK role_id</text><text x="130" y="77" class="col-type">int</text>
+    </g>
+
+    <!-- users Table -->
+    <g transform="translate(1000, 85)">
+        <rect x="0" y="0" width="350" height="235" class="table-box" rx="6" />
+        <path d="M0 6 Q0 0 6 0 L344 0 Q350 0 350 6 L350 35 L0 35 Z" fill="#1e3a8a" />
+        <text x="175" y="23" class="header-text" text-anchor="middle">users</text>
+        
+        <rect x="0" y="35" width="350" height="25" class="row-bg" />
+        <text x="10" y="52" class="col-pk">PK user_id</text><text x="180" y="52" class="col-type">uuid</text>
+        
+        <rect x="0" y="60" width="350" height="25" class="row-bg" />
+        <text x="10" y="77" class="col-text">full_name</text><text x="180" y="77" class="col-type">varchar(100) NOT NULL</text>
+        
+        <rect x="0" y="85" width="350" height="25" class="row-bg" />
+        <text x="10" y="102" class="col-text">email</text><text x="180" y="102" class="col-type">varchar(150) NOT NULL UNQ</text>
+        
+        <rect x="0" y="110" width="350" height="25" class="row-bg" />
+        <text x="10" y="127" class="col-text">phone_number</text><text x="180" y="127" class="col-type">varchar(20) NOT NULL UNQ</text>
+        
+        <rect x="0" y="135" width="350" height="25" class="row-bg" />
+        <text x="10" y="152" class="col-text">password_hash</text><text x="180" y="152" class="col-type">varchar(255) NOT NULL</text>
+        
+        <rect x="0" y="160" width="350" height="25" class="row-bg" />
+        <text x="10" y="177" class="col-text">is_active</text><text x="180" y="177" class="col-type">boolean DEFAULT TRUE</text>
+        
+        <rect x="0" y="185" width="350" height="25" class="row-bg" />
+        <text x="10" y="202" class="col-text">created_at</text><text x="180" y="202" class="col-type">timestamptz</text>
+        
+        <rect x="0" y="210" width="350" height="25" class="row-bg" />
+        <text x="10" y="227" class="col-text">updated_at</text><text x="180" y="227" class="col-type">timestamptz</text>
+    </g>
+
+    <!-- districts Table -->
+    <g transform="translate(50, 450)">
+        <rect x="0" y="0" width="200" height="85" class="table-box" rx="6" />
+        <path d="M0 6 Q0 0 6 0 L194 0 Q200 0 200 6 L200 35 L0 35 Z" fill="#4b5563" />
+        <text x="100" y="23" class="header-text" text-anchor="middle">districts</text>
+        
+        <rect x="0" y="35" width="200" height="25" class="row-bg" />
+        <text x="10" y="52" class="col-pk">PK district_id</text><text x="100" y="52" class="col-type">int IDENTITY</text>
+        
+        <rect x="0" y="60" width="200" height="25" class="row-bg" />
+        <text x="10" y="77" class="col-text">district_name</text><text x="100" y="77" class="col-type">varchar(100) UNQ</text>
+    </g>
+
+    <!-- upazilas Table -->
+    <g transform="translate(50, 600)">
+        <rect x="0" y="0" width="200" height="110" class="table-box" rx="6" />
+        <path d="M0 6 Q0 0 6 0 L194 0 Q200 0 200 6 L200 35 L0 35 Z" fill="#4b5563" />
+        <text x="100" y="23" class="header-text" text-anchor="middle">upazilas</text>
+        
+        <rect x="0" y="35" width="200" height="25" class="row-bg" />
+        <text x="10" y="52" class="col-pk">PK upazila_id</text><text x="100" y="52" class="col-type">int IDENTITY</text>
+        
+        <rect x="0" y="60" width="200" height="25" class="row-bg" />
+        <text x="10" y="77" class="col-fk">FK district_id</text><text x="100" y="77" class="col-type">int</text>
+        
+        <rect x="0" y="85" width="200" height="25" class="row-bg" />
+        <text x="10" y="102" class="col-text">upazila_name</text><text x="100" y="102" class="col-type">varchar(100)</text>
+    </g>
+
+    <!-- service_provider_profiles Table -->
+    <g transform="translate(550, 400)">
+        <rect x="0" y="0" width="350" height="360" class="table-box" rx="6" />
+        <path d="M0 6 Q0 0 6 0 L344 0 Q350 0 350 6 L350 35 L0 35 Z" fill="#059669" />
+        <text x="175" y="23" class="header-text" text-anchor="middle">service_provider_profiles</text>
+        
+        <rect x="0" y="35" width="350" height="25" class="row-bg" />
+        <text x="10" y="52" class="col-pk">PK profile_id</text><text x="150" y="52" class="col-type">uuid</text>
+        
+        <rect x="0" y="60" width="350" height="25" class="row-bg" />
+        <text x="10" y="77" class="col-fk">FK user_id</text><text x="150" y="77" class="col-type">uuid UNIQUE</text>
+        
+        <rect x="0" y="85" width="350" height="25" class="row-bg" />
+        <text x="10" y="102" class="col-fk">FK district_id</text><text x="150" y="102" class="col-type">int</text>
+        
+        <rect x="0" y="110" width="350" height="25" class="row-bg" />
+        <text x="10" y="127" class="col-fk">FK upazila_id</text><text x="150" y="127" class="col-type">int</text>
+        
+        <rect x="0" y="135" width="350" height="25" class="row-bg" />
+        <text x="10" y="152" class="col-text">bio</text><text x="150" y="152" class="col-type">text</text>
+        
+        <rect x="0" y="160" width="350" height="25" class="row-bg" />
+        <text x="10" y="177" class="col-text">experience_years</text><text x="150" y="177" class="col-type">int DEFAULT 0</text>
+        
+        <rect x="0" y="185" width="350" height="25" class="row-bg" />
+        <text x="10" y="202" class="col-text">hourly_rate</text><text x="150" y="202" class="col-type">numeric(10,2)</text>
+        
+        <rect x="0" y="210" width="350" height="25" class="row-bg" />
+        <text x="10" y="227" class="col-text">verification_status</text><text x="150" y="227" class="col-type">varchar(20) DEFAULT 'PENDING'</text>
+        
+        <rect x="0" y="235" width="350" height="25" class="row-bg" />
+        <text x="10" y="252" class="col-text">verified_at</text><text x="150" y="252" class="col-type">timestamptz</text>
+        
+        <rect x="0" y="260" width="350" height="25" class="row-bg" />
+        <text x="10" y="277" class="col-text">average_rating</text><text x="150" y="277" class="col-type">numeric(3,2) DEFAULT 0.00</text>
+        
+        <rect x="0" y="285" width="350" height="25" class="row-bg" />
+        <text x="10" y="302" class="col-text">total_reviews</text><text x="150" y="302" class="col-type">int DEFAULT 0</text>
+        
+        <rect x="0" y="310" width="350" height="25" class="row-bg" />
+        <text x="10" y="327" class="col-text">created_at</text><text x="150" y="327" class="col-type">timestamptz</text>
+        
+        <rect x="0" y="335" width="350" height="25" class="row-bg" />
+        <text x="10" y="352" class="col-text">updated_at</text><text x="150" y="352" class="col-type">timestamptz</text>
+    </g>
+
+    <!-- worker_categories Table -->
+    <g transform="translate(1100, 450)">
+        <rect x="0" y="0" width="250" height="85" class="table-box" rx="6" />
+        <path d="M0 6 Q0 0 6 0 L244 0 Q250 0 250 6 L250 35 L0 35 Z" fill="#6b7280" />
+        <text x="125" y="23" class="header-text" text-anchor="middle">worker_categories</text>
+        
+        <rect x="0" y="35" width="250" height="25" class="row-bg" />
+        <text x="10" y="52" class="col-pk">PK,FK profile_id</text><text x="130" y="52" class="col-type">uuid</text>
+        
+        <rect x="0" y="60" width="250" height="25" class="row-bg" />
+        <text x="10" y="77" class="col-pk">PK,FK category_id</text><text x="130" y="77" class="col-type">int</text>
+    </g>
+
+    <!-- categories Table -->
+    <g transform="translate(1450, 400)">
+        <rect x="0" y="0" width="300" height="185" class="table-box" rx="6" />
+        <path d="M0 6 Q0 0 6 0 L294 0 Q300 0 300 6 L300 35 L0 35 Z" fill="#4b5563" />
+        <text x="150" y="23" class="header-text" text-anchor="middle">categories</text>
+        
+        <rect x="0" y="35" width="300" height="25" class="row-bg" />
+        <text x="10" y="52" class="col-pk">PK category_id</text><text x="120" y="52" class="col-type">int IDENTITY</text>
+        
+        <rect x="0" y="60" width="300" height="25" class="row-bg" />
+        <text x="10" y="77" class="col-text">category_name</text><text x="120" y="77" class="col-type">varchar(100) UNQ</text>
+        
+        <rect x="0" y="85" width="300" height="25" class="row-bg" />
+        <text x="10" y="102" class="col-text">description</text><text x="120" y="102" class="col-type">text</text>
+        
+        <rect x="0" y="110" width="300" height="25" class="row-bg" />
+        <text x="10" y="127" class="col-text">icon_url</text><text x="120" y="127" class="col-type">varchar(255)</text>
+        
+        <rect x="0" y="135" width="300" height="25" class="row-bg" />
+        <text x="10" y="152" class="col-text">is_active</text><text x="120" y="152" class="col-type">boolean DEFAULT TRUE</text>
+        
+        <rect x="0" y="160" width="300" height="25" class="row-bg" />
+        <text x="10" y="177" class="col-text">created_at</text><text x="120" y="177" class="col-type">timestamptz</text>
+    </g>
+
+    <!-- reports Table -->
+    <g transform="translate(150, 900)">
+        <rect x="0" y="0" width="300" height="185" class="table-box" rx="6" />
+        <path d="M0 6 Q0 0 6 0 L294 0 Q300 0 300 6 L300 35 L0 35 Z" fill="#dc2626" />
+        <text x="150" y="23" class="header-text" text-anchor="middle">reports</text>
+        
+        <rect x="0" y="35" width="300" height="25" class="row-bg" />
+        <text x="10" y="52" class="col-pk">PK report_id</text><text x="150" y="52" class="col-type">uuid</text>
+        
+        <rect x="0" y="60" width="300" height="25" class="row-bg" />
+        <text x="10" y="77" class="col-fk">FK reported_by_user_id</text><text x="150" y="77" class="col-type">uuid</text>
+        
+        <rect x="0" y="85" width="300" height="25" class="row-bg" />
+        <text x="10" y="102" class="col-fk">FK target_user_id</text><text x="150" y="102" class="col-type">uuid</text>
+        
+        <rect x="0" y="110" width="300" height="25" class="row-bg" />
+        <text x="10" y="127" class="col-text">reason</text><text x="150" y="127" class="col-type">text</text>
+        
+        <rect x="0" y="135" width="300" height="25" class="row-bg" />
+        <text x="10" y="152" class="col-text">status</text><text x="150" y="152" class="col-type">varchar(20) DEFAULT 'OPEN'</text>
+        
+        <rect x="0" y="160" width="300" height="25" class="row-bg" />
+        <text x="10" y="177" class="col-text">created_at</text><text x="150" y="177" class="col-type">timestamptz</text>
+    </g>
+
+    <!-- reviews Table -->
+    <g transform="translate(550, 900)">
+        <rect x="0" y="0" width="300" height="210" class="table-box" rx="6" />
+        <path d="M0 6 Q0 0 6 0 L294 0 Q300 0 300 6 L300 35 L0 35 Z" fill="#d97706" />
+        <text x="150" y="23" class="header-text" text-anchor="middle">reviews</text>
+        
+        <rect x="0" y="35" width="300" height="25" class="row-bg" />
+        <text x="10" y="52" class="col-pk">PK review_id</text><text x="150" y="52" class="col-type">uuid</text>
+        
+        <rect x="0" y="60" width="300" height="25" class="row-bg" />
+        <text x="10" y="77" class="col-fk">FK consumer_id</text><text x="150" y="77" class="col-type">uuid</text>
+        
+        <rect x="0" y="85" width="300" height="25" class="row-bg" />
+        <text x="10" y="102" class="col-fk">FK worker_profile_id</text><text x="150" y="102" class="col-type">uuid</text>
+        
+        <rect x="0" y="110" width="300" height="25" class="row-bg" />
+        <text x="10" y="127" class="col-text">rating</text><text x="150" y="127" class="col-type">int CHECK(1-5)</text>
+        
+        <rect x="0" y="135" width="300" height="25" class="row-bg" />
+        <text x="10" y="152" class="col-text">comment</text><text x="150" y="152" class="col-type">text</text>
+        
+        <rect x="0" y="160" width="300" height="25" class="row-bg" />
+        <text x="10" y="177" class="col-text">created_at</text><text x="150" y="177" class="col-type">timestamptz</text>
+        
+        <rect x="0" y="185" width="300" height="25" class="row-bg" />
+        <text x="10" y="202" class="col-text">updated_at</text><text x="150" y="202" class="col-type">timestamptz</text>
+    </g>
+
+    <!-- community_recommendations Table -->
+    <g transform="translate(950, 900)">
+        <rect x="0" y="0" width="400" height="310" class="table-box" rx="6" />
+        <path d="M0 6 Q0 0 6 0 L394 0 Q400 0 400 6 L400 35 L0 35 Z" fill="#d97706" />
+        <text x="200" y="23" class="header-text" text-anchor="middle">community_recommendations</text>
+        
+        <rect x="0" y="35" width="400" height="25" class="row-bg" />
+        <text x="10" y="52" class="col-pk">PK recommendation_id</text><text x="180" y="52" class="col-type">uuid</text>
+        
+        <rect x="0" y="60" width="400" height="25" class="row-bg" />
+        <text x="10" y="77" class="col-fk">FK recommended_by_user_id</text><text x="180" y="77" class="col-type">uuid</text>
+        
+        <rect x="0" y="85" width="400" height="25" class="row-bg" />
+        <text x="10" y="102" class="col-text">worker_name</text><text x="180" y="102" class="col-type">varchar(100)</text>
+        
+        <rect x="0" y="110" width="400" height="25" class="row-bg" />
+        <text x="10" y="127" class="col-text">phone_number</text><text x="180" y="127" class="col-type">varchar(20)</text>
+        
+        <rect x="0" y="135" width="400" height="25" class="row-bg" />
+        <text x="10" y="152" class="col-fk">FK category_id</text><text x="180" y="152" class="col-type">int</text>
+        
+        <rect x="0" y="160" width="400" height="25" class="row-bg" />
+        <text x="10" y="177" class="col-fk">FK district_id</text><text x="180" y="177" class="col-type">int</text>
+        
+        <rect x="0" y="185" width="400" height="25" class="row-bg" />
+        <text x="10" y="202" class="col-fk">FK upazila_id</text><text x="180" y="202" class="col-type">int</text>
+        
+        <rect x="0" y="210" width="400" height="25" class="row-bg" />
+        <text x="10" y="227" class="col-text">notes</text><text x="180" y="227" class="col-type">text</text>
+        
+        <rect x="0" y="235" width="400" height="25" class="row-bg" />
+        <text x="10" y="252" class="col-text">status</text><text x="180" y="252" class="col-type">varchar(20) DEFAULT 'PENDING'</text>
+        
+        <rect x="0" y="260" width="400" height="25" class="row-bg" />
+        <text x="10" y="277" class="col-fk">FK reviewed_by_admin_id</text><text x="180" y="277" class="col-type">uuid</text>
+        
+        <rect x="0" y="285" width="400" height="25" class="row-bg" />
+        <text x="10" y="302" class="col-text">created_at</text><text x="180" y="302" class="col-type">timestamptz</text>
+    </g>
+
+    <!-- admin_audit_logs Table -->
+    <g transform="translate(1500, 900)">
+        <rect x="0" y="0" width="300" height="210" class="table-box" rx="6" />
+        <path d="M0 6 Q0 0 6 0 L294 0 Q300 0 300 6 L300 35 L0 35 Z" fill="#7c3aed" />
+        <text x="150" y="23" class="header-text" text-anchor="middle">admin_audit_logs</text>
+        
+        <rect x="0" y="35" width="300" height="25" class="row-bg" />
+        <text x="10" y="52" class="col-pk">PK log_id</text><text x="120" y="52" class="col-type">uuid</text>
+        
+        <rect x="0" y="60" width="300" height="25" class="row-bg" />
+        <text x="10" y="77" class="col-fk">FK admin_user_id</text><text x="120" y="77" class="col-type">uuid</text>
+        
+        <rect x="0" y="85" width="300" height="25" class="row-bg" />
+        <text x="10" y="102" class="col-text">action</text><text x="120" y="102" class="col-type">varchar(100)</text>
+        
+        <rect x="0" y="110" width="300" height="25" class="row-bg" />
+        <text x="10" y="127" class="col-text">entity_name</text><text x="120" y="127" class="col-type">varchar(50)</text>
+        
+        <rect x="0" y="135" width="300" height="25" class="row-bg" />
+        <text x="10" y="152" class="col-text">entity_id</text><text x="120" y="152" class="col-type">uuid</text>
+        
+        <rect x="0" y="160" width="300" height="25" class="row-bg" />
+        <text x="10" y="177" class="col-text">details</text><text x="120" y="177" class="col-type">text</text>
+        
+        <rect x="0" y="185" width="300" height="25" class="row-bg" />
+        <text x="10" y="202" class="col-text">timestamp</text><text x="120" y="202" class="col-type">timestamptz</text>
+    </g>
+
+</svg>

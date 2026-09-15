@@ -1,0 +1,199 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1200" width="100%" height="100%">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#475569" />
+    </marker>
+    <style>
+      .entity { fill: #1e3a8a; }
+      .entity-text { fill: white; font-family: sans-serif; font-size: 14px; font-weight: bold; text-anchor: middle; }
+      .subsystem { fill: #f0fdf4; stroke: #059669; stroke-width: 2; stroke-dasharray: 5,5; }
+      .subsystem-title { fill: #059669; font-family: sans-serif; font-size: 14px; font-weight: bold; }
+      .process { fill: #059669; }
+      .process-text { fill: white; font-family: sans-serif; font-size: 12px; text-anchor: middle; }
+      .datastore-fill { fill: #d97706; }
+      .datastore-line { stroke: #d97706; stroke-width: 2; fill: none; }
+      .datastore-text { fill: white; font-family: sans-serif; font-size: 12px; font-weight: bold; text-anchor: middle; }
+      .flow { stroke: #475569; stroke-width: 1.5; fill: none; marker-end: url(#arrow); }
+      .flow-label { fill: #334155; font-family: sans-serif; font-size: 10px; text-anchor: middle; }
+      .title { font-family: sans-serif; font-size: 22px; font-weight: bold; fill: #1e293b; }
+    </style>
+  </defs>
+
+  <rect width="1600" height="1200" fill="white" />
+  
+  <text x="800" y="40" class="title" text-anchor="middle">KajBazar Level 1 DFD</text>
+
+  <!-- External Entities -->
+  <g transform="translate(100, 80)">
+    <rect x="-80" y="-30" width="160" height="60" class="entity" />
+    <text x="0" y="5" class="entity-text">Consumer</text>
+  </g>
+  <g transform="translate(650, 80)">
+    <rect x="-80" y="-30" width="160" height="60" class="entity" />
+    <text x="0" y="5" class="entity-text">Service Provider</text>
+  </g>
+  <g transform="translate(1200, 80)">
+    <rect x="-80" y="-30" width="160" height="60" class="entity" />
+    <text x="0" y="5" class="entity-text">Administrator</text>
+  </g>
+
+  <!-- Subsystems Row 2 -->
+  <g transform="translate(50, 200)">
+    <rect x="0" y="0" width="400" height="200" rx="15" class="subsystem" />
+    <text x="20" y="30" class="subsystem-title">P1: User Authentication &amp; RBAC</text>
+    
+    <g transform="translate(100, 100)">
+      <circle r="50" class="process" />
+      <text x="0" y="-5" class="process-text">1.1 Register</text>
+      <text x="0" y="15" class="process-text">Account</text>
+    </g>
+    <g transform="translate(300, 100)">
+      <circle r="50" class="process" />
+      <text x="0" y="-5" class="process-text">1.2 Auth &amp;</text>
+      <text x="0" y="15" class="process-text">Issue JWT</text>
+    </g>
+  </g>
+
+  <g transform="translate(500, 200)">
+    <rect x="0" y="0" width="400" height="200" rx="15" class="subsystem" />
+    <text x="20" y="30" class="subsystem-title">P2: Worker Profile Management</text>
+    
+    <g transform="translate(100, 100)">
+      <circle r="50" class="process" />
+      <text x="0" y="-5" class="process-text">2.1 Submit Bio</text>
+      <text x="0" y="15" class="process-text">&amp; Rates</text>
+    </g>
+    <g transform="translate(300, 100)">
+      <circle r="50" class="process" />
+      <text x="0" y="-5" class="process-text">2.2 Map Service</text>
+      <text x="0" y="15" class="process-text">Categories</text>
+    </g>
+  </g>
+
+  <g transform="translate(950, 200)">
+    <rect x="0" y="0" width="400" height="200" rx="15" class="subsystem" />
+    <text x="20" y="30" class="subsystem-title">P3: Directory Search &amp; Contact</text>
+    
+    <g transform="translate(100, 100)">
+      <circle r="50" class="process" />
+      <text x="0" y="-5" class="process-text">3.1 Filter by</text>
+      <text x="0" y="15" class="process-text">Cat/Loc</text>
+    </g>
+    <g transform="translate(300, 100)">
+      <circle r="50" class="process" />
+      <text x="0" y="-5" class="process-text">3.2 Reveal</text>
+      <text x="0" y="15" class="process-text">Direct Phone</text>
+    </g>
+  </g>
+
+  <!-- Subsystems Row 3 -->
+  <g transform="translate(250, 450)">
+    <rect x="0" y="0" width="400" height="200" rx="15" class="subsystem" />
+    <text x="20" y="30" class="subsystem-title">P4: Ratings &amp; Reviews</text>
+    
+    <g transform="translate(100, 100)">
+      <circle r="50" class="process" />
+      <text x="0" y="-5" class="process-text">4.1 Validate &amp;</text>
+      <text x="0" y="15" class="process-text">Submit Review</text>
+    </g>
+    <g transform="translate(300, 100)">
+      <circle r="50" class="process" />
+      <text x="0" y="-5" class="process-text">4.2 Recalc Avg</text>
+      <text x="0" y="15" class="process-text">Rating</text>
+    </g>
+  </g>
+
+  <g transform="translate(700, 450)">
+    <rect x="0" y="0" width="800" height="200" rx="15" class="subsystem" />
+    <text x="20" y="30" class="subsystem-title">P5: Community Referral &amp; Admin</text>
+    
+    <g transform="translate(100, 100)">
+      <circle r="50" class="process" />
+      <text x="0" y="-5" class="process-text">5.1 Submit Off.</text>
+      <text x="0" y="15" class="process-text">Recommend</text>
+    </g>
+    <g transform="translate(300, 100)">
+      <circle r="50" class="process" />
+      <text x="0" y="-5" class="process-text">5.2 Moderate &amp;</text>
+      <text x="0" y="15" class="process-text">Verify Workers</text>
+    </g>
+    <g transform="translate(500, 100)">
+      <circle r="50" class="process" />
+      <text x="0" y="-5" class="process-text">5.3 Review</text>
+      <text x="0" y="15" class="process-text">Referrals</text>
+    </g>
+    <g transform="translate(700, 100)">
+      <circle r="50" class="process" />
+      <text x="0" y="-5" class="process-text">5.4 Manage Tax.</text>
+      <text x="0" y="15" class="process-text">&amp; Log Audit</text>
+    </g>
+  </g>
+
+  <!-- Data Stores Row 4 -->
+  <g transform="translate(50, 800)">
+    <g transform="translate(100, 0)">
+      <path d="M 0 0 L 120 0 L 120 40 L 0 40 Z" class="datastore-fill" />
+      <path d="M 10 0 L 10 40" class="datastore-line" stroke="white" />
+      <text x="65" y="25" class="datastore-text">D1: users/roles</text>
+    </g>
+    <g transform="translate(300, 0)">
+      <path d="M 0 0 L 150 0 L 150 40 L 0 40 Z" class="datastore-fill" />
+      <path d="M 10 0 L 10 40" class="datastore-line" stroke="white" />
+      <text x="80" y="25" class="datastore-text">D2: worker_profiles</text>
+    </g>
+    <g transform="translate(530, 0)">
+      <path d="M 0 0 L 120 0 L 120 40 L 0 40 Z" class="datastore-fill" />
+      <path d="M 10 0 L 10 40" class="datastore-line" stroke="white" />
+      <text x="65" y="25" class="datastore-text">D3: categories</text>
+    </g>
+    <g transform="translate(730, 0)">
+      <path d="M 0 0 L 140 0 L 140 40 L 0 40 Z" class="datastore-fill" />
+      <path d="M 10 0 L 10 40" class="datastore-line" stroke="white" />
+      <text x="75" y="25" class="datastore-text">D4: dists/upazilas</text>
+    </g>
+    <g transform="translate(950, 0)">
+      <path d="M 0 0 L 100 0 L 100 40 L 0 40 Z" class="datastore-fill" />
+      <path d="M 10 0 L 10 40" class="datastore-line" stroke="white" />
+      <text x="55" y="25" class="datastore-text">D5: reviews</text>
+    </g>
+    <g transform="translate(1130, 0)">
+      <path d="M 0 0 L 160 0 L 160 40 L 0 40 Z" class="datastore-fill" />
+      <path d="M 10 0 L 10 40" class="datastore-line" stroke="white" />
+      <text x="85" y="25" class="datastore-text">D6: recommendations</text>
+    </g>
+    <g transform="translate(1370, 0)">
+      <path d="M 0 0 L 120 0 L 120 40 L 0 40 Z" class="datastore-fill" />
+      <path d="M 10 0 L 10 40" class="datastore-line" stroke="white" />
+      <text x="65" y="25" class="datastore-text">D7: audit_logs</text>
+    </g>
+  </g>
+
+  <!-- Flows (Illustrative selection to avoid infinite clutter, based on prompt) -->
+  <path d="M 100 110 L 150 250" class="flow" />
+  <text x="125" y="170" class="flow-label">Reg Details</text>
+  
+  <path d="M 180 350 L 180 800" class="flow" />
+  <text x="190" y="600" class="flow-label">Create User</text>
+
+  <path d="M 330 350 L 220 800" class="flow" />
+  <text x="290" y="600" class="flow-label">Verify Hash</text>
+
+  <path d="M 580 350 L 375 800" class="flow" />
+  <text x="490" y="600" class="flow-label">Save PENDING</text>
+  
+  <path d="M 850 350 L 600 800" class="flow" />
+  <text x="730" y="600" class="flow-label">Categories</text>
+  
+  <!-- Legend -->
+  <g transform="translate(1350, 1050)">
+    <rect x="0" y="0" width="200" height="120" fill="white" stroke="#94a3b8" />
+    <text x="100" y="20" font-family="sans-serif" font-size="14px" font-weight="bold" text-anchor="middle" fill="#1e293b">Legend</text>
+    <rect x="10" y="35" width="20" height="15" class="entity" />
+    <text x="40" y="47" font-family="sans-serif" font-size="12px" fill="#334155">External Entity</text>
+    <circle cx="20" cy="70" r="10" class="process" />
+    <text x="40" y="74" font-family="sans-serif" font-size="12px" fill="#334155">Process Node</text>
+    <path d="M 10 90 L 30 90 L 30 105 L 10 105 Z" class="datastore-fill" />
+    <text x="40" y="101" font-family="sans-serif" font-size="12px" fill="#334155">Data Store</text>
+  </g>
+
+</svg>

@@ -1,0 +1,153 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1100" style="background-color: white; font-family: sans-serif;">
+  <defs>
+    <!-- Arrowhead marker -->
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#1e293b" />
+    </marker>
+  </defs>
+
+  <!-- Title -->
+  <text x="600" y="30" font-size="20" font-weight="bold" text-anchor="middle" fill="#0f172a">User Registration &amp; Authentication Flow</text>
+
+  <!-- Start -->
+  <circle cx="600" cy="70" r="15" fill="#000000" />
+  <path d="M 600 85 L 600 105" stroke="#1e293b" stroke-width="2" marker-end="url(#arrow)" />
+
+  <!-- 1. SelectRole Composite -->
+  <g id="SelectRole">
+    <rect x="350" y="105" width="500" height="140" fill="#eff6ff" stroke="#3b82f6" stroke-width="2" stroke-dasharray="6,4" rx="10" />
+    <text x="360" y="125" font-size="14" font-weight="bold" fill="#1e3a8a">Select Account Type</text>
+
+    <!-- ChooseRole Diamond -->
+    <polygon points="600,120 660,145 600,170 540,145" fill="#fbbf24" stroke="#d97706" stroke-width="2" />
+    <text x="600" y="150" font-size="12" font-weight="bold" text-anchor="middle" fill="#451a03">ChooseRole</text>
+
+    <path d="M 540 145 L 475 145 L 475 185" stroke="#1e293b" stroke-width="2" fill="none" marker-end="url(#arrow)" />
+    <path d="M 660 145 L 725 145 L 725 185" stroke="#1e293b" stroke-width="2" fill="none" marker-end="url(#arrow)" />
+    <text x="500" y="140" font-size="12" fill="#1e293b">Consumer</text>
+    <text x="700" y="140" font-size="12" fill="#1e293b">Worker</text>
+
+    <!-- ConsumerRole -->
+    <rect x="400" y="185" width="150" height="40" rx="8" fill="#3b82f6" />
+    <text x="475" y="210" font-size="14" font-weight="bold" fill="#ffffff" text-anchor="middle">ConsumerRole</text>
+
+    <!-- WorkerRole -->
+    <rect x="650" y="185" width="150" height="40" rx="8" fill="#3b82f6" />
+    <text x="725" y="210" font-size="14" font-weight="bold" fill="#ffffff" text-anchor="middle">WorkerRole</text>
+  </g>
+
+  <!-- Connect SelectRole to EnterDetails -->
+  <path d="M 475 225 L 475 245 L 600 245 L 600 255" stroke="#1e293b" stroke-width="2" fill="none" />
+  <path d="M 725 225 L 725 245 L 600 245" stroke="#1e293b" stroke-width="2" fill="none" />
+  <path d="M 600 245 L 600 265" stroke="#1e293b" stroke-width="2" fill="none" marker-end="url(#arrow)" />
+
+  <!-- 2. EnterDetails -->
+  <rect x="400" y="270" width="400" height="50" rx="8" fill="#3b82f6" />
+  <text x="600" y="300" font-size="14" font-weight="bold" fill="#ffffff" text-anchor="middle">Fill Full Name, Email, Phone, Password</text>
+
+  <path d="M 600 320 L 600 345" stroke="#1e293b" stroke-width="2" marker-end="url(#arrow)" />
+
+  <!-- 3. SubmitForm -->
+  <rect x="475" y="350" width="250" height="50" rx="8" fill="#3b82f6" />
+  <text x="600" y="380" font-size="14" font-weight="bold" fill="#ffffff" text-anchor="middle">Click "Register Account"</text>
+
+  <path d="M 600 400 L 600 425" stroke="#1e293b" stroke-width="2" marker-end="url(#arrow)" />
+
+  <!-- 4. ValidateInput Composite -->
+  <g id="ValidateInput">
+    <rect x="250" y="430" width="650" height="270" fill="#f8fafc" stroke="#94a3b8" stroke-width="2" stroke-dasharray="6,4" rx="10" />
+    <text x="260" y="450" font-size="14" font-weight="bold" fill="#475569">Validate Input</text>
+
+    <!-- CheckEmail -->
+    <polygon points="450,450 560,475 450,500 340,475" fill="#fbbf24" stroke="#d97706" stroke-width="2" />
+    <text x="450" y="475" font-size="12" font-weight="bold" text-anchor="middle" fill="#451a03">Valid &amp; Unique Email?</text>
+
+    <path d="M 450 500 L 450 520" stroke="#1e293b" stroke-width="2" marker-end="url(#arrow)" />
+    <text x="460" y="515" font-size="12" fill="#15803d">Yes</text>
+
+    <path d="M 560 475 L 740 475 L 740 515" stroke="#1e293b" stroke-width="2" fill="none" marker-end="url(#arrow)" />
+    <text x="575" y="470" font-size="12" fill="#b91c1c">No</text>
+
+    <!-- CheckPhone -->
+    <polygon points="450,525 560,550 450,575 340,550" fill="#fbbf24" stroke="#d97706" stroke-width="2" />
+    <text x="450" y="555" font-size="12" font-weight="bold" text-anchor="middle" fill="#451a03">Valid BD Phone?</text>
+
+    <path d="M 450 575 L 450 595" stroke="#1e293b" stroke-width="2" marker-end="url(#arrow)" />
+    <text x="460" y="590" font-size="12" fill="#15803d">Yes</text>
+
+    <path d="M 560 550 L 650 550" stroke="#1e293b" stroke-width="2" fill="none" marker-end="url(#arrow)" />
+    <text x="575" y="545" font-size="12" fill="#b91c1c">No</text>
+
+    <!-- CheckPassword -->
+    <polygon points="450,600 560,625 450,650 340,625" fill="#fbbf24" stroke="#d97706" stroke-width="2" />
+    <text x="450" y="630" font-size="12" font-weight="bold" text-anchor="middle" fill="#451a03">Password &gt;= 6 Chars?</text>
+
+    <path d="M 560 625 L 740 625 L 740 585" stroke="#1e293b" stroke-width="2" fill="none" marker-end="url(#arrow)" />
+    <text x="575" y="620" font-size="12" fill="#b91c1c">No</text>
+
+    <path d="M 450 650 L 450 715" stroke="#1e293b" stroke-width="2" fill="none" marker-end="url(#arrow)" />
+    <text x="460" y="670" font-size="12" fill="#15803d">Yes</text>
+
+    <!-- ValidationError -->
+    <rect x="650" y="525" width="180" height="50" rx="8" fill="#dc2626" />
+    <text x="740" y="545" font-size="14" font-weight="bold" fill="#ffffff" text-anchor="middle">ValidationError</text>
+    <text x="740" y="565" font-size="12" fill="#ffffff" text-anchor="middle">"Display Error Toast"</text>
+  </g>
+
+  <!-- Loop back to EnterDetails from ValidationError -->
+  <path d="M 830 550 L 920 550 L 920 295 L 810 295" stroke="#b91c1c" stroke-width="2" stroke-dasharray="4,4" fill="none" marker-end="url(#arrow)" />
+
+  <!-- 5. HashSecret -->
+  <rect x="300" y="720" width="300" height="50" rx="8" fill="#3b82f6" />
+  <text x="450" y="740" font-size="14" font-weight="bold" fill="#ffffff" text-anchor="middle">HashSecret</text>
+  <text x="450" y="760" font-size="12" fill="#ffffff" text-anchor="middle">BCrypt.HashPassword(password, 11)</text>
+
+  <path d="M 450 770 L 450 795" stroke="#1e293b" stroke-width="2" marker-end="url(#arrow)" />
+
+  <!-- 6. PersistUser -->
+  <rect x="300" y="800" width="300" height="50" rx="8" fill="#3b82f6" />
+  <text x="450" y="820" font-size="14" font-weight="bold" fill="#ffffff" text-anchor="middle">PersistUser</text>
+  <text x="450" y="840" font-size="12" fill="#ffffff" text-anchor="middle">INSERT INTO users &amp; user_roles</text>
+
+  <path d="M 450 850 L 450 875" stroke="#1e293b" stroke-width="2" marker-end="url(#arrow)" />
+
+  <!-- 7. GenerateJWT -->
+  <rect x="300" y="880" width="300" height="50" rx="8" fill="#3b82f6" />
+  <text x="450" y="900" font-size="14" font-weight="bold" fill="#ffffff" text-anchor="middle">GenerateJWT</text>
+  <text x="450" y="920" font-size="12" fill="#ffffff" text-anchor="middle">Generate Signed JWT Token</text>
+
+  <path d="M 450 930 L 450 955" stroke="#1e293b" stroke-width="2" marker-end="url(#arrow)" />
+
+  <!-- 8. StoreSession -->
+  <rect x="300" y="960" width="300" height="50" rx="8" fill="#3b82f6" />
+  <text x="450" y="980" font-size="14" font-weight="bold" fill="#ffffff" text-anchor="middle">StoreSession</text>
+  <text x="450" y="1000" font-size="12" fill="#ffffff" text-anchor="middle">Client stores Token in localStorage</text>
+
+  <path d="M 450 1010 L 450 1030" stroke="#1e293b" stroke-width="2" marker-end="url(#arrow)" />
+
+  <!-- 9. RouteUser -->
+  <polygon points="450,1035 550,1055 450,1075 350,1055" fill="#fbbf24" stroke="#d97706" stroke-width="2" />
+  <text x="450" y="1060" font-size="12" font-weight="bold" text-anchor="middle" fill="#451a03">Check User Role</text>
+
+  <!-- Route Consumer -->
+  <path d="M 350 1055 L 260 1055" stroke="#1e293b" stroke-width="2" fill="none" marker-end="url(#arrow)" />
+  <text x="310" y="1050" font-size="12" fill="#1e293b">Consumer</text>
+
+  <rect x="80" y="1035" width="170" height="40" rx="8" fill="#3b82f6" />
+  <text x="165" y="1060" font-size="14" font-weight="bold" fill="#ffffff" text-anchor="middle">NavigateDirectory</text>
+
+  <path d="M 80 1055 L 45 1055" stroke="#1e293b" stroke-width="2" fill="none" marker-end="url(#arrow)" />
+  <circle cx="25" cy="1055" r="10" fill="#ffffff" stroke="#000000" stroke-width="3" />
+  <circle cx="25" cy="1055" r="5" fill="#000000" />
+
+  <!-- Route Worker -->
+  <path d="M 550 1055 L 630 1055" stroke="#1e293b" stroke-width="2" fill="none" marker-end="url(#arrow)" />
+  <text x="590" y="1050" font-size="12" fill="#1e293b">ServiceProvider</text>
+
+  <rect x="640" y="1035" width="200" height="40" rx="8" fill="#3b82f6" />
+  <text x="740" y="1060" font-size="14" font-weight="bold" fill="#ffffff" text-anchor="middle">NavigateProfileSetup</text>
+
+  <path d="M 840 1055 L 870 1055" stroke="#1e293b" stroke-width="2" fill="none" marker-end="url(#arrow)" />
+  <circle cx="890" cy="1055" r="10" fill="#ffffff" stroke="#000000" stroke-width="3" />
+  <circle cx="890" cy="1055" r="5" fill="#000000" />
+</svg>

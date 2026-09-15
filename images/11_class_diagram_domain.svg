@@ -1,0 +1,353 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1800 1200" width="100%" height="100%">
+  <defs>
+    <style>
+      .title { font-family: sans-serif; font-size: 24px; font-weight: bold; fill: #111; }
+      .class-name { font-family: sans-serif; font-size: 14px; font-weight: bold; fill: #fff; }
+      .class-name-dark { font-family: sans-serif; font-size: 14px; font-weight: bold; fill: #111; }
+      .attr { font-family: monospace; font-size: 11px; fill: #333; }
+      .line { stroke: #666; stroke-width: 1.5; fill: none; }
+      .cardinality { font-family: sans-serif; font-size: 11px; fill: #444; background: white; }
+      .bg { fill: #f9fafb; }
+      .header-blue { fill: #1e3a8a; }
+      .header-green { fill: #059669; }
+      .header-orange { fill: #d97706; }
+      .header-purple { fill: #7c3aed; }
+      .header-gray { fill: #4b5563; }
+      .box { fill: #fff; stroke: #9ca3af; stroke-width: 1.5; }
+    </style>
+  </defs>
+
+  <rect width="100%" height="100%" class="bg" />
+  
+  <text x="900" y="40" class="title" text-anchor="middle">KajBazar Domain Model Class Diagram</text>
+
+  <!-- LINES AND RELATIONSHIPS -->
+  
+  <!-- User to UserRole -->
+  <path d="M 800 141 L 700 141" class="line" />
+  <text x="780" y="135" class="cardinality">1</text>
+  <text x="710" y="135" class="cardinality">1..*</text>
+  <text x="750" y="155" class="cardinality" text-anchor="middle">assigned</text>
+
+  <!-- Role to UserRole -->
+  <path d="M 400 141 L 500 141" class="line" />
+  <text x="410" y="135" class="cardinality">1</text>
+  <text x="480" y="135" class="cardinality">0..*</text>
+  <text x="450" y="155" class="cardinality" text-anchor="middle">groups</text>
+
+  <!-- User to SPP -->
+  <path d="M 910 278 L 910 400" class="line" />
+  <text x="915" y="295" class="cardinality">1</text>
+  <text x="915" y="390" class="cardinality">0..1</text>
+  <text x="915" y="340" class="cardinality">has</text>
+
+  <!-- SPP to WorkerCategory -->
+  <path d="M 1040 591 L 1200 591" class="line" />
+  <text x="1050" y="585" class="cardinality">1</text>
+  <text x="1170" y="585" class="cardinality">1..*</text>
+  <text x="1120" y="605" class="cardinality" text-anchor="middle">categorized_by</text>
+
+  <!-- Category to WorkerCategory -->
+  <path d="M 1300 496 L 1300 550" class="line" />
+  <text x="1305" y="510" class="cardinality">1</text>
+  <text x="1305" y="540" class="cardinality">0..*</text>
+  <text x="1305" y="525" class="cardinality">classifies</text>
+
+  <!-- District to Upazila -->
+  <path d="M 300 432 L 300 500" class="line" />
+  <text x="305" y="445" class="cardinality">1</text>
+  <text x="305" y="490" class="cardinality">1..*</text>
+  <text x="305" y="470" class="cardinality">contains</text>
+
+  <!-- District to SPP -->
+  <path d="M 400 391 L 800 450" class="line" />
+  <text x="410" y="385" class="cardinality">1</text>
+  <text x="780" y="445" class="cardinality">0..*</text>
+  <text x="600" y="415" class="cardinality" text-anchor="middle">operates_in</text>
+
+  <!-- Upazila to SPP -->
+  <path d="M 400 549 L 800 550" class="line" />
+  <text x="410" y="540" class="cardinality">1</text>
+  <text x="780" y="545" class="cardinality">0..*</text>
+  <text x="600" y="540" class="cardinality" text-anchor="middle">located_in</text>
+
+  <!-- SPP to Review -->
+  <path d="M 910 658 L 910 800" class="line" />
+  <text x="915" y="675" class="cardinality">1</text>
+  <text x="915" y="790" class="cardinality">0..*</text>
+  <text x="915" y="730" class="cardinality">evaluates</text>
+
+  <!-- User to Review -->
+  <path d="M 800 178 L 740 178 L 740 881 L 800 881" class="line" />
+  <text x="780" y="170" class="cardinality">1</text>
+  <text x="770" y="875" class="cardinality">0..*</text>
+  <text x="745" y="530" class="cardinality">writes</text>
+
+  <!-- User to CommRec -->
+  <path d="M 840 278 L 840 750 L 520 750 L 520 800" class="line" />
+  <text x="845" y="295" class="cardinality">1</text>
+  <text x="525" y="790" class="cardinality">0..*</text>
+  <text x="680" y="745" class="cardinality" text-anchor="middle">refers</text>
+
+  <!-- User to Report -->
+  <path d="M 980 278 L 980 700 L 1310 700 L 1310 750" class="line" />
+  <text x="985" y="295" class="cardinality">1</text>
+  <text x="1315" y="740" class="cardinality">0..*</text>
+  <text x="1145" y="695" class="cardinality" text-anchor="middle">files</text>
+
+  <!-- User to AdminAuditLog -->
+  <path d="M 1020 150 L 1480 150 L 1480 1031 L 1420 1031" class="line" />
+  <text x="1030" y="145" class="cardinality">1</text>
+  <text x="1430" y="1025" class="cardinality">0..*</text>
+  <text x="1485" y="590" class="cardinality">executes</text>
+
+  <!-- CLASSES -->
+
+  <!-- User -->
+  <g transform="translate(800, 100)">
+    <rect width="220" height="178" rx="5" class="box" />
+    <rect width="220" height="30" rx="5" class="header-blue" />
+    <rect y="25" width="220" height="5" class="header-blue" />
+    <text x="110" y="20" class="class-name" text-anchor="middle">User</text>
+    <line x1="0" y1="30" x2="220" y2="30" stroke="#333" stroke-width="1.5" />
+    <text x="10" y="35" class="attr">
+      <tspan x="10" dy="16">+ Guid UserId</tspan>
+      <tspan x="10" dy="16">+ string FullName</tspan>
+      <tspan x="10" dy="16">+ string Email</tspan>
+      <tspan x="10" dy="16">+ string PhoneNumber</tspan>
+      <tspan x="10" dy="16">+ string PasswordHash</tspan>
+      <tspan x="10" dy="16">+ bool IsActive</tspan>
+      <tspan x="10" dy="16">+ DateTime CreatedAt</tspan>
+      <tspan x="10" dy="16">+ DateTime UpdatedAt</tspan>
+    </text>
+  </g>
+
+  <!-- Role -->
+  <g transform="translate(200, 100)">
+    <rect width="200" height="98" rx="5" class="box" />
+    <rect width="200" height="30" rx="5" class="header-gray" />
+    <rect y="25" width="200" height="5" class="header-gray" />
+    <text x="100" y="20" class="class-name" text-anchor="middle">Role</text>
+    <line x1="0" y1="30" x2="200" y2="30" stroke="#333" stroke-width="1.5" />
+    <text x="10" y="35" class="attr">
+      <tspan x="10" dy="16">+ RoleId</tspan>
+      <tspan x="10" dy="16">+ RoleName</tspan>
+      <tspan x="10" dy="16">+ CreatedAt</tspan>
+    </text>
+  </g>
+
+  <!-- UserRole -->
+  <g transform="translate(500, 100)">
+    <rect width="200" height="82" rx="5" class="box" />
+    <rect width="200" height="30" rx="5" class="header-gray" />
+    <rect y="25" width="200" height="5" class="header-gray" />
+    <text x="100" y="20" class="class-name" text-anchor="middle">UserRole</text>
+    <line x1="0" y1="30" x2="200" y2="30" stroke="#333" stroke-width="1.5" />
+    <text x="10" y="35" class="attr">
+      <tspan x="10" dy="16">+ UserId</tspan>
+      <tspan x="10" dy="16">+ RoleId</tspan>
+    </text>
+  </g>
+
+  <!-- ServiceProviderProfile -->
+  <g transform="translate(800, 400)">
+    <rect width="240" height="258" rx="5" class="box" />
+    <rect width="240" height="30" rx="5" class="header-green" />
+    <rect y="25" width="240" height="5" class="header-green" />
+    <text x="120" y="20" class="class-name" text-anchor="middle">ServiceProviderProfile</text>
+    <line x1="0" y1="30" x2="240" y2="30" stroke="#333" stroke-width="1.5" />
+    <text x="10" y="35" class="attr">
+      <tspan x="10" dy="16">+ ProfileId</tspan>
+      <tspan x="10" dy="16">+ UserId</tspan>
+      <tspan x="10" dy="16">+ DistrictId</tspan>
+      <tspan x="10" dy="16">+ UpazilaId</tspan>
+      <tspan x="10" dy="16">+ Bio</tspan>
+      <tspan x="10" dy="16">+ ExperienceYears</tspan>
+      <tspan x="10" dy="16">+ HourlyRate</tspan>
+      <tspan x="10" dy="16">+ VerificationStatus</tspan>
+      <tspan x="10" dy="16">+ VerifiedAt</tspan>
+      <tspan x="10" dy="16">+ AverageRating</tspan>
+      <tspan x="10" dy="16">+ TotalReviews</tspan>
+      <tspan x="10" dy="16">+ CreatedAt</tspan>
+      <tspan x="10" dy="16">+ UpdatedAt</tspan>
+    </text>
+  </g>
+
+  <!-- Category -->
+  <g transform="translate(1200, 350)">
+    <rect width="220" height="146" rx="5" class="box" />
+    <rect width="220" height="30" rx="5" class="header-gray" />
+    <rect y="25" width="220" height="5" class="header-gray" />
+    <text x="110" y="20" class="class-name" text-anchor="middle">Category</text>
+    <line x1="0" y1="30" x2="220" y2="30" stroke="#333" stroke-width="1.5" />
+    <text x="10" y="35" class="attr">
+      <tspan x="10" dy="16">+ CategoryId</tspan>
+      <tspan x="10" dy="16">+ CategoryName</tspan>
+      <tspan x="10" dy="16">+ Description</tspan>
+      <tspan x="10" dy="16">+ IconUrl</tspan>
+      <tspan x="10" dy="16">+ IsActive</tspan>
+      <tspan x="10" dy="16">+ CreatedAt</tspan>
+    </text>
+  </g>
+
+  <!-- WorkerCategory -->
+  <g transform="translate(1200, 550)">
+    <rect width="200" height="82" rx="5" class="box" />
+    <rect width="200" height="30" rx="5" class="header-gray" />
+    <rect y="25" width="200" height="5" class="header-gray" />
+    <text x="100" y="20" class="class-name" text-anchor="middle">WorkerCategory</text>
+    <line x1="0" y1="30" x2="200" y2="30" stroke="#333" stroke-width="1.5" />
+    <text x="10" y="35" class="attr">
+      <tspan x="10" dy="16">+ ProfileId</tspan>
+      <tspan x="10" dy="16">+ CategoryId</tspan>
+    </text>
+  </g>
+
+  <!-- District -->
+  <g transform="translate(200, 350)">
+    <rect width="200" height="82" rx="5" class="box" />
+    <rect width="200" height="30" rx="5" class="header-gray" />
+    <rect y="25" width="200" height="5" class="header-gray" />
+    <text x="100" y="20" class="class-name" text-anchor="middle">District</text>
+    <line x1="0" y1="30" x2="200" y2="30" stroke="#333" stroke-width="1.5" />
+    <text x="10" y="35" class="attr">
+      <tspan x="10" dy="16">+ DistrictId</tspan>
+      <tspan x="10" dy="16">+ DistrictName</tspan>
+    </text>
+  </g>
+
+  <!-- Upazila -->
+  <g transform="translate(200, 500)">
+    <rect width="200" height="98" rx="5" class="box" />
+    <rect width="200" height="30" rx="5" class="header-gray" />
+    <rect y="25" width="200" height="5" class="header-gray" />
+    <text x="100" y="20" class="class-name" text-anchor="middle">Upazila</text>
+    <line x1="0" y1="30" x2="200" y2="30" stroke="#333" stroke-width="1.5" />
+    <text x="10" y="35" class="attr">
+      <tspan x="10" dy="16">+ UpazilaId</tspan>
+      <tspan x="10" dy="16">+ DistrictId</tspan>
+      <tspan x="10" dy="16">+ UpazilaName</tspan>
+    </text>
+  </g>
+
+  <!-- Review -->
+  <g transform="translate(800, 800)">
+    <rect width="220" height="162" rx="5" class="box" />
+    <rect width="220" height="30" rx="5" class="header-orange" />
+    <rect y="25" width="220" height="5" class="header-orange" />
+    <text x="110" y="20" class="class-name" text-anchor="middle">Review</text>
+    <line x1="0" y1="30" x2="220" y2="30" stroke="#333" stroke-width="1.5" />
+    <text x="10" y="35" class="attr">
+      <tspan x="10" dy="16">+ ReviewId</tspan>
+      <tspan x="10" dy="16">+ ConsumerId</tspan>
+      <tspan x="10" dy="16">+ WorkerProfileId</tspan>
+      <tspan x="10" dy="16">+ Rating</tspan>
+      <tspan x="10" dy="16">+ Comment</tspan>
+      <tspan x="10" dy="16">+ CreatedAt</tspan>
+      <tspan x="10" dy="16">+ UpdatedAt</tspan>
+    </text>
+  </g>
+
+  <!-- CommunityRecommendation -->
+  <g transform="translate(400, 800)">
+    <rect width="240" height="226" rx="5" class="box" />
+    <rect width="240" height="30" rx="5" class="header-gray" />
+    <rect y="25" width="240" height="5" class="header-gray" />
+    <text x="120" y="20" class="class-name" text-anchor="middle">CommunityRecommendation</text>
+    <line x1="0" y1="30" x2="240" y2="30" stroke="#333" stroke-width="1.5" />
+    <text x="10" y="35" class="attr">
+      <tspan x="10" dy="16">+ RecommendationId</tspan>
+      <tspan x="10" dy="16">+ RecommendedByUserId</tspan>
+      <tspan x="10" dy="16">+ WorkerName</tspan>
+      <tspan x="10" dy="16">+ PhoneNumber</tspan>
+      <tspan x="10" dy="16">+ CategoryId</tspan>
+      <tspan x="10" dy="16">+ DistrictId</tspan>
+      <tspan x="10" dy="16">+ UpazilaId</tspan>
+      <tspan x="10" dy="16">+ Notes</tspan>
+      <tspan x="10" dy="16">+ Status</tspan>
+      <tspan x="10" dy="16">+ ReviewedByAdminId</tspan>
+      <tspan x="10" dy="16">+ CreatedAt</tspan>
+    </text>
+  </g>
+
+  <!-- Report -->
+  <g transform="translate(1200, 750)">
+    <rect width="220" height="146" rx="5" class="box" />
+    <rect width="220" height="30" rx="5" class="header-gray" />
+    <rect y="25" width="220" height="5" class="header-gray" />
+    <text x="110" y="20" class="class-name" text-anchor="middle">Report</text>
+    <line x1="0" y1="30" x2="220" y2="30" stroke="#333" stroke-width="1.5" />
+    <text x="10" y="35" class="attr">
+      <tspan x="10" dy="16">+ ReportId</tspan>
+      <tspan x="10" dy="16">+ ReportedByUserId</tspan>
+      <tspan x="10" dy="16">+ TargetUserId</tspan>
+      <tspan x="10" dy="16">+ Reason</tspan>
+      <tspan x="10" dy="16">+ Status</tspan>
+      <tspan x="10" dy="16">+ CreatedAt</tspan>
+    </text>
+  </g>
+
+  <!-- AdminAuditLog -->
+  <g transform="translate(1200, 950)">
+    <rect width="220" height="162" rx="5" class="box" />
+    <rect width="220" height="30" rx="5" class="header-gray" />
+    <rect y="25" width="220" height="5" class="header-gray" />
+    <text x="110" y="20" class="class-name" text-anchor="middle">AdminAuditLog</text>
+    <line x1="0" y1="30" x2="220" y2="30" stroke="#333" stroke-width="1.5" />
+    <text x="10" y="35" class="attr">
+      <tspan x="10" dy="16">+ LogId</tspan>
+      <tspan x="10" dy="16">+ AdminUserId</tspan>
+      <tspan x="10" dy="16">+ Action</tspan>
+      <tspan x="10" dy="16">+ EntityName</tspan>
+      <tspan x="10" dy="16">+ EntityId</tspan>
+      <tspan x="10" dy="16">+ Details</tspan>
+      <tspan x="10" dy="16">+ Timestamp</tspan>
+    </text>
+  </g>
+
+  <!-- ENUMS -->
+  <!-- VerificationStatus -->
+  <g transform="translate(1550, 350)">
+    <rect width="180" height="114" rx="5" class="box" />
+    <rect width="180" height="30" rx="5" class="header-purple" />
+    <rect y="25" width="180" height="5" class="header-purple" />
+    <text x="90" y="20" class="class-name" text-anchor="middle">VerificationStatus</text>
+    <line x1="0" y1="30" x2="180" y2="30" stroke="#333" stroke-width="1.5" />
+    <text x="10" y="35" class="attr">
+      <tspan x="10" dy="16">Pending</tspan>
+      <tspan x="10" dy="16">Verified</tspan>
+      <tspan x="10" dy="16">Rejected</tspan>
+      <tspan x="10" dy="16">Suspended</tspan>
+    </text>
+  </g>
+
+  <!-- RecommendationStatus -->
+  <g transform="translate(1550, 500)">
+    <rect width="180" height="98" rx="5" class="box" />
+    <rect width="180" height="30" rx="5" class="header-purple" />
+    <rect y="25" width="180" height="5" class="header-purple" />
+    <text x="90" y="20" class="class-name" text-anchor="middle">RecommendationStatus</text>
+    <line x1="0" y1="30" x2="180" y2="30" stroke="#333" stroke-width="1.5" />
+    <text x="10" y="35" class="attr">
+      <tspan x="10" dy="16">Pending</tspan>
+      <tspan x="10" dy="16">Approved</tspan>
+      <tspan x="10" dy="16">Rejected</tspan>
+    </text>
+  </g>
+
+  <!-- ReportStatus -->
+  <g transform="translate(1550, 650)">
+    <rect width="180" height="114" rx="5" class="box" />
+    <rect width="180" height="30" rx="5" class="header-purple" />
+    <rect y="25" width="180" height="5" class="header-purple" />
+    <text x="90" y="20" class="class-name" text-anchor="middle">ReportStatus</text>
+    <line x1="0" y1="30" x2="180" y2="30" stroke="#333" stroke-width="1.5" />
+    <text x="10" y="35" class="attr">
+      <tspan x="10" dy="16">Open</tspan>
+      <tspan x="10" dy="16">UnderReview</tspan>
+      <tspan x="10" dy="16">Resolved</tspan>
+      <tspan x="10" dy="16">Dismissed</tspan>
+    </text>
+  </g>
+
+</svg>

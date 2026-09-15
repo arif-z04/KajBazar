@@ -1,0 +1,125 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 950" width="100%" height="100%">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#475569"/>
+    </marker>
+    <marker id="arrow-rev" viewBox="0 0 10 10" refX="2" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 10 0 L 0 5 L 10 10 z" fill="#475569"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1400" height="950" fill="#ffffff" />
+  
+  <!-- System Boundary Area (Subtle background) -->
+  <rect x="750" y="150" width="500" height="800" rx="20" fill="#f8fafc" stroke="#e2e8f0" stroke-width="2" stroke-dasharray="10,5"/>
+  
+  <!-- Title -->
+  <text x="700" y="50" font-family="sans-serif" font-size="24" font-weight="bold" fill="#0f172a" text-anchor="middle">KajBazar Context Diagram</text>
+
+  <!-- Legend -->
+  <g transform="translate(1050, 40)">
+    <rect x="0" y="0" width="20" height="20" rx="4" fill="#1e3a8a" />
+    <text x="30" y="15" font-family="sans-serif" font-size="12" fill="#334155">External Entity</text>
+    <rect x="150" y="0" width="20" height="20" rx="4" fill="#059669" />
+    <text x="180" y="15" font-family="sans-serif" font-size="12" fill="#334155">System Process</text>
+  </g>
+
+  <!-- Consumer <-> System -->
+  <!-- C->S -->
+  <path id="p1" d="M 320,110 C 560,110 560,230 800,230" fill="none" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/>
+  <text font-family="sans-serif" font-size="11" fill="#1e293b" dy="-5"><textPath href="#p1" startOffset="50%" text-anchor="middle">1. Registration / Login Credentials</textPath></text>
+  
+  <path id="p2" d="M 320,140 C 560,140 560,260 800,260" fill="none" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/>
+  <text font-family="sans-serif" font-size="11" fill="#1e293b" dy="-5"><textPath href="#p2" startOffset="50%" text-anchor="middle">2. Search Filters (Category, District, Upazila)</textPath></text>
+  
+  <path id="p3" d="M 320,170 C 560,170 560,290 800,290" fill="none" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/>
+  <text font-family="sans-serif" font-size="11" fill="#1e293b" dy="-5"><textPath href="#p3" startOffset="50%" text-anchor="middle">3. Worker Review &amp; Star Rating (1-5)</textPath></text>
+  
+  <path id="p4" d="M 320,200 C 560,200 560,320 800,320" fill="none" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/>
+  <text font-family="sans-serif" font-size="11" fill="#1e293b" dy="-5"><textPath href="#p4" startOffset="50%" text-anchor="middle">4. Offline Worker Recommendation</textPath></text>
+
+  <!-- S->C -->
+  <path id="p5" d="M 320,240 C 560,240 560,360 800,360" fill="none" stroke="#475569" stroke-width="2" marker-start="url(#arrow-rev)"/>
+  <text font-family="sans-serif" font-size="11" fill="#1e293b" dy="-5"><textPath href="#p5" startOffset="50%" text-anchor="middle">5. Search Results &amp; Verified Worker Profiles</textPath></text>
+  
+  <path id="p6" d="M 320,270 C 560,270 560,390 800,390" fill="none" stroke="#475569" stroke-width="2" marker-start="url(#arrow-rev)"/>
+  <text font-family="sans-serif" font-size="11" fill="#1e293b" dy="-5"><textPath href="#p6" startOffset="50%" text-anchor="middle">6. Direct Phone Contact Number</textPath></text>
+  
+  <path id="p7" d="M 320,300 C 560,300 560,420 800,420" fill="none" stroke="#475569" stroke-width="2" marker-start="url(#arrow-rev)"/>
+  <text font-family="sans-serif" font-size="11" fill="#1e293b" dy="-5"><textPath href="#p7" startOffset="50%" text-anchor="middle">7. Authentication JWT Token &amp; Profile Info</textPath></text>
+
+
+  <!-- Provider <-> System -->
+  <!-- P->S -->
+  <path id="p8" d="M 320,410 C 560,410 560,470 800,470" fill="none" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/>
+  <text font-family="sans-serif" font-size="11" fill="#1e293b" dy="-5"><textPath href="#p8" startOffset="50%" text-anchor="middle">8. Profile Registration &amp; Experience Bio</textPath></text>
+  
+  <path id="p9" d="M 320,440 C 560,440 560,500 800,500" fill="none" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/>
+  <text font-family="sans-serif" font-size="11" fill="#1e293b" dy="-5"><textPath href="#p9" startOffset="50%" text-anchor="middle">9. Service Categories &amp; Hourly Rate</textPath></text>
+  
+  <path id="p10" d="M 320,470 C 560,470 560,530 800,530" fill="none" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/>
+  <text font-family="sans-serif" font-size="11" fill="#1e293b" dy="-5"><textPath href="#p10" startOffset="50%" text-anchor="middle">10. Location Details (District, Upazila)</textPath></text>
+
+  <!-- S->P -->
+  <path id="p11" d="M 320,520 C 560,520 560,570 800,570" fill="none" stroke="#475569" stroke-width="2" marker-start="url(#arrow-rev)"/>
+  <text font-family="sans-serif" font-size="11" fill="#1e293b" dy="-5"><textPath href="#p11" startOffset="50%" text-anchor="middle">11. Verification Status</textPath></text>
+  
+  <path id="p12" d="M 320,550 C 560,550 560,600 800,600" fill="none" stroke="#475569" stroke-width="2" marker-start="url(#arrow-rev)"/>
+  <text font-family="sans-serif" font-size="11" fill="#1e293b" dy="-5"><textPath href="#p12" startOffset="50%" text-anchor="middle">12. Customer Reviews &amp; Average Rating</textPath></text>
+  
+  <path id="p13" d="M 320,580 C 560,580 560,630 800,630" fill="none" stroke="#475569" stroke-width="2" marker-start="url(#arrow-rev)"/>
+  <text font-family="sans-serif" font-size="11" fill="#1e293b" dy="-5"><textPath href="#p13" startOffset="50%" text-anchor="middle">13. Direct Call Inquiries</textPath></text>
+
+
+  <!-- Admin <-> System -->
+  <!-- A->S -->
+  <path id="p14" d="M 320,710 C 560,710 560,680 800,680" fill="none" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/>
+  <text font-family="sans-serif" font-size="11" fill="#1e293b" dy="-5"><textPath href="#p14" startOffset="50%" text-anchor="middle">14. Admin Credentials &amp; Authentication</textPath></text>
+  
+  <path id="p15" d="M 320,740 C 560,740 560,710 800,710" fill="none" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/>
+  <text font-family="sans-serif" font-size="11" fill="#1e293b" dy="-5"><textPath href="#p15" startOffset="50%" text-anchor="middle">15. Worker Verification Decision</textPath></text>
+  
+  <path id="p16" d="M 320,770 C 560,770 560,740 800,740" fill="none" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/>
+  <text font-family="sans-serif" font-size="11" fill="#1e293b" dy="-5"><textPath href="#p16" startOffset="50%" text-anchor="middle">16. Recommendation Moderation</textPath></text>
+  
+  <path id="p17" d="M 320,800 C 560,800 560,770 800,770" fill="none" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/>
+  <text font-family="sans-serif" font-size="11" fill="#1e293b" dy="-5"><textPath href="#p17" startOffset="50%" text-anchor="middle">17. Category Management</textPath></text>
+
+  <!-- S->A -->
+  <path id="p18" d="M 320,840 C 560,840 560,810 800,810" fill="none" stroke="#475569" stroke-width="2" marker-start="url(#arrow-rev)"/>
+  <text font-family="sans-serif" font-size="11" fill="#1e293b" dy="-5"><textPath href="#p18" startOffset="50%" text-anchor="middle">18. Dashboard Metrics &amp; Stats</textPath></text>
+  
+  <path id="p19" d="M 320,870 C 560,870 560,840 800,840" fill="none" stroke="#475569" stroke-width="2" marker-start="url(#arrow-rev)"/>
+  <text font-family="sans-serif" font-size="11" fill="#1e293b" dy="-5"><textPath href="#p19" startOffset="50%" text-anchor="middle">19. Pending Verification Queues</textPath></text>
+  
+  <path id="p20" d="M 320,900 C 560,900 560,870 800,870" fill="none" stroke="#475569" stroke-width="2" marker-start="url(#arrow-rev)"/>
+  <text font-family="sans-serif" font-size="11" fill="#1e293b" dy="-5"><textPath href="#p20" startOffset="50%" text-anchor="middle">20. Audit Trail Logs</textPath></text>
+
+  <!-- Actors -->
+  <!-- Consumer -->
+  <g transform="translate(80, 80)">
+    <rect width="240" height="240" rx="15" fill="#1e3a8a" />
+    <text x="120" y="125" font-family="sans-serif" font-size="20" font-weight="bold" fill="#ffffff" text-anchor="middle">Consumer</text>
+  </g>
+  
+  <!-- Service Provider -->
+  <g transform="translate(80, 380)">
+    <rect width="240" height="240" rx="15" fill="#1e3a8a" />
+    <text x="120" y="125" font-family="sans-serif" font-size="20" font-weight="bold" fill="#ffffff" text-anchor="middle">Service Provider</text>
+  </g>
+  
+  <!-- Administrator -->
+  <g transform="translate(80, 680)">
+    <rect width="240" height="240" rx="15" fill="#1e3a8a" />
+    <text x="120" y="125" font-family="sans-serif" font-size="20" font-weight="bold" fill="#ffffff" text-anchor="middle">Administrator</text>
+  </g>
+
+  <!-- System -->
+  <g transform="translate(800, 180)">
+    <rect width="400" height="740" rx="20" fill="#059669" />
+    <text x="200" y="340" font-family="sans-serif" font-size="24" font-weight="bold" fill="#ffffff" text-anchor="middle">0.0</text>
+    <text x="200" y="375" font-family="sans-serif" font-size="24" font-weight="bold" fill="#ffffff" text-anchor="middle">KajBazar Platform</text>
+    <text x="200" y="405" font-family="sans-serif" font-size="18" fill="#ffffff" text-anchor="middle">(Core Directory System)</text>
+  </g>
+</svg>

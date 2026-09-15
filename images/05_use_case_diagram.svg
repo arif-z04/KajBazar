@@ -1,0 +1,190 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 1000" width="1400" height="1000" style="background-color: #ffffff; font-family: sans-serif;">
+    <defs>
+        <!-- Marker for solid arrows (general relationships) -->
+        <marker id="arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#475569" />
+        </marker>
+        <!-- Marker for dashed arrows (includes/extends) -->
+        <marker id="arrow-dashed" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#64748b" />
+        </marker>
+        <!-- Marker for open arrows (generalization) -->
+        <marker id="arrow-open" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+            <path d="M 0 0 L 10 5 L 0 10 Z" fill="none" stroke="#1e3a8a" stroke-width="1.5"/>
+        </marker>
+        
+        <!-- Drop shadow filter -->
+        <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+            <feDropShadow dx="2" dy="2" stdDeviation="3" flood-opacity="0.1" />
+        </filter>
+    </defs>
+
+    <!-- Title -->
+    <text x="700" y="50" text-anchor="middle" font-size="24" font-weight="bold" fill="#1e293b">KajBazar Use Case Diagram</text>
+
+    <!-- System Boundary -->
+    <rect x="350" y="80" width="1000" height="880" fill="#f8fafc" stroke="#94a3b8" stroke-width="2" stroke-dasharray="8 4" rx="10" />
+    <text x="850" y="110" text-anchor="middle" font-size="18" font-weight="bold" fill="#64748b">KajBazar Platform Boundary</text>
+
+    <!-- ACTORS -->
+    <g id="actors" fill="#1e3a8a">
+        <!-- Guest Visitor -->
+        <g transform="translate(150, 180)">
+            <circle cx="0" cy="-25" r="15" />
+            <line x1="0" y1="-10" x2="0" y2="25" stroke="#1e3a8a" stroke-width="4"/>
+            <line x1="-20" y1="5" x2="20" y2="5" stroke="#1e3a8a" stroke-width="4"/>
+            <line x1="0" y1="25" x2="-15" y2="55" stroke="#1e3a8a" stroke-width="4"/>
+            <line x1="0" y1="25" x2="15" y2="55" stroke="#1e3a8a" stroke-width="4"/>
+            <text x="0" y="80" text-anchor="middle" font-size="16" font-weight="bold">Guest Visitor</text>
+        </g>
+
+        <!-- Consumer -->
+        <g transform="translate(150, 420)">
+            <circle cx="0" cy="-25" r="15" />
+            <line x1="0" y1="-10" x2="0" y2="25" stroke="#1e3a8a" stroke-width="4"/>
+            <line x1="-20" y1="5" x2="20" y2="5" stroke="#1e3a8a" stroke-width="4"/>
+            <line x1="0" y1="25" x2="-15" y2="55" stroke="#1e3a8a" stroke-width="4"/>
+            <line x1="0" y1="25" x2="15" y2="55" stroke="#1e3a8a" stroke-width="4"/>
+            <text x="0" y="80" text-anchor="middle" font-size="16" font-weight="bold">Consumer (Registered)</text>
+        </g>
+        
+        <!-- Generalization: Consumer extends Guest -->
+        <path d="M 150 380 L 150 280" fill="none" stroke="#1e3a8a" stroke-width="2" marker-end="url(#arrow-open)"/>
+
+        <!-- Service Provider -->
+        <g transform="translate(150, 650)">
+            <circle cx="0" cy="-25" r="15" />
+            <line x1="0" y1="-10" x2="0" y2="25" stroke="#1e3a8a" stroke-width="4"/>
+            <line x1="-20" y1="5" x2="20" y2="5" stroke="#1e3a8a" stroke-width="4"/>
+            <line x1="0" y1="25" x2="-15" y2="55" stroke="#1e3a8a" stroke-width="4"/>
+            <line x1="0" y1="25" x2="15" y2="55" stroke="#1e3a8a" stroke-width="4"/>
+            <text x="0" y="80" text-anchor="middle" font-size="16" font-weight="bold">Service Provider</text>
+        </g>
+
+        <!-- Administrator -->
+        <g transform="translate(150, 830)">
+            <circle cx="0" cy="-25" r="15" />
+            <line x1="0" y1="-10" x2="0" y2="25" stroke="#1e3a8a" stroke-width="4"/>
+            <line x1="-20" y1="5" x2="20" y2="5" stroke="#1e3a8a" stroke-width="4"/>
+            <line x1="0" y1="25" x2="-15" y2="55" stroke="#1e3a8a" stroke-width="4"/>
+            <line x1="0" y1="25" x2="15" y2="55" stroke="#1e3a8a" stroke-width="4"/>
+            <text x="0" y="80" text-anchor="middle" font-size="16" font-weight="bold">Administrator</text>
+        </g>
+    </g>
+
+    <!-- CONNECTIONS: Actor to Use Cases -->
+    <g stroke="#94a3b8" stroke-width="1.5" fill="none">
+        <!-- Guest connections -->
+        <path d="M 220 200 C 300 200, 350 160, 420 160" />
+        <path d="M 220 200 C 300 200, 350 230, 420 230" />
+        <path d="M 220 200 C 300 200, 350 300, 420 300" />
+        <path d="M 220 200 C 500 200, 600 265, 800 265" /> <!-- UC-04 -->
+
+        <!-- Consumer connections -->
+        <path d="M 230 440 C 300 440, 350 370, 420 370" />
+        <path d="M 230 440 C 300 440, 350 440, 420 440" />
+        <path d="M 230 440 C 300 440, 350 510, 420 510" />
+        <path d="M 230 440 C 300 440, 350 580, 420 580" />
+
+        <!-- Service Provider connections -->
+        <path d="M 220 670 C 300 670, 350 630, 420 630" /> <!-- UC-09 -->
+        <path d="M 220 670 C 300 670, 350 710, 420 710" /> <!-- UC-11 -->
+        <path d="M 220 670 C 500 670, 700 265, 800 265" /> <!-- UC-04 shared -->
+
+        <!-- Administrator connections -->
+        <path d="M 220 850 C 300 850, 800 780, 850 780" /> <!-- UC-12 -->
+        <path d="M 220 850 C 300 850, 800 850, 850 850" /> <!-- UC-13 -->
+        <path d="M 220 850 C 300 850, 800 920, 850 920" /> <!-- UC-14 -->
+        <path d="M 220 850 C 300 850, 1070 780, 1150 780" /> <!-- UC-15 -->
+        <path d="M 220 850 C 300 850, 1070 850, 1150 850" /> <!-- UC-16 -->
+    </g>
+
+    <!-- INCLUDES / EXTENDS relationships -->
+    <g stroke="#64748b" stroke-width="1.5" stroke-dasharray="5 5" fill="none" marker-end="url(#arrow-dashed)">
+        <!-- UC-05 includes UC-04 -->
+        <path d="M 680 370 C 720 370, 750 300, 820 280" />
+        <!-- UC-06 includes UC-04 -->
+        <path d="M 680 440 C 750 440, 780 320, 840 285" />
+        <!-- UC-09 includes UC-10 -->
+        <path d="M 680 630 L 770 630" />
+    </g>
+    <!-- Labels for includes -->
+    <g font-size="12" fill="#64748b" font-style="italic">
+        <text x="750" y="340">«includes»</text>
+        <text x="770" y="400">«includes»</text>
+        <text x="725" y="620">«includes»</text>
+    </g>
+
+    <!-- USE CASES -->
+    <g fill="#ffffff" stroke="#059669" stroke-width="2" filter="url(#shadow)">
+        <!-- Guest Use Cases -->
+        <ellipse cx="550" cy="160" rx="130" ry="25" />
+        <ellipse cx="550" cy="230" rx="130" ry="25" />
+        <ellipse cx="550" cy="300" rx="130" ry="25" />
+        <ellipse cx="950" cy="265" rx="150" ry="25" /> <!-- UC-04 -->
+
+        <!-- Consumer Use Cases -->
+        <ellipse cx="550" cy="370" rx="130" ry="25" />
+        <ellipse cx="550" cy="440" rx="130" ry="25" />
+        <ellipse cx="550" cy="510" rx="130" ry="25" />
+        <ellipse cx="550" cy="580" rx="130" ry="25" />
+
+        <!-- Service Provider Use Cases -->
+        <ellipse cx="550" cy="630" rx="130" ry="25" /> <!-- UC-09 -->
+        <ellipse cx="900" cy="630" rx="130" ry="25" /> <!-- UC-10 -->
+        <ellipse cx="550" cy="710" rx="130" ry="25" /> <!-- UC-11 -->
+
+        <!-- Administrator Use Cases -->
+        <ellipse cx="980" cy="780" rx="130" ry="25" /> <!-- UC-12 -->
+        <ellipse cx="980" cy="850" rx="130" ry="25" /> <!-- UC-13 -->
+        <ellipse cx="980" cy="920" rx="130" ry="25" /> <!-- UC-14 -->
+        <ellipse cx="1200" cy="780" rx="130" ry="25" /> <!-- UC-15 -->
+        <ellipse cx="1200" cy="850" rx="130" ry="25" /> <!-- UC-16 -->
+    </g>
+
+    <!-- USE CASE TEXT LABELS -->
+    <g font-size="13" fill="#0f172a" text-anchor="middle">
+        <!-- Guest -->
+        <text x="550" y="165">UC-01: Register Account</text>
+        <text x="550" y="235">UC-02: Login &amp; Obtain JWT Token</text>
+        <text x="550" y="300">UC-03: Search Workers by</text>
+        <text x="550" y="315">Category &amp; Location</text>
+        <text x="950" y="270">UC-04: View Worker Profile &amp; Past Reviews</text>
+
+        <!-- Consumer -->
+        <text x="550" y="375">UC-05: Direct Contact Worker via Phone</text>
+        <text x="550" y="440">UC-06: Submit / Update Worker</text>
+        <text x="550" y="455">Rating &amp; Review</text>
+        <text x="550" y="515">UC-07: Recommend Offline Skilled Worker</text>
+        <text x="550" y="585">UC-08: Track Status of My Referrals</text>
+
+        <!-- Service Provider -->
+        <text x="550" y="630">UC-09: Create / Update</text>
+        <text x="550" y="645">Worker Profile &amp; Rates</text>
+        <text x="900" y="630">UC-10: Select Multi-Category</text>
+        <text x="900" y="645">Specializations</text>
+        <text x="550" y="715">UC-11: Check Verification &amp; Rating Status</text>
+
+        <!-- Administrator -->
+        <text x="980" y="785">UC-12: Approve / Reject Worker Verification</text>
+        <text x="980" y="855">UC-13: Approve / Reject Offline Recommendations</text>
+        <text x="980" y="925">UC-14: Manage Service Categories &amp; Taxonomy</text>
+        <text x="1200" y="785">UC-15: View System Analytics &amp; Metrics Dashboard</text>
+        <text x="1200" y="855">UC-16: Review Admin Action Audit Logs</text>
+    </g>
+
+    <!-- Legend -->
+    <g transform="translate(1050, 40)">
+        <rect x="0" y="0" width="280" height="110" fill="#ffffff" stroke="#cbd5e1" stroke-width="1" rx="5" />
+        <text x="140" y="25" text-anchor="middle" font-size="14" font-weight="bold" fill="#334155">Legend</text>
+        
+        <path d="M 20 45 L 60 45" stroke="#94a3b8" stroke-width="2" />
+        <text x="70" y="50" font-size="12" fill="#475569">Association</text>
+        
+        <path d="M 20 70 L 60 70" stroke="#64748b" stroke-width="2" stroke-dasharray="4 2" marker-end="url(#arrow-dashed)" />
+        <text x="70" y="75" font-size="12" fill="#475569">Dependency / Includes</text>
+
+        <path d="M 20 95 L 60 95" stroke="#1e3a8a" stroke-width="2" marker-end="url(#arrow-open)" />
+        <text x="70" y="100" font-size="12" fill="#475569">Generalization (Extends Actor)</text>
+    </g>
+</svg>
