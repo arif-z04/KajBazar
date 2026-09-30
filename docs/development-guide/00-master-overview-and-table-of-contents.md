@@ -91,21 +91,21 @@ All system architecture diagrams are available in Mermaid source format in `docs
 
 | Diagram | Filename | Description |
 | :--- | :--- | :--- |
-| **Context Diagram** | [`01_context_diagram.mmd`](../diagrams/01_context_diagram.mmd) | Birds-eye view of external actors (Customers, Workers, Admins) interacting with KajBazar. |
-| **DFD Level 0** | [`02_dfd_level_0.mmd`](../diagrams/02_dfd_level_0.mmd) | High-level data flow diagram showing platform boundaries and core data stores. |
-| **DFD Level 1** | [`03_dfd_level_1.mmd`](../diagrams/03_dfd_level_1.mmd) | Decomposed data flow across Authentication, Worker Search, Reviews, and Administration. |
-| **DFD Level 2** | [`04_dfd_level_2.mmd`](../diagrams/04_dfd_level_2.mmd) | Micro-level data flow for the Review and Rating calculation pipeline. |
-| **Use Case Diagram** | [`05_use_case_diagram.mmd`](../diagrams/05_use_case_diagram.mmd) | Complete functional actor use cases across Guest, Customer, Worker, and Admin. |
+| **Context Diagram** | [`01_context_diagram.mmd`](../diagrams/01_context_diagram.mmd) | High-level system boundary and external actors. |
+| **DFD Level 0** | [`02_dfd_level_0.mmd`](../diagrams/02_dfd_level_0.mmd) | Context level data flow showing system boundary and data stores. |
+| **DFD Level 1** | [`03_dfd_level_1.mmd`](../diagrams/03_dfd_level_1.mmd) | Subsystem data flow across Auth, Search, Reviews, and Moderation. |
+| **DFD Level 2** | [`04_dfd_level_2.mmd`](../diagrams/04_dfd_level_2.mmd) | Detailed data flow for review processing and rating recalculation. |
+| **Use Case Diagram** | [`05_use_case_diagram.mmd`](../diagrams/05_use_case_diagram.mmd) | Functional actor use cases across Guest, Customer, Worker, and Admin. |
 | **Activity: Registration**| [`06_activity_diagram_registration.mmd`](../diagrams/06_activity_diagram_registration.mmd) | User onboarding and role selection workflow. |
-| **Activity: Search** | [`07_activity_diagram_search.mmd`](../diagrams/07_activity_diagram_search.mmd) | Cascading geographic and category filtering workflow. |
-| **Activity: Review** | [`08_activity_diagram_review.mmd`](../diagrams/08_activity_diagram_review.mmd) | Customer review submission and rating calculation pipeline. |
-| **Activity: Referral**| [`09_activity_diagram_recommendation.mmd`](../diagrams/09_activity_diagram_recommendation.mmd) | Community worker recommendation and admin approval pipeline. |
-| **Class Diagram: Domain**| [`10_class_diagram_domain.mmd`](../diagrams/10_class_diagram_domain.mmd) | Core C# Domain Entities and their OOP relationships. |
-| **Class Diagram: System**| [`11_class_diagram_architecture.mmd`](../diagrams/11_class_diagram_architecture.mmd) | Clean Architecture layers: Controllers, Repositories, DbContext, and DTOs. |
-| **ER Diagram: Conceptual**| [`12_er_diagram_conceptual.mmd`](../diagrams/12_er_diagram_conceptual.mmd) | High-level business entities and cardinalities (1-to-1, 1-to-many, many-to-many). |
-| **ER Diagram: Physical**| [`13_er_diagram_physical.mmd`](../diagrams/13_er_diagram_physical.mmd) | Complete PostgreSQL schema with exact column types, primary keys, and foreign keys. |
-| **State Diagram** | [`14_state_diagrams.mmd`](../diagrams/14_state_diagrams.mmd) | Lifecycle states of Workers (`pending` -> `verified`), Recommendations, and Reports. |
-| **Sequence Diagram** | [`15_sequence_diagrams.mmd`](../diagrams/15_sequence_diagrams.mmd) | Sequence flows for Login, Search, and Rating Recalculation. |
+| **Activity: Verification**| [`07_activity_diagram_worker_verification.mmd`](../diagrams/07_activity_diagram_worker_verification.mmd) | Admin worker credential verification workflow. |
+| **Activity: Search & Contact**| [`08_activity_diagram_search_and_contact.mmd`](../diagrams/08_activity_diagram_search_and_contact.mmd) | Geographic and category filtering and direct calling workflow. |
+| **Activity: Review** | [`09_activity_diagram_review_submission.mmd`](../diagrams/09_activity_diagram_review_submission.mmd) | Customer review submission and automatic rating recalculation. |
+| **Activity: Referral**| [`10_activity_diagram_recommendation.mmd`](../diagrams/10_activity_diagram_recommendation.mmd) | Community offline worker referral and approval workflow. |
+| **Class Diagram: Domain**| [`11_class_diagram_domain_model.mmd`](../diagrams/11_class_diagram_domain_model.mmd) | Core C# Domain Entities and their entity relationships. |
+| **Class Diagram: Architecture**| [`12_class_diagram_architecture.mmd`](../diagrams/12_class_diagram_architecture.mmd) | Clean Architecture layers: Controllers, Repositories, DbContext, and DTOs. |
+| **ER Diagram: Conceptual**| [`13_er_diagram_conceptual.mmd`](../diagrams/13_er_diagram_conceptual.mmd) | Conceptual business entities and cardinalities. |
+| **ER Diagram: Physical**| [`14_er_diagram_physical.mmd`](../diagrams/14_er_diagram_physical.mmd) | Physical 12-table PostgreSQL schema with types, PKs, FKs, and triggers. |
+| **Sequence Diagram** | [`15_sequence_diagrams.mmd`](../diagrams/15_sequence_diagrams.mmd) | End-to-end sequence flows across frontend, API, and database. |
 
 ---
 

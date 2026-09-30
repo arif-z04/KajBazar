@@ -1129,28 +1129,41 @@ KajBazar/
 ├── .gitignore
 ├── KajBazar.sln
 ├── README.md
-├── prompt.md
 ├── client/
 │   ├── index.html
 │   ├── package.json
 │   ├── vite.config.js
 │   └── src/
-│       ├── App.css
-│       ├── App.jsx
 │       ├── index.jsx
+│       ├── App.jsx
+│       ├── styles/
+│       │   └── App.css                 # Master modern design system stylesheet
 │       ├── components/
-│       │   ├── Navigation.jsx
-│       │   └── WorkerComponents.jsx
+│       │   ├── Navigation.jsx          # Responsive Navbar & SaaS Footer
+│       │   ├── WorkerComponents.jsx    # WorkerCard, WorkerFilter, WorkerDetailModal
+│       │   └── common/                 # Atomic UI component library
+│       │       ├── index.js            # Barrel export
+│       │       ├── Button.jsx          # Primary, secondary, outline, danger, loading
+│       │       ├── Badge.jsx           # Verified, pending, rejected status pills
+│       │       ├── Card.jsx            # Bordered surface container with hover elevation
+│       │       ├── Modal.jsx           # Accessible dialog with backdrop blur & ESC handler
+│       │       ├── ConfirmDialog.jsx   # Modern action confirmation replacing prompt()
+│       │       ├── Input.jsx           # Accessible inputs, select, textarea, eye toggle
+│       │       ├── RatingStars.jsx     # Display & interactive gold star ratings
+│       │       ├── SkeletonLoader.jsx  # Shimmer loading cards, rows, and lines
+│       │       └── EmptyState.jsx      # Friendly no-results state with action triggers
 │       ├── context/
-│       │   └── AuthContext.jsx
+│       │   ├── AuthContext.jsx         # User session, role state & JWT token persistence
+│       │   └── ToastContext.jsx        # Floating notifications (success, error, warning)
 │       ├── pages/
-│       │   ├── AuthAndAdminPages.jsx
-│       │   ├── HomePage.jsx
-│       │   ├── RecommendWorkerPage.jsx
-│       │   ├── WorkerDirectoryPage.jsx
-│       │   └── WorkerProfilePage.jsx
+│       │   ├── HomePage.jsx            # Hero search, trade categories, verified worker cards
+│       │   ├── WorkerDirectoryPage.jsx # Multi-criteria search, filters, and pagination
+│       │   ├── WorkerProfilePage.jsx   # Dual mode: public profile & worker dashboard
+│       │   ├── RecommendWorkerPage.jsx # Offline worker referral form & history
+│       │   ├── AuthAndAdminPages.jsx   # Login, Register, and Admin moderation dashboard
+│       │   └── NotFoundPage.jsx        # 404 error page for unmatched routes
 │       └── services/
-│           └── api.js
+│           └── api.js                  # Axios client with automatic Bearer token interceptor
 ├── docs/
 │   ├── Class-diagrams.md
 │   ├── Database-details.md
@@ -1161,6 +1174,7 @@ KajBazar/
 │   ├── Testing-procedure.md
 │   ├── walkthrough.md
 │   ├── development-guide/
+│   │   ├── README.md                                           # Master guide index
 │   │   ├── 00-master-overview-and-table-of-contents.md
 │   │   ├── 01-complete-architecture-and-build-from-scratch.md
 │   │   ├── 02-database-guide-and-production-hardening.md
@@ -1179,78 +1193,70 @@ KajBazar/
 │       ├── 04_dfd_level_2.mmd
 │       ├── 05_use_case_diagram.mmd
 │       ├── 06_activity_diagram_registration.mmd
-│       ├── 07_activity_diagram_search.mmd
-│       ├── 08_activity_diagram_review.mmd
-│       ├── 09_activity_diagram_recommendation.mmd
-│       ├── 10_class_diagram_domain.mmd
-│       ├── 11_class_diagram_architecture.mmd
-│       ├── 12_er_diagram_conceptual.mmd
-│       ├── 13_er_diagram_physical.mmd
-│       ├── 14_state_diagrams.mmd
+│       ├── 07_activity_diagram_worker_verification.mmd
+│       ├── 08_activity_diagram_search_and_contact.mmd
+│       ├── 09_activity_diagram_review_submission.mmd
+│       ├── 10_activity_diagram_recommendation.mmd
+│       ├── 11_class_diagram_domain_model.mmd
+│       ├── 12_class_diagram_architecture.mmd
+│       ├── 13_er_diagram_conceptual.mmd
+│       ├── 14_er_diagram_physical.mmd
 │       ├── 15_sequence_diagrams.mmd
 │       └── README.md
 ├── sql/
-│   ├── 01_schema_ddl.sql
-│   ├── 02_seed_data.sql
-│   ├── 03_crud_queries.sql
-│   └── 04_complex_queries.sql
+│   ├── 01_schema_ddl.sql               # 12 Tables, constraints, triggers, indexes
+│   ├── 02_seed_data.sql                # Seed roles, districts, categories, test accounts
+│   ├── 03_crud_queries.sql             # Operational CRUD test queries
+│   └── 04_complex_queries.sql          # Analytical reporting & rating queries
 ├── src/
 │   ├── KajBazar.API/
 │   │   ├── KajBazar.API.csproj
-│   │   ├── Program.cs
-│   │   ├── appsettings.json
-│   │   ├── appsettings.Development.json
+│   │   ├── Program.cs                  # Pipeline, DI, JWT auth, Swagger, Health checks
+│   │   ├── appsettings.json            # DB connection string, JWT keys, CORS config
 │   │   ├── Controllers/
-│   │   │   ├── AdminController.cs
-│   │   │   ├── AuthController.cs
-│   │   │   ├── CategoriesController.cs
-│   │   │   ├── GeographyController.cs
-│   │   │   ├── RecommendationsController.cs
-│   │   │   ├── ReviewsController.cs
-│   │   │   └── WorkersController.cs
+│   │   │   ├── AdminController.cs      # Moderation, stats, verification, audit trail
+│   │   │   ├── AuthController.cs       # Register, login, current user (/api/auth/me)
+│   │   │   ├── CategoriesController.cs # Public trade categories
+│   │   │   ├── GeographyController.cs  # Districts and Upazilas
+│   │   │   ├── RecommendationsController.cs # Offline referrals
+│   │   │   ├── ReviewsController.cs    # Reviews and ratings
+│   │   │   └── WorkersController.cs    # Worker search, profile details, provider updates
 │   │   └── Middleware/
-│   │       └── ExceptionHandlingMiddleware.cs
+│   │       └── ExceptionHandlingMiddleware.cs # Global safe exception handler
 │   ├── KajBazar.Core/
 │   │   ├── KajBazar.Core.csproj
 │   │   ├── DTOs/
-│   │   │   └── DTOs.cs
+│   │   │   ├── AdminDtos.cs
+│   │   │   ├── AuthDtos.cs
+│   │   │   ├── GeographyDtos.cs
+│   │   │   ├── RecommendationDtos.cs
+│   │   │   ├── ReviewDtos.cs
+│   │   │   └── WorkerDtos.cs
 │   │   ├── Entities/
-│   │   │   ├── AdminAuditLog.cs
 │   │   │   ├── Category.cs
-│   │   │   ├── CommunityRecommendation.cs
-│   │   │   ├── District.cs
-│   │   │   ├── Report.cs
-│   │   │   ├── Review.cs
+│   │   │   ├── GeographyEntities.cs    # District & Upazila
+│   │   │   ├── InteractionEntities.cs  # Review, Recommendation, Report, AuditLog
 │   │   │   ├── Role.cs
 │   │   │   ├── ServiceProviderProfile.cs
-│   │   │   ├── Upazila.cs
-│   │   │   ├── User.cs
-│   │   │   └── WorkerCategory.cs
+│   │   │   └── User.cs
 │   │   ├── Enums/
-│   │   │   └── DomainEnums.cs
+│   │   │   └── DomainEnums.cs          # VerificationStatus, RecommendationStatus
 │   │   └── Interfaces/
-│   │       ├── IAdminAuditLogRepository.cs
-│   │       ├── IAuthService.cs
-│   │       ├── ICategoryRepository.cs
-│   │       ├── IGeographyRepository.cs
-│   │       ├── IRecommendationRepository.cs
-│   │       ├── IReviewRepository.cs
-│   │       ├── IServiceProviderRepository.cs
-│   │       └── IUserRepository.cs
+│   │       └── RepositoryInterfaces.cs # IUserRepository, IServiceProviderRepository, etc.
 │   └── KajBazar.Infrastructure/
 │       ├── KajBazar.Infrastructure.csproj
 │       ├── Data/
-│       │   └── KajBazarDbContext.cs
-│       ├── Repositories/
-│       │   ├── AdminAuditLogRepository.cs
-│       │   ├── CategoryRepository.cs
-│       │   ├── GeographyRepository.cs
-│       │   ├── RecommendationRepository.cs
-│       │   ├── ReviewRepository.cs
-│       │   ├── ServiceProviderRepository.cs
-│       │   └── UserRepository.cs
-│       └── Services/
-│           └── AuthService.cs
+│       │   └── KajBazarDbContext.cs    # EF Core DbContext with snake_case naming
+│       ├── Services/
+│       │   └── AuthService.cs          # BCrypt password hashing & JWT generation
+│       └── Repositories/
+│           ├── AdminAuditLogRepository.cs
+│           ├── CategoryRepository.cs
+│           ├── GeographyRepository.cs
+│           ├── RecommendationRepository.cs
+│           ├── ReviewRepository.cs
+│           ├── ServiceProviderRepository.cs
+│           └── UserRepository.cs
 └── tests/
     └── KajBazar.Tests/
         ├── KajBazar.Tests.csproj
@@ -1268,17 +1274,21 @@ KajBazar/
 #### Frontend Files (`client/`):
 - `index.html`: The single HTML container page loaded by the browser. Contains `<div id="root"></div>` where React mounts.
 - `src/index.jsx`: The JavaScript entrypoint that mounts `App.jsx` into the root DOM node.
-- `src/App.jsx`: The top-level component defining application routing and theme wrappers.
-- `src/App.css`: Master styling file containing CSS variables, card grids, modal styles, and mobile responsive rules.
-- `src/services/api.js`: The central Axios instance configured with baseURL and request/response interceptors.
-- `src/context/AuthContext.jsx`: React Context providing global user authentication state, login, register, and logout functions.
-- `src/components/Navigation.jsx`: Navigation bar with role-aware links and mobile menu drawer.
-- `src/components/WorkerComponents.jsx`: Reusable UI components including `WorkerCard`, `WorkerFilter`, and `WorkerDetailModal`.
-- `src/pages/HomePage.jsx`: Landing page featuring hero banner, live platform counters, and category discovery grid.
-- `src/pages/WorkerDirectoryPage.jsx`: Filterable worker directory supporting district, upazila, category, and keyword search.
-- `src/pages/WorkerProfilePage.jsx`: Detailed individual worker portfolio showing skills, rating breakdown, and customer testimonials.
-- `src/pages/RecommendWorkerPage.jsx`: Public form allowing citizens to nominate informal service providers.
-- `src/pages/AuthAndAdminPages.jsx`: Combined authentication pages and the comprehensive 5-tab Admin Control Dashboard.
+- `src/App.jsx`: The top-level component defining application routing (`/`, `/directory`, `/workers/:id`, `/my-profile`, `/recommend`, `/admin`, `/login`, `/register`, `*`), `AuthProvider`, and `ToastProvider`.
+- `src/styles/App.css`: Master modern design system stylesheet containing color tokens, typography scales, card layouts, modal styles, toast animations, and responsive media queries.
+- `src/components/common/`: Reusable atomic UI component library (`Button`, `Badge`, `Card`, `Modal`, `ConfirmDialog`, `Input`, `RatingStars`, `SkeletonLoader`, `EmptyState`).
+- `src/components/Navigation.jsx`: Responsive header with active route indicators, user role badges, mobile sliding drawer, and SaaS footer.
+- `src/components/WorkerComponents.jsx`: Directory UI components (`WorkerCard`, `WorkerFilter`, `WorkerDetailModal`).
+- `src/context/AuthContext.jsx`: Global authentication context managing login, register, JWT token persistence, and role state.
+- `src/context/ToastContext.jsx`: Floating notification provider for non-intrusive feedback (`toast.success`, `toast.error`, etc.).
+- `src/pages/HomePage.jsx`: Landing page featuring hero search, live platform statistics ribbon, popular trade category grid, and verified worker cards.
+- `src/pages/WorkerDirectoryPage.jsx`: Filterable worker directory with URL query param sync, active filter pills, skeleton loaders, and pagination.
+- `src/pages/WorkerProfilePage.jsx`: Dual-mode profile view: public profile display with direct call CTA and reviews, or private worker management dashboard.
+- `src/pages/RecommendWorkerPage.jsx`: Offline worker referral form with Bangladeshi phone number validation and submission history list.
+- `src/pages/AuthAndAdminPages.jsx`: Authentication (login with 1-click demo accounts, registration with role switcher) and admin dashboard (metrics, moderation tabs, and ConfirmDialog).
+- `src/pages/NotFoundPage.jsx`: Modern 404 error page with navigation actions.
+- `src/services/api.js`: Axios HTTP client with base URL configuration, request interceptor (attaches JWT Bearer token), and response interceptor (handles 401 unauthenticated errors).
+
 
 #### Backend Core Files (`src/KajBazar.Core/`):
 - `Entities/`: Pure C# classes representing database tables (`User`, `Role`, `ServiceProviderProfile`, `Category`, `District`, `Upazila`, `Review`, `CommunityRecommendation`, `Report`, `AdminAuditLog`).

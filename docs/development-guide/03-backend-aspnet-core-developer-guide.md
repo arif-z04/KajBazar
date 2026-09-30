@@ -229,20 +229,22 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddAuthorization();
 
 // Configure CORS for Frontend Development & Production
+var configuredOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() 
+    ?? new[] { "http://localhost:3000", "http://localhost:5173", "http://127.0.0.1:3000", "http://127.0.0.1:5173" };
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowReactApp", policy =>
     {
-        policy.WithOrigins(
-                "http://localhost:3000",
-                "http://localhost:5173",
-                "http://127.0.0.1:3000",
-                "http://127.0.0.1:5173")
+        policy.WithOrigins(configuredOrigins)
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials();
     });
 });
+
+// Add Health Checks
+builder.Services.AddHealthChecks();
 
 // Configure Swagger/OpenAPI with Bearer Security
 builder.Services.AddEndpointsApiExplorer();
@@ -286,7 +288,8 @@ var app = builder.Build();
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 // Configure HTTP request pipeline
-if (app.Environment.IsDevelopment() || true)
+var enableSwagger = app.Environment.IsDevelopment() || app.Configuration.GetValue<bool>("EnableSwagger", true);
+if (enableSwagger)
 {
     app.UseSwagger();
     app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "KajBazar API v1"));
@@ -295,10 +298,10 @@ if (app.Environment.IsDevelopment() || true)
 app.UseCors("AllowReactApp");
 app.UseAuthentication();
 app.UseAuthorization();
+app.MapHealthChecks("/health");
 app.MapControllers();
 
 app.Run();
-
 ```
 
 ---
@@ -2436,11 +2439,16 @@ namespace KajBazar.API.Middleware
     {
         private readonly RequestDelegate _next;
         private readonly ILogger<ExceptionHandlingMiddleware> _logger;
+        private readonly Microsoft.Extensions.Hosting.IHostEnvironment _environment;
 
-        public ExceptionHandlingMiddleware(RequestDelegate next, ILogger<ExceptionHandlingMiddleware> logger)
+        public ExceptionHandlingMiddleware(
+            RequestDelegate next,
+            ILogger<ExceptionHandlingMiddleware> logger,
+            Microsoft.Extensions.Hosting.IHostEnvironment environment)
         {
             _next = next;
             _logger = logger;
+            _environment = environment;
         }
 
         public async Task InvokeAsync(HttpContext context)
@@ -2452,11 +2460,11 @@ namespace KajBazar.API.Middleware
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An unhandled exception occurred during request execution: {Message}", ex.Message);
-                await HandleExceptionAsync(context, ex);
+                await HandleExceptionAsync(context, ex, _environment);
             }
         }
 
-        private static Task HandleExceptionAsync(HttpContext context, Exception exception)
+        private static Task HandleExceptionAsync(HttpContext context, Exception exception, Microsoft.Extensions.Hosting.IHostEnvironment environment)
         {
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
@@ -2464,17 +2472,22 @@ namespace KajBazar.API.Middleware
             var response = new
             {
                 statusCode = context.Response.StatusCode,
-                message = "An internal server error occurred. Please try again later.",
-                details = exception.Message
+                message = "An unexpected error occurred while processing your request. Please try again later.",
+                details = environment.IsDevelopment() ? exception.Message : null,
+                traceId = context.TraceIdentifier
             };
 
-            var json = JsonSerializer.Serialize(response);
+            var options = new JsonSerializerOptions { DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull };
+            var json = JsonSerializer.Serialize(response, options);
             return context.Response.WriteAsync(json);
         }
     }
 }
-
 ```
+
+> [!IMPORTANT]
+> **Production Security Best Practice**: Notice that `details` is only populated when `environment.IsDevelopment()` is true! In production, revealing raw database or internal exception messages can leak table names, server paths, and library versions to attackers. The `traceId` (`context.TraceIdentifier`) gives clients a safe reference ID they can quote to support staff, while full error traces remain safely inside server logs.
+
 
 ---
 

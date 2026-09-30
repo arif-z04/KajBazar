@@ -53,21 +53,29 @@ This volume was written to teach you every concept, every hook, every component,
    - 5.3 Decoupling Login, Register, and Logout
    - 5.4 Role-Based Authorization Helpers (`isAdmin`, `isWorker`, `isCustomer`)
    - 5.5 Complete Annotated Source Code of `AuthContext.jsx`
+   - 5.6 Global Notification System (`ToastContext.jsx`)
 6. [Component Architecture & Complete Annotated Source Code](#6-component-architecture--complete-annotated-source-code)
-   - 6.1 `Navigation.jsx`: Responsive Navbar, Dynamic Badges, and Mobile Drawer
-   - 6.2 `WorkerComponents.jsx`:
-     - 6.2.1 `WorkerCard`: Business Rule BR-06 Phone Obfuscation & Reveal Mechanism
-     - 6.2.2 `WorkerFilter`: Cascading District -> Upazila Dropdowns & Search
-     - 6.2.3 `WorkerDetailModal`: Modal Overlay, Portfolio View, and Interactive Review Form
+   - 6.1 Atomic Design Component Suite (`client/src/components/common/`)
+     - 6.1.1 `Button.jsx` & `Badge.jsx`: Core UI Micro-Actions & Status Flags
+     - 6.1.2 `Card.jsx`: Structured Card Containers
+     - 6.1.3 `Input.jsx`, `Select.jsx`, `Textarea.jsx`: Accessible Form Controls
+     - 6.1.4 `Modal.jsx` & `ConfirmDialog.jsx`: Accessible Dialogs & Guardrails
+     - 6.1.5 `RatingStars.jsx`, `SkeletonLoader.jsx`, `EmptyState.jsx`: Polished Micro-Interactions
+   - 6.2 `Navigation.jsx`: Responsive Navbar, Dynamic Badges, and Mobile Drawer
+   - 6.3 `WorkerComponents.jsx`:
+     - 6.3.1 `WorkerCard`: Business Rule BR-06 Phone Obfuscation & Reveal Mechanism
+     - 6.3.2 `WorkerFilter`: Cascading District -> Upazila Dropdowns & Search
+     - 6.3.3 `WorkerDetailModal`: Modal Overlay, Portfolio View, and Interactive Review Form
 7. [Page Views & Route Breakdown](#7-page-views--route-breakdown)
    - 7.1 `HomePage.jsx`: Hero Banner, Live Platform Statistics, and Category Discovery Grid
    - 7.2 `WorkerDirectoryPage.jsx`: Filterable Directory, Empty States, and Modal Triggers
-   - 7.3 `WorkerProfilePage.jsx`: Dedicated Worker Portfolio & Verified Customer Testimonials
+   - 7.3 `WorkerProfilePage.jsx`: Dual-Mode Architecture (Public `/workers/:id` vs Provider `/my-profile`)
    - 7.4 `RecommendWorkerPage.jsx`: Public Crowdsourced Informal Worker Nomination
    - 7.5 `AuthAndAdminPages.jsx`:
      - 7.5.1 Login View (Identifier + Password)
      - 7.5.2 Register View (Customer vs Worker Role Toggle)
      - 7.5.3 The 5-Tab Admin Dashboard (Verification, Categories, Recommendations, Users, Audit Logs)
+   - 7.6 `NotFoundPage.jsx`: Helpful 404 Route Catch-All
 8. [Master Routing Setup: `App.jsx`](#8-master-routing-setup-appjsx)
 9. [The Design System & Pure CSS Architecture (`App.css`)](#9-the-design-system--pure-css-architecture-appcss)
    - 9.1 Modern CSS Custom Properties (Design Tokens)
@@ -228,20 +236,33 @@ client/
 ├── package.json
 ├── vite.config.js
 └── src/
-    ├── App.css                    <-- Master Design System & Pure CSS Styling
-    ├── App.jsx                    <-- Master Routes & App Wrapper
+    ├── App.css                    <-- Master Design System & Pure CSS Tokens
+    ├── App.jsx                    <-- Master Routes & App Wrapper (ToastProvider, AuthProvider)
     ├── index.jsx                  <-- React 18 createRoot Mounting Entrypoint
     ├── components/
+    │   ├── common/                <-- Atomic UI Components
+    │   │   ├── Badge.jsx          <-- Status badges (Success, Warning, Danger, Info)
+    │   │   ├── Button.jsx         <-- Consistent buttons with loading states & icons
+    │   │   ├── Card.jsx           <-- Modular cards (CardHeader, CardBody, CardFooter)
+    │   │   ├── ConfirmDialog.jsx  <-- Confirmation modals for destructive actions
+    │   │   ├── EmptyState.jsx     <-- Friendly empty state illustrations
+    │   │   ├── Input.jsx          <-- Accessible Input, Select, Textarea controls
+    │   │   ├── Modal.jsx          <-- Accessible dialog with backdrop blur & ESC close
+    │   │   ├── RatingStars.jsx    <-- Interactive or read-only star reviews
+    │   │   ├── SkeletonLoader.jsx <-- Shimmer skeleton placeholders during fetches
+    │   │   └── index.js           <-- Barrel export for clean atomic imports
     │   ├── Navigation.jsx         <-- Dynamic Navbar & Mobile Hamburger Drawer
     │   └── WorkerComponents.jsx   <-- WorkerCard (BR-06), WorkerFilter, DetailModal
     ├── context/
-    │   └── AuthContext.jsx        <-- Global Auth Provider & JWT Storage
+    │   ├── AuthContext.jsx        <-- Global Auth Provider & JWT Storage
+    │   └── ToastContext.jsx       <-- Toast notification system (success/error/info)
     ├── pages/
     │   ├── AuthAndAdminPages.jsx  <-- Login, Register, & 5-Tab Admin Dashboard
     │   ├── HomePage.jsx           <-- Hero Banner, Platform Counters, Quick Links
+    │   ├── NotFoundPage.jsx       <-- Friendly 404 error page with quick links
     │   ├── RecommendWorkerPage.jsx<-- Public Worker Nomination Form
     │   ├── WorkerDirectoryPage.jsx<-- Filterable Worker Directory
-    │   └── WorkerProfilePage.jsx  <-- Individual Worker Portfolio & Reviews
+    │   └── WorkerProfilePage.jsx  <-- Dual-Mode: Public Portfolio (/workers/:id) & Provider Management (/my-profile)
     └── services/
         └── api.js                 <-- Axios HTTP Client with JWT Interceptors
 ```
@@ -428,17 +449,177 @@ export const AuthProvider = ({ children }) => {
 
 ```
 
-### Key Architectural Concepts:
-- `createContext()`: Creates the global context container.
-- `AuthProvider`: The wrapper component that maintains the state variables `user`, `token`, and `loading`.
-- `localStorage.getItem('kajbazar_token')`: Loads saved sessions on browser boot so users stay logged in across browser refreshes.
-- `useAuth()`: A custom React hook that simplifies consuming context in other components (`const { user, logout } = useAuth();`).
+
+### 5.6 Global Notification System (`ToastContext.jsx`)
+
+In real-world web applications, using browser native `alert("Success!")` or `alert("Error!")` creates a jarring user experience: it blocks the browser thread, looks archaic, and cannot be styled.
+
+To provide a sleek, non-blocking notification experience, KajBazar includes a custom **Toast Notification System** (`client/src/context/ToastContext.jsx`):
+
+```javascript
+import React, { createContext, useContext, useState, useCallback } from 'react';
+import { CheckCircle2, AlertCircle, Info, AlertTriangle, X } from 'lucide-react';
+
+const ToastContext = createContext(null);
+
+export const ToastProvider = ({ children }) => {
+  const [toasts, setToasts] = useState([]);
+
+  const removeToast = useCallback((id) => {
+    setToasts((prev) => prev.filter((t) => t.id !== id));
+  }, []);
+
+  const addToast = useCallback((type, message, title = null, duration = 4500) => {
+    const id = Date.now() + Math.random().toString(36).substring(2, 7);
+    setToasts((prev) => [...prev, { id, type, message, title, duration }]);
+
+    if (duration > 0) {
+      setTimeout(() => {
+        removeToast(id);
+      }, duration);
+    }
+    return id;
+  }, [removeToast]);
+
+  const toast = {
+    success: (msg, title) => addToast('success', msg, title),
+    error: (msg, title) => addToast('error', msg, title),
+    info: (msg, title) => addToast('info', msg, title),
+    warning: (msg, title) => addToast('warning', msg, title),
+    remove: removeToast
+  };
+
+  return (
+    <ToastContext.Provider value={toast}>
+      {children}
+      <div className="toast-container" aria-live="polite" aria-atomic="true">
+        {toasts.map((t) => (
+          <div key={t.id} className={`toast-card toast-${t.type}`} role="alert">
+            <div className="toast-icon">
+              {t.type === 'success' && <CheckCircle2 size={20} />}
+              {t.type === 'error' && <AlertCircle size={20} />}
+              {t.type === 'warning' && <AlertTriangle size={20} />}
+              {t.type === 'info' && <Info size={20} />}
+            </div>
+            <div className="toast-body">
+              {t.title && <div className="toast-title">{t.title}</div>}
+              <div className="toast-message">{t.message}</div>
+            </div>
+            <button
+              type="button"
+              className="toast-close-btn"
+              onClick={() => removeToast(t.id)}
+              aria-label="Close notification"
+            >
+              <X size={16} />
+            </button>
+          </div>
+        ))}
+      </div>
+    </ToastContext.Provider>
+  );
+};
+
+export const useToast = () => {
+  const context = useContext(ToastContext);
+  if (!context) {
+    throw new Error('useToast must be used within a ToastProvider');
+  }
+  return context;
+};
+```
+
+#### How to Use Toasts in Any Component:
+```javascript
+import { useToast } from '../context/ToastContext';
+
+const MyComponent = () => {
+  const toast = useToast();
+
+  const handleAction = async () => {
+    try {
+      await saveSomething();
+      toast.success('Profile updated successfully!', 'Saved');
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to save', 'Error');
+    }
+  };
+};
+```
 
 ---
 
 ## 6. Component Architecture & Complete Annotated Source Code
 
-### 6.1 `Navigation.jsx`: Responsive Navigation Bar
+### 6.1 Atomic Design Component Suite (`client/src/components/common/`)
+
+Instead of writing raw, inconsistent HTML buttons and inputs across dozens of pages, KajBazar follows **Atomic Design Principles**. A set of foundational, highly reusable primitives lives in `client/src/components/common/`:
+
+```
+client/src/components/common/
+├── Button.jsx          <-- Standardized button with loading spinners, variants, sizes
+├── Badge.jsx           <-- Status indicator (Verified, Pending, Suspended)
+├── Card.jsx            <-- Card, CardHeader, CardBody, CardFooter containers
+├── Input.jsx           <-- Accessible Input, Select, and Textarea with error states
+├── Modal.jsx           <-- Modal dialog with backdrop blur and ESC key listener
+├── ConfirmDialog.jsx   <-- Safe confirmation prompts for destructive actions
+├── RatingStars.jsx     <-- Read-only or interactive 5-star rating picker
+├── SkeletonLoader.jsx  <-- Shimmer loading skeletons to prevent layout shift
+├── EmptyState.jsx      <-- Empty directory or search zero-state display
+└── index.js            <-- Clean barrel export
+```
+
+#### 6.1.1 `Button.jsx`
+Supports variants (`primary`, `secondary`, `outline`, `ghost`, `danger`), sizes (`sm`, `md`, `lg`), `loading` spinner state, and prefix/suffix icons using `lucide-react`:
+```jsx
+import { Button } from '../components/common';
+import { Plus } from 'lucide-react';
+
+<Button 
+  variant="primary" 
+  size="md" 
+  icon={Plus} 
+  loading={isSubmitting}
+  onClick={handleSubmit}
+>
+  Add Service Category
+</Button>
+```
+
+#### 6.1.2 `Badge.jsx`
+Visual status tags with uniform color tokens:
+```jsx
+<Badge variant="success">Verified</Badge>
+<Badge variant="warning">Pending Review</Badge>
+<Badge variant="danger">Suspended</Badge>
+```
+
+#### 6.1.3 `Modal.jsx` & `ConfirmDialog.jsx`
+Accessible popups that trap focus, blur the background, prevent body scrolling, and close cleanly when pressing the `Escape` key or clicking outside:
+```jsx
+<Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Worker Details">
+  <p>Worker profile content here...</p>
+</Modal>
+
+<ConfirmDialog
+  isOpen={showDeleteConfirm}
+  title="Delete Category"
+  message="Are you sure you want to delete this category? This cannot be undone."
+  confirmText="Delete"
+  confirmVariant="danger"
+  onConfirm={handleDelete}
+  onCancel={() => setShowDeleteConfirm(false)}
+/>
+```
+
+#### 6.1.4 `SkeletonLoader.jsx` & `EmptyState.jsx`
+Professional apps never leave the user staring at an empty white screen while data loads.
+- `<WorkerCardSkeleton />`: Displays pulsating gray shapes mimicking worker cards during API fetches.
+- `<EmptyState icon={Search} title="No workers found" message="Try adjusting your district or search term." />`: Displays friendly guidance when search yields 0 results.
+
+---
+
+### 6.2 `Navigation.jsx`: Responsive Navigation Bar
 
 ```javascript
 import React, { useContext } from 'react';
@@ -565,7 +746,7 @@ export const Footer = () => (
 
 ---
 
-### 6.2 `WorkerComponents.jsx`: Reusable Directory Components
+### 6.3 `WorkerComponents.jsx`: Reusable Directory Components
 
 Here is the complete source code of `client/src/components/WorkerComponents.jsx`, containing `WorkerCard` (implementing Rule BR-06), `WorkerFilter`, and `WorkerDetailModal`:
 
@@ -1297,15 +1478,52 @@ export const WorkerDirectoryPage = () => {
 
 ---
 
-### 7.3 `WorkerProfilePage.jsx`: Dedicated Worker Portfolio
+### 7.3 `WorkerProfilePage.jsx`: Dual-Mode Architecture (Public Portfolio vs Provider Management)
+
+A common dilemma in full-stack architecture is whether to create two separate pages for:
+1. **Public Worker Portfolio** (`/workers/:id`): Consumers viewing a worker's ratings, bio, phone number (BR-06 reveal), and submitting testimonials.
+2. **Provider Self-Management Dashboard** (`/my-profile`): Service providers editing their trade categories, district, experience, and hourly rate.
+
+KajBazar employs an elegant **Dual-Mode Architectural Pattern** within a single component (`client/src/pages/WorkerProfilePage.jsx`):
+- `const { id: paramWorkerId } = useParams();`
+- `const isPublicView = Boolean(paramWorkerId);`
+
+If `isPublicView` is `true`:
+- It fetches public details via `getWorkerProfileApi(paramWorkerId)`
+- Renders the public portfolio layout: header banner with verification badge, rating stars, location, category badges, "Call Worker" button (BR-06), review submission form, and community testimonials.
+
+If `isPublicView` is `false`:
+- It verifies authentication & service provider role
+- Fetches private data via `getMyWorkerProfileApi()`
+- Renders the interactive editor form with category checkboxes, cascading district/upazila selectors, experience counter, and verification status alerts.
+
+Here is the annotated architecture of `client/src/pages/WorkerProfilePage.jsx`:
 
 ```javascript
 import React, { useState, useEffect, useContext } from 'react';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
-import { getMyWorkerProfileApi, saveWorkerProfileApi, getCategoriesApi, getDistrictsApi } from '../services/api';
+import { useToast } from '../context/ToastContext';
+import {
+  getMyWorkerProfileApi,
+  getWorkerProfileApi,
+  saveWorkerProfileApi,
+  getCategoriesApi,
+  getDistrictsApi,
+  submitReviewApi
+} from '../services/api';
+import { Button, Badge, RatingStars, Skeleton, Input, Select, Textarea } from '../components/common';
+import { Briefcase, MapPin, PhoneCall, Clock, Star, CheckCircle2, AlertCircle, Save, MessageSquare, ShieldCheck } from 'lucide-react';
 
 export const WorkerProfilePage = () => {
-  const { user, isServiceProvider } = useContext(AuthContext);
+  const { id: paramWorkerId } = useParams();
+  const { user, isAuthenticated, isServiceProvider } = useContext(AuthContext);
+  const toast = useToast();
+  const navigate = useNavigate();
+
+  // Mode detection
+  const isPublicView = Boolean(paramWorkerId);
+
 
   const [categories, setCategories] = useState([]);
   const [districts, setDistricts] = useState([]);
@@ -2501,56 +2719,255 @@ export const AdminDashboardPage = () => {
 
 ---
 
+### 7.6 `NotFoundPage.jsx`: The 404 Route Catch-All
+
+When users mistype a URL or click on a stale link, a blank page or unhandled crash leaves a terrible impression. React Router allows configuring a wildcard `*` route that catches any unmatched path:
+
+```javascript
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Button } from '../components/common';
+import { Home, Search, AlertCircle } from 'lucide-react';
+
+export const NotFoundPage = () => {
+  const navigate = useNavigate();
+
+  return (
+    <div style={{ textAlign: 'center', padding: '5rem 1.5rem', maxWidth: '540px', margin: '0 auto' }}>
+      <div
+        style={{
+          width: '72px',
+          height: '72px',
+          borderRadius: '50%',
+          background: 'var(--danger-light)',
+          color: 'var(--danger)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          margin: '0 auto 1.5rem'
+        }}
+      >
+        <AlertCircle size={36} />
+      </div>
+
+      <h1 style={{ fontSize: '2.5rem', marginBottom: '0.75rem' }}>404 - Page Not Found</h1>
+      <p style={{ color: 'var(--slate-500)', fontSize: '1.05rem', lineHeight: '1.6', marginBottom: '2rem' }}>
+        The page you are looking for might have been removed, had its name changed, or is temporarily unavailable.
+      </p>
+
+      <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+        <Button
+          variant="primary"
+          size="md"
+          icon={Home}
+          onClick={() => navigate('/')}
+        >
+          Return Home
+        </Button>
+        <Button
+          variant="outline"
+          size="md"
+          icon={Search}
+          onClick={() => navigate('/directory')}
+        >
+          Explore Directory
+        </Button>
+      </div>
+    </div>
+  );
+};
+
+export default NotFoundPage;
+```
+
+---
+
 ## 8. Master Routing Setup: `App.jsx`
+
+Here is the master router file (`client/src/App.jsx`), which orchestrates global providers (`ToastProvider`, `AuthProvider`) and client-side routing:
 
 ```javascript
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
+import { ToastProvider } from './context/ToastContext';
 import { Navbar, Footer } from './components/Navigation';
 import { HomePage } from './pages/HomePage';
 import { WorkerDirectoryPage } from './pages/WorkerDirectoryPage';
 import { WorkerProfilePage } from './pages/WorkerProfilePage';
 import { RecommendWorkerPage } from './pages/RecommendWorkerPage';
 import { AdminDashboardPage, LoginPage, RegisterPage } from './pages/AuthAndAdminPages';
+import { NotFoundPage } from './pages/NotFoundPage';
 
 function App() {
   return (
-    <AuthProvider>
-      <Router>
-        <div className="app-layout">
-          <Navbar />
-          <main className="main-content">
-            <Routes>
-              <Route path="/" element={<HomePage />} />
-              <Route path="/directory" element={<WorkerDirectoryPage />} />
-              <Route path="/my-profile" element={<WorkerProfilePage />} />
-              <Route path="/recommend" element={<RecommendWorkerPage />} />
-              <Route path="/admin" element={<AdminDashboardPage />} />
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/register" element={<RegisterPage />} />
-            </Routes>
-          </main>
-          <Footer />
-        </div>
-      </Router>
-    </AuthProvider>
+    <ToastProvider>
+      <AuthProvider>
+        <Router>
+          <div className="app-layout">
+            <Navbar />
+            <main className="main-content">
+              <Routes>
+                {/* Public Discovery Routes */}
+                <Route path="/" element={<HomePage />} />
+                <Route path="/directory" element={<WorkerDirectoryPage />} />
+                
+                {/* Worker Profile: Dual-Mode Routes */}
+                <Route path="/workers/:id" element={<WorkerProfilePage />} />
+                <Route path="/my-profile" element={<WorkerProfilePage />} />
+                
+                {/* Community Recommendation Form */}
+                <Route path="/recommend" element={<RecommendWorkerPage />} />
+                
+                {/* Admin Management & Authentication */}
+                <Route path="/admin" element={<AdminDashboardPage />} />
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/register" element={<RegisterPage />} />
+                
+                {/* 404 Catch-All */}
+                <Route path="*" element={<NotFoundPage />} />
+              </Routes>
+            </main>
+            <Footer />
+          </div>
+        </Router>
+      </AuthProvider>
+    </ToastProvider>
   );
 }
 
 export default App;
-
 ```
 
 ---
 
-## 9. The Design System & Pure CSS Architecture (`App.css`)
+## 9. The Design System & Pure CSS Architecture (`styles/App.css`)
 
-Here is the complete, zero-dependency master stylesheet `client/src/App.css`:
+KajBazar intentionally uses a **zero-dependency pure CSS architecture** located at `client/src/styles/App.css`. Rather than pulling in heavy utility frameworks or bloated UI kits, we use native modern CSS features:
+- **CSS Custom Properties (Variables)** for design tokens.
+- **CSS Grid** for auto-responsive cards without media query clutter.
+- **CSS Flexbox** for navigation, action bars, and modal controls.
+- **Backdrop Filters** for modern frosted-glass modal overlays.
+
+### 9.1 Modern CSS Custom Properties (Design Tokens)
 
 ```css
+:root {
+  /* Brand & Status Color Tokens */
+  --primary: #1d4ed8;
+  --primary-hover: #1e40af;
+  --primary-light: #eff6ff;
+  --primary-border: #bfdbfe;
 
+  --secondary: #059669;
+  --secondary-hover: #047857;
+  --secondary-light: #ecfdf5;
+  --secondary-border: #a7f3d0;
+
+  --accent: #d97706;
+  --accent-light: #fffbeb;
+
+  --danger: #dc2626;
+  --danger-hover: #b91c1c;
+  --danger-light: #fef2f2;
+  --danger-border: #fecaca;
+
+  --info: #0284c7;
+  --info-light: #f0f9ff;
+  --info-border: #bae6fd;
+
+  /* Neutral Surface & Text Palette */
+  --slate-900: #0f172a;
+  --slate-800: #1e293b;
+  --slate-700: #334155;
+  --slate-600: #475569;
+  --slate-500: #64748b;
+  --slate-400: #94a3b8;
+  --slate-300: #cbd5e1;
+  --slate-200: #e2e8f0;
+  --slate-100: #f1f5f9;
+  --slate-50: #f8fafc;
+
+  --text-main: #1e293b;
+  --text-muted: #64748b;
+  --border: #e2e8f0;
+  --bg-page: #f8fafc;
+  --card-bg: #ffffff;
+
+  /* Typography */
+  --font-heading: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+  /* Elevation Shadows */
+  --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.08), 0 1px 2px -1px rgb(0 0 0 / 0.08);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.08), 0 2px 4px -2px rgb(0 0 0 / 0.06);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.08), 0 4px 6px -4px rgb(0 0 0 / 0.04);
+
+  /* Radius */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-full: 9999px;
+
+  /* Transitions */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+}
 ```
+
+### 9.2 Responsive Layout with CSS Grid
+
+For the worker directory and service categories, we use CSS Grid with `repeat(auto-fill, minmax(320px, 1fr))`:
+
+```css
+.worker-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+```
+*Why this is beginner magic*: You don't need any complex CSS `@media` queries! On wide 4K displays, the grid automatically forms 4 columns; on tablets it becomes 2 columns; on narrow mobile phones it automatically collapses to 1 full-width column.
+
+### 9.3 Floating Toast Notification Stack
+
+```css
+.toast-container {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-width: 400px;
+  pointer-events: none;
+}
+
+.toast-card {
+  pointer-events: auto;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.875rem 1.125rem;
+  background: #ffffff;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  border-left: 4px solid;
+  animation: toastIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.toast-success { border-left-color: var(--secondary); }
+.toast-error   { border-left-color: var(--danger); }
+.toast-warning { border-left-color: var(--accent); }
+.toast-info    { border-left-color: var(--info); }
+
+@keyframes toastIn {
+  from { opacity: 0; transform: translateY(12px) scale(0.96); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+```
+
 
 ---
 

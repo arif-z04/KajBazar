@@ -143,6 +143,20 @@ In 30 seconds, you have isolated the exact layer responsible for the problem!
 
 ---
 
+### 2.2b Error A02b: `FATAL: role "<username>" does not exist`
+- **Symptom**: `psql: error: connection to server on socket "/var/run/postgresql/.s.PGSQL.5432" failed: FATAL: role "noir" does not exist`
+- **Root Cause**: When you run `psql` without the `-U` flag, PostgreSQL assumes your database role name is identical to your current Linux/macOS user account. If that role was never explicitly created in PostgreSQL, it aborts.
+- **Terminal Fix**: Always pass `-U postgres` explicitly when executing commands:
+  ```bash
+  # Correct:
+  psql -U postgres -d kajbazar_db
+
+  # Or run via the postgres system user:
+  sudo -u postgres psql -d kajbazar_db
+  ```
+
+---
+
 ### 2.3 Error A03: `Database "kajbazar_db" does not exist`
 - **Symptom**: `Npgsql.PostgresException: 3D000: database "kajbazar_db" does not exist`
 - **Root Cause**: PostgreSQL is running, but the database itself was never created.

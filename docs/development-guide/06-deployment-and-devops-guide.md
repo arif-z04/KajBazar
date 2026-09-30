@@ -559,7 +559,7 @@ ssh ${SERVER_USER}@${SERVER_IP} "sudo systemctl restart kajbazar-api"
 
 echo "=== 7. Verifying Production Health Check ==="
 sleep 2
-curl -s -f https://kajbazar.com/api/categories > /dev/null
+curl -s -f http://localhost:5000/health > /dev/null || curl -s -f https://kajbazar.com/health > /dev/null
 
 echo "🎉 DEPLOYMENT SUCCESSFUL! KajBazar is live at https://kajbazar.com"
 ```
