@@ -1,79 +1,142 @@
 import React, { useState, useEffect, useContext } from 'react';
+import { Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
-import { submitReviewApi, getWorkerProfileApi, getCategoriesApi, getDistrictsApi } from '../services/api';
+import { useToast } from '../context/ToastContext';
+import {
+  submitReviewApi,
+  getWorkerProfileApi,
+  getCategoriesApi,
+  getDistrictsApi
+} from '../services/api';
+import {
+  Button,
+  Badge,
+  Modal,
+  RatingStars,
+  Skeleton
+} from './common';
+import {
+  MapPin,
+  Phone,
+  PhoneCall,
+  Clock,
+  Briefcase,
+  Star,
+  CheckCircle2,
+  Filter,
+  RotateCcw,
+  Sparkles,
+  ChevronRight,
+  MessageSquare
+} from 'lucide-react';
 
 export const WorkerCard = ({ worker, onViewDetails }) => {
   const [showPhone, setShowPhone] = useState(false);
 
   return (
-    <div className="worker-card">
-      <div className="card-top">
-        <div className="avatar-circle">
-          {worker.workerName ? worker.workerName[0].toUpperCase() : 'W'}
+    <article className="worker-card-modern" aria-label={`Worker ${worker.workerName}`}>
+      <div>
+        <div className="worker-top-row">
+          <div className="worker-avatar">
+            {worker.workerName ? worker.workerName.charAt(0).toUpperCase() : 'W'}
+          </div>
+          <div className="worker-header-info">
+            <h3 className="worker-name">{worker.workerName}</h3>
+            <div className="worker-location">
+              <MapPin size={14} />
+              <span>{worker.upazilaName ? `${worker.upazilaName}, ` : ''}{worker.districtName || 'Bangladesh'}</span>
+            </div>
+          </div>
+          <Badge variant="verified" size="sm">
+            Verified
+          </Badge>
         </div>
-        <div className="worker-title-area">
-          <h3 className="worker-title">{worker.workerName}</h3>
-          <span className="location-tag">📍 {worker.upazilaName}, {worker.districtName}</span>
-        </div>
-        <div className="rating-pill" title={`${worker.averageRating} out of 5 stars`}>
-          ⭐ {Number(worker.averageRating).toFixed(1)} <small>({worker.totalReviews})</small>
-        </div>
-      </div>
 
-      <div className="category-tags">
-        {worker.categories && worker.categories.length > 0 ? (
-          worker.categories.map((cat, idx) => (
-            <span key={idx} className="tag-pill">{cat}</span>
-          ))
-        ) : (
-          <span className="tag-pill">Skilled Worker</span>
+        {/* Rating & Review summary */}
+        <div style={{ marginBottom: '0.85rem' }}>
+          <RatingStars
+            rating={worker.averageRating}
+            showValue={true}
+            totalReviews={worker.totalReviews}
+            size={15}
+          />
+        </div>
+
+        {/* Category Specialization Tags */}
+        <div className="worker-categories-list">
+          {worker.categories && worker.categories.length > 0 ? (
+            worker.categories.map((cat, idx) => (
+              <span key={idx} className="category-tag-pill">
+                {cat}
+              </span>
+            ))
+          ) : (
+            <span className="category-tag-pill">Skilled Technician</span>
+          )}
+        </div>
+
+        {/* Bio Snippet */}
+        {worker.bio && (
+          <p className="worker-bio-text">
+            {worker.bio}
+          </p>
         )}
+
+        {/* Experience & Rate Strip */}
+        <div className="worker-meta-strip">
+          <div className="meta-col">
+            <span className="meta-title">Experience</span>
+            <span className="meta-val">{worker.experienceYears || 0} Yrs</span>
+          </div>
+          <div className="meta-col">
+            <span className="meta-title">Hourly Rate</span>
+            <span className="meta-val">
+              {worker.hourlyRate ? `৳${worker.hourlyRate}/hr` : 'Negotiable'}
+            </span>
+          </div>
+          <div className="meta-col">
+            <span className="meta-title">Direct Contact</span>
+            <span className="meta-val" style={{ color: 'var(--secondary)' }}>Active</span>
+          </div>
+        </div>
       </div>
 
-      {worker.bio && <p className="worker-bio-snippet">{worker.bio}</p>}
-
-      <div className="worker-meta-grid">
-        <div className="meta-item">
-          <span className="meta-label">Experience</span>
-          <span className="meta-value">{worker.experienceYears} Years</span>
-        </div>
-        <div className="meta-item">
-          <span className="meta-label">Expected Rate</span>
-          <span className="meta-value">
-            {worker.hourlyRate ? `৳${worker.hourlyRate}/hr` : 'Negotiable'}
-          </span>
-        </div>
-        <div className="meta-item">
-          <span className="meta-label">Status</span>
-          <span className="meta-value verified-badge">✓ Verified</span>
-        </div>
-      </div>
-
-      <div className="card-action-buttons">
+      {/* Action Buttons */}
+      <div className="worker-action-row">
         {showPhone ? (
-          <a href={`tel:${worker.phoneNumber}`} className="btn-call-active" title="Click to call directly">
-            📞 {worker.phoneNumber}
+          <a
+            href={`tel:${worker.phoneNumber}`}
+            className="btn-phone-revealed"
+            title="Click to place phone call"
+            aria-label={`Call ${worker.workerName} at ${worker.phoneNumber}`}
+          >
+            <PhoneCall size={16} />
+            <span>{worker.phoneNumber}</span>
           </a>
         ) : (
-          <button 
-            type="button" 
-            onClick={() => setShowPhone(true)} 
-            className="btn-contact-reveal"
-            title="Direct contact without intermediary (BR-06)"
+          <Button
+            variant="outline"
+            size="sm"
+            icon={Phone}
+            onClick={() => setShowPhone(true)}
+            className="btn-reveal-phone"
+            title="Click to view direct phone number"
           >
-            📞 Contact Worker
-          </button>
+            Contact Phone
+          </Button>
         )}
 
-        <button 
-          type="button" 
-          onClick={() => onViewDetails(worker.profileId)} 
-          className="btn-view-details"
+        <Button
+          variant="primary"
+          size="sm"
+          icon={ChevronRight}
+          iconPosition="right"
+          onClick={() => onViewDetails(worker.profileId)}
         >
-          Reviews & Details
-        </button>
+          View Profile
+        </Button>
       </div>
-    </div>
+    </article>
   );
 };
 
@@ -83,7 +146,7 @@ export const WorkerFilter = ({ filters, onFilterChange, onReset }) => {
   const [availableUpazilas, setAvailableUpazilas] = useState([]);
 
   useEffect(() => {
-    const loadFilterMetadata = async () => {
+    const loadMetadata = async () => {
       try {
         const [catRes, distRes] = await Promise.all([
           getCategoriesApi(),
@@ -91,11 +154,16 @@ export const WorkerFilter = ({ filters, onFilterChange, onReset }) => {
         ]);
         setCategories(catRes.data || []);
         setDistricts(distRes.data || []);
+
+        if (filters.districtId) {
+          const selected = distRes.data.find(d => d.districtId === filters.districtId);
+          setAvailableUpazilas(selected?.upazilas || []);
+        }
       } catch (err) {
         console.error("Failed to load filter metadata:", err);
       }
     };
-    loadFilterMetadata();
+    loadMetadata();
   }, []);
 
   const handleDistrictChange = (e) => {
@@ -112,17 +180,28 @@ export const WorkerFilter = ({ filters, onFilterChange, onReset }) => {
   };
 
   return (
-    <div className="filter-panel-card">
-      <div className="filter-header">
-        <h3>🔍 Search & Location Filter (BR-05)</h3>
-        <button type="button" onClick={onReset} className="btn-reset-filter">Reset Filters</button>
+    <div className="filter-card-panel">
+      <div className="filter-header-bar">
+        <div className="filter-title">
+          <Filter size={18} />
+          <span>Filter & Search Professionals</span>
+        </div>
+        <Button
+          variant="ghost"
+          size="sm"
+          icon={RotateCcw}
+          onClick={onReset}
+        >
+          Reset Filters
+        </Button>
       </div>
 
-      <div className="filter-controls-grid">
-        <div className="filter-field">
-          <label>Service Category</label>
-          <select 
-            value={filters.category || ''} 
+      <div className="filter-controls-row">
+        <div className="filter-item">
+          <label htmlFor="filter-category">Service Category</label>
+          <select
+            id="filter-category"
+            value={filters.category || ''}
             onChange={(e) => onFilterChange('category', e.target.value || null)}
           >
             <option value="">All Categories</option>
@@ -134,10 +213,11 @@ export const WorkerFilter = ({ filters, onFilterChange, onReset }) => {
           </select>
         </div>
 
-        <div className="filter-field">
-          <label>District</label>
-          <select 
-            value={filters.districtId || ''} 
+        <div className="filter-item">
+          <label htmlFor="filter-district">District / City</label>
+          <select
+            id="filter-district"
+            value={filters.districtId || ''}
             onChange={handleDistrictChange}
           >
             <option value="">All Districts</option>
@@ -149,10 +229,11 @@ export const WorkerFilter = ({ filters, onFilterChange, onReset }) => {
           </select>
         </div>
 
-        <div className="filter-field">
-          <label>Upazila / Sub-District</label>
-          <select 
-            value={filters.upazilaId || ''} 
+        <div className="filter-item">
+          <label htmlFor="filter-upazila">Upazila / Area</label>
+          <select
+            id="filter-upazila"
+            value={filters.upazilaId || ''}
             onChange={(e) => onFilterChange('upazilaId', e.target.value ? parseInt(e.target.value, 10) : null)}
             disabled={!filters.districtId}
           >
@@ -165,16 +246,17 @@ export const WorkerFilter = ({ filters, onFilterChange, onReset }) => {
           </select>
         </div>
 
-        <div className="filter-field">
-          <label>Minimum Rating</label>
-          <select 
-            value={filters.minRating || ''} 
+        <div className="filter-item">
+          <label htmlFor="filter-rating">Minimum Rating</label>
+          <select
+            id="filter-rating"
+            value={filters.minRating || ''}
             onChange={(e) => onFilterChange('minRating', e.target.value ? parseFloat(e.target.value) : null)}
           >
             <option value="">Any Rating</option>
-            <option value="3.0">3.0+ Stars ⭐⭐⭐</option>
-            <option value="4.0">4.0+ Stars ⭐⭐⭐⭐</option>
             <option value="4.5">4.5+ Stars ⭐⭐⭐⭐⭐</option>
+            <option value="4.0">4.0+ Stars ⭐⭐⭐⭐</option>
+            <option value="3.0">3.0+ Stars ⭐⭐⭐</option>
           </select>
         </div>
       </div>
@@ -184,13 +266,13 @@ export const WorkerFilter = ({ filters, onFilterChange, onReset }) => {
 
 export const WorkerDetailModal = ({ profileId, onClose, onReviewSubmitted }) => {
   const { user, isAuthenticated } = useContext(AuthContext);
+  const toast = useToast();
+
   const [worker, setWorker] = useState(null);
   const [loading, setLoading] = useState(true);
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState('');
   const [submittingReview, setSubmittingReview] = useState(false);
-  const [reviewMsg, setReviewMsg] = useState(null);
-  const [reviewError, setReviewError] = useState(null);
 
   useEffect(() => {
     const fetchWorker = async () => {
@@ -200,6 +282,7 @@ export const WorkerDetailModal = ({ profileId, onClose, onReviewSubmitted }) => 
         setWorker(res.data);
       } catch (err) {
         console.error("Failed to load worker profile details:", err);
+        toast.error("Could not load worker profile details.");
       } finally {
         setLoading(false);
       }
@@ -210,8 +293,6 @@ export const WorkerDetailModal = ({ profileId, onClose, onReviewSubmitted }) => 
   const handleReviewSubmit = async (e) => {
     e.preventDefault();
     setSubmittingReview(true);
-    setReviewMsg(null);
-    setReviewError(null);
 
     try {
       await submitReviewApi({
@@ -220,15 +301,15 @@ export const WorkerDetailModal = ({ profileId, onClose, onReviewSubmitted }) => 
         comment: comment.trim() || null
       });
 
-      setReviewMsg("Thank you! Your rating and review have been submitted.");
+      toast.success("Your rating and review have been submitted successfully!");
       setComment('');
-      
-      // Refresh worker details to reflect updated rating & reviews
+
+      // Refresh worker data
       const freshRes = await getWorkerProfileApi(profileId);
       setWorker(freshRes.data);
       if (onReviewSubmitted) onReviewSubmitted();
     } catch (err) {
-      setReviewError(err.response?.data?.message || "Failed to submit review. Please try again.");
+      toast.error(err.response?.data?.message || "Failed to submit review.");
     } finally {
       setSubmittingReview(false);
     }
@@ -237,130 +318,191 @@ export const WorkerDetailModal = ({ profileId, onClose, onReviewSubmitted }) => 
   if (!profileId) return null;
 
   return (
-    <div className="modal-backdrop" onClick={onClose}>
-      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-        <button className="modal-close-btn" onClick={onClose}>✕</button>
-
-        {loading ? (
-          <div className="loading-state">Loading worker profile...</div>
-        ) : !worker ? (
-          <div className="error-state">Worker details could not be found.</div>
-        ) : (
-          <div className="modal-body">
-            <div className="modal-header-section">
-              <div className="avatar-large">{worker.workerName ? worker.workerName[0].toUpperCase() : 'W'}</div>
-              <div className="modal-title-info">
-                <h2>{worker.workerName}</h2>
-                <p className="modal-location">📍 {worker.upazilaName}, {worker.districtName}</p>
-                <div className="modal-badges">
-                  <span className="badge-verified">✓ Verified Professional</span>
-                  <span className="badge-rating">⭐ {Number(worker.averageRating).toFixed(1)} / 5.0 ({worker.totalReviews} reviews)</span>
+    <Modal
+      isOpen={Boolean(profileId)}
+      onClose={onClose}
+      maxWidth="lg"
+      title={worker ? worker.workerName : "Worker Details"}
+      subtitle={worker ? `${worker.upazilaName ? `${worker.upazilaName}, ` : ''}${worker.districtName || 'Bangladesh'}` : ''}
+    >
+      {loading ? (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', padding: '1rem 0' }}>
+          <Skeleton height="70px" borderRadius="var(--radius-md)" />
+          <Skeleton height="100px" borderRadius="var(--radius-md)" />
+          <Skeleton height="150px" borderRadius="var(--radius-md)" />
+        </div>
+      ) : !worker ? (
+        <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--slate-500)' }}>
+          Worker details could not be found.
+        </div>
+      ) : (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }}>
+          {/* Header Info & Actions */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
+            <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+              <div className="worker-avatar" style={{ width: '64px', height: '64px', fontSize: '1.75rem' }}>
+                {worker.workerName ? worker.workerName.charAt(0).toUpperCase() : 'W'}
+              </div>
+              <div>
+                <h3 style={{ fontSize: '1.35rem', marginBottom: '4px' }}>{worker.workerName}</h3>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <RatingStars
+                    rating={worker.averageRating}
+                    showValue={true}
+                    totalReviews={worker.totalReviews}
+                    size={16}
+                  />
+                  <Badge variant="verified" size="sm">Verified Worker</Badge>
                 </div>
               </div>
             </div>
 
-            <div className="modal-categories">
-              <strong>Specializations:</strong>
-              <div className="tag-list">
-                {worker.categories?.map((cat, idx) => (
-                  <span key={idx} className="tag-pill large">{cat}</span>
-                ))}
-              </div>
+            <a
+              href={`tel:${worker.phoneNumber}`}
+              className="btn-phone-revealed"
+              style={{ fontSize: '1rem', padding: '0.65rem 1.25rem' }}
+            >
+              <PhoneCall size={18} />
+              <span>Call: {worker.phoneNumber}</span>
+            </a>
+          </div>
+
+          {/* Quick Metrics */}
+          <div className="worker-meta-strip" style={{ padding: '0.85rem' }}>
+            <div className="meta-col">
+              <span className="meta-title">Practical Experience</span>
+              <span className="meta-val" style={{ fontSize: '1rem' }}>{worker.experienceYears || 0} Years</span>
             </div>
-
-            <div className="modal-details-grid">
-              <div className="detail-box">
-                <span className="detail-label">Experience</span>
-                <span className="detail-val">{worker.experienceYears} Years in Service</span>
-              </div>
-              <div className="detail-box">
-                <span className="detail-label">Rate / Charge</span>
-                <span className="detail-val">{worker.hourlyRate ? `৳${worker.hourlyRate} / hour` : 'Negotiable'}</span>
-              </div>
-              <div className="detail-box">
-                <span className="detail-label">Direct Contact (BR-06)</span>
-                <a href={`tel:${worker.phoneNumber}`} className="btn-call-direct">
-                  📞 {worker.phoneNumber}
-                </a>
-              </div>
+            <div className="meta-col">
+              <span className="meta-title">Hourly Rate</span>
+              <span className="meta-val" style={{ fontSize: '1rem' }}>
+                {worker.hourlyRate ? `৳${worker.hourlyRate} / hour` : 'Negotiable'}
+              </span>
             </div>
-
-            {worker.bio && (
-              <div className="modal-bio-section">
-                <h4>About Service Provider</h4>
-                <p>{worker.bio}</p>
-              </div>
-            )}
-
-            <hr className="modal-divider" />
-
-            {/* Reviews Section */}
-            <div className="modal-reviews-section">
-              <h3>Customer Reviews ({worker.reviews?.length || 0})</h3>
-
-              {worker.reviews && worker.reviews.length > 0 ? (
-                <div className="reviews-list">
-                  {worker.reviews.map((rev) => (
-                    <div key={rev.reviewId} className="review-item-card">
-                      <div className="review-item-header">
-                        <span className="reviewer-name">👤 {rev.consumerName}</span>
-                        <span className="review-stars">{'⭐'.repeat(rev.rating)}</span>
-                        <span className="review-date">{new Date(rev.createdAt).toLocaleDateString()}</span>
-                      </div>
-                      {rev.comment && <p className="review-comment-text">{rev.comment}</p>}
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="no-reviews-msg">No reviews yet for this service provider. Be the first to review!</p>
-              )}
-
-              {/* Review Submission Form (BR-07, BR-08) */}
-              <div className="add-review-container">
-                <h4>Rate This Worker</h4>
-                {!isAuthenticated ? (
-                  <p className="login-to-review-hint">
-                    Please <a href="/login">Login as a Consumer</a> to submit a rating and review (BR-07).
-                  </p>
-                ) : worker.userId === user?.userId ? (
-                  <p className="self-review-hint">You cannot review your own profile.</p>
-                ) : (
-                  <form onSubmit={handleReviewSubmit} className="review-form">
-                    {reviewMsg && <div className="alert-success">{reviewMsg}</div>}
-                    {reviewError && <div className="alert-danger">{reviewError}</div>}
-
-                    <div className="form-row-rating">
-                      <label>Star Rating (1 to 5):</label>
-                      <select value={rating} onChange={(e) => setRating(e.target.value)}>
-                        <option value="5">⭐⭐⭐⭐⭐ (5 - Excellent)</option>
-                        <option value="4">⭐⭐⭐⭐ (4 - Very Good)</option>
-                        <option value="3">⭐⭐⭐ (3 - Average)</option>
-                        <option value="2">⭐⭐ (2 - Poor)</option>
-                        <option value="1">⭐ (1 - Very Bad)</option>
-                      </select>
-                    </div>
-
-                    <div className="form-row-comment">
-                      <label>Feedback & Comments (optional):</label>
-                      <textarea
-                        rows="3"
-                        placeholder="Share your experience regarding punctuality, quality of work, pricing..."
-                        value={comment}
-                        onChange={(e) => setComment(e.target.value)}
-                        maxLength={1000}
-                      />
-                    </div>
-
-                    <button type="submit" disabled={submittingReview} className="btn-submit-review">
-                      {submittingReview ? 'Submitting...' : 'Submit / Update Review'}
-                    </button>
-                  </form>
-                )}
-              </div>
+            <div className="meta-col">
+              <span className="meta-title">Location</span>
+              <span className="meta-val" style={{ fontSize: '0.9rem' }}>
+                {worker.upazilaName}, {worker.districtName}
+              </span>
             </div>
           </div>
-        )}
-      </div>
-    </div>
+
+          {/* Specialization Categories */}
+          <div>
+            <h4 style={{ fontSize: '0.95rem', color: 'var(--slate-700)', marginBottom: '0.5rem' }}>
+              Skills & Service Categories
+            </h4>
+            <div className="worker-categories-list">
+              {worker.categories?.map((cat, idx) => (
+                <span key={idx} className="category-tag-pill" style={{ fontSize: '0.85rem', padding: '0.3rem 0.8rem' }}>
+                  {cat}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          {/* Bio */}
+          {worker.bio && (
+            <div>
+              <h4 style={{ fontSize: '0.95rem', color: 'var(--slate-700)', marginBottom: '0.4rem' }}>
+                Professional Background
+              </h4>
+              <p style={{ color: 'var(--slate-600)', lineHeight: '1.6', fontSize: '0.925rem' }}>
+                {worker.bio}
+              </p>
+            </div>
+          )}
+
+          <hr style={{ border: 'none', borderTop: '1px solid var(--border)' }} />
+
+          {/* Reviews List */}
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+              <h4 style={{ fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <MessageSquare size={18} />
+                <span>Customer Reviews ({worker.reviews?.length || 0})</span>
+              </h4>
+            </div>
+
+            {worker.reviews && worker.reviews.length > 0 ? (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                {worker.reviews.map((rev) => (
+                  <div key={rev.reviewId} className="review-item">
+                    <div className="review-user-row">
+                      <span className="review-user-name">{rev.consumerName || 'Community Member'}</span>
+                      <span className="review-date">{new Date(rev.createdAt).toLocaleDateString()}</span>
+                    </div>
+                    <RatingStars rating={rev.rating} size={14} style={{ marginBottom: '6px' }} />
+                    {rev.comment && <p className="review-comment">{rev.comment}</p>}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div style={{ padding: '1.5rem', textAlign: 'center', background: 'var(--slate-50)', borderRadius: 'var(--radius-md)' }}>
+                <p style={{ color: 'var(--slate-500)', fontSize: '0.9rem' }}>
+                  No customer reviews yet. Be the first to share your experience with {worker.workerName}!
+                </p>
+              </div>
+            )}
+          </div>
+
+          {/* Submit Review Section */}
+          <div style={{ background: 'var(--slate-50)', border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)', padding: '1.25rem' }}>
+            <h4 style={{ fontSize: '1rem', marginBottom: '0.75rem', color: 'var(--slate-800)' }}>
+              Rate & Review This Service Provider
+            </h4>
+
+            {!isAuthenticated ? (
+              <p style={{ fontSize: '0.875rem', color: 'var(--slate-600)' }}>
+                Please <Link to="/login" style={{ fontWeight: 600 }}>sign in with a Consumer account</Link> to submit a review and rating.
+              </p>
+            ) : worker.userId === user?.userId ? (
+              <p style={{ fontSize: '0.875rem', color: 'var(--slate-500)' }}>
+                You cannot review your own service provider profile.
+              </p>
+            ) : (
+              <form onSubmit={handleReviewSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: 'var(--slate-700)', marginBottom: '0.35rem' }}>
+                    Your Rating:
+                  </label>
+                  <RatingStars
+                    rating={rating}
+                    size={22}
+                    interactive={true}
+                    onChange={(val) => setRating(val)}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: 'var(--slate-700)', marginBottom: '0.35rem' }}>
+                    Review Comments (optional):
+                  </label>
+                  <textarea
+                    rows={3}
+                    className="kb-textarea"
+                    placeholder="Share feedback on punctuality, pricing, and craftsmanship..."
+                    value={comment}
+                    onChange={(e) => setComment(e.target.value)}
+                    maxLength={1000}
+                  />
+                </div>
+
+                <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                  <Button
+                    type="submit"
+                    variant="primary"
+                    size="sm"
+                    loading={submittingReview}
+                  >
+                    Submit Review
+                  </Button>
+                </div>
+              </form>
+            )}
+          </div>
+        </div>
+      )}
+    </Modal>
   );
 };

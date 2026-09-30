@@ -40,9 +40,9 @@ flowchart LR
 
 | Layer | Technology | Description |
 | :--- | :--- | :--- |
-| **Frontend** | React 18, Vite, React Router v6, Axios | Responsive Single Page Application with JWT authorization request interceptors and Context API global state |
-| **Backend API** | ASP.NET Core 8 Web API | Clean Layered Architecture (Core, Infrastructure, API) with Dependency Injection and JWT Bearer RBAC |
-| **ORM** | Entity Framework Core 8 | Object-Relational Mapping with PostgreSQL provider (`Npgsql`) and automatic snake_case naming |
+| **Frontend** | React 18, Vite, React Router v6, Axios, Lucide Icons | Production SaaS UI design system with Toast notifications, Skeleton loaders, responsive mobile navigation, modal dialogs, and Context API global state |
+| **Backend API** | ASP.NET Core (.NET 10 LTS compatible) | Clean Architecture (Core, Infrastructure, API) with Global Exception Handling, Health Checks (`/health`), Configurable CORS, and JWT Bearer RBAC |
+| **ORM** | Entity Framework Core | Object-Relational Mapping with PostgreSQL provider (`Npgsql`) and automatic snake_case naming |
 | **Database** | PostgreSQL 15+ | 12 relational tables, B-Tree composite indexes, check constraints, UUIDs, and automated rating triggers |
 | **Testing** | xUnit, In-Memory DbContext | 14 automated unit and integration tests covering authentication, search, reviews, and audit logs |
 

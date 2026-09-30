@@ -1,9 +1,37 @@
 import React, { useState, useEffect, useContext } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
-import { submitRecommendationApi, getMyRecommendationsApi, getCategoriesApi, getDistrictsApi } from '../services/api';
+import { useToast } from '../context/ToastContext';
+import {
+  submitRecommendationApi,
+  getMyRecommendationsApi,
+  getCategoriesApi,
+  getDistrictsApi
+} from '../services/api';
+import {
+  Button,
+  Badge,
+  Input,
+  Select,
+  Textarea
+} from '../components/common';
+import {
+  UserPlus,
+  Send,
+  CheckCircle2,
+  Clock,
+  MapPin,
+  Phone,
+  HelpCircle,
+  ShieldCheck,
+  History,
+  AlertCircle
+} from 'lucide-react';
 
 export const RecommendWorkerPage = () => {
   const { isAuthenticated } = useContext(AuthContext);
+  const toast = useToast();
+  const navigate = useNavigate();
 
   const [categories, setCategories] = useState([]);
   const [districts, setDistricts] = useState([]);
@@ -20,8 +48,6 @@ export const RecommendWorkerPage = () => {
   });
 
   const [submitting, setSubmitting] = useState(false);
-  const [successMsg, setSuccessMsg] = useState(null);
-  const [errorMsg, setErrorMsg] = useState(null);
 
   useEffect(() => {
     const loadMetadata = async () => {
@@ -53,16 +79,14 @@ export const RecommendWorkerPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setSubmitting(true);
-    setSuccessMsg(null);
-    setErrorMsg(null);
 
     if (!isAuthenticated) {
-      setErrorMsg("Please login to submit a community worker recommendation (BR-09).");
-      setSubmitting(false);
+      toast.warning("Please sign in to submit a worker recommendation.");
+      navigate('/login');
       return;
     }
 
+    setSubmitting(true);
     try {
       const payload = {
         workerName: formData.workerName.trim(),
@@ -74,7 +98,7 @@ export const RecommendWorkerPage = () => {
       };
 
       const res = await submitRecommendationApi(payload);
-      setSuccessMsg(res.data.message || "Thank you! Your recommendation has been submitted for admin review.");
+      toast.success(res.data.message || "Thank you! Your recommendation has been submitted for admin review.");
 
       // Reset form
       setFormData({
@@ -86,167 +110,209 @@ export const RecommendWorkerPage = () => {
         notes: ''
       });
 
-      // Refresh my recommendations list
+      // Refresh my recommendations
       const myRecs = await getMyRecommendationsApi();
       setMyRecommendations(myRecs.data || []);
     } catch (err) {
-      setErrorMsg(err.response?.data?.message || "Failed to submit recommendation. Please check your inputs.");
+      toast.error(err.response?.data?.message || "Failed to submit recommendation. Please verify all fields.");
     } finally {
       setSubmitting(false);
     }
   };
 
   return (
-    <div className="recommend-page-container">
-      <div className="recommend-header">
-        <h2>🤝 Recommend an Offline Skilled Worker (BR-09)</h2>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+      {/* Header Banner */}
+      <div className="directory-header-banner">
+        <h1>Recommend an Offline Skilled Worker</h1>
         <p>
-          Do you know a trustworthy electrician, plumber, or mechanic in your neighborhood who lacks an internet profile?
-          Help expand local employment opportunities by submitting their information for platform verification.
+          Do you know a trustworthy electrician, plumber, or mechanic in your neighborhood who lacks an online profile?
+          Help bridge the digital divide by submitting their details for platform verification.
         </p>
       </div>
 
-      <div className="recommend-layout-grid">
-        <div className="recommend-form-column">
-          <div className="card-form-wrapper">
-            <h3>Worker Recommendation Form</h3>
+      <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: '2rem' }}>
+        {/* Referral Form */}
+        <div className="reviews-section-card">
+          <h3 style={{ fontSize: '1.25rem', marginBottom: '1.25rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <UserPlus size={20} />
+            <span>Worker Referral Form</span>
+          </h3>
 
-            {!isAuthenticated && (
-              <div className="alert-info">
-                ℹ️ You need to <a href="/login">login or register</a> before submitting a recommendation.
-              </div>
-            )}
+          {!isAuthenticated && (
+            <div style={{ padding: '0.85rem 1rem', background: 'var(--info-light)', border: '1px solid var(--info-border)', borderRadius: 'var(--radius-sm)', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.9rem', color: 'var(--info)' }}>
+              <AlertCircle size={18} />
+              <span>You must <Link to="/login" style={{ fontWeight: 700 }}>sign in</Link> before submitting a worker referral.</span>
+            </div>
+          )}
 
-            {successMsg && <div className="alert-success">{successMsg}</div>}
-            {errorMsg && <div className="alert-danger">{errorMsg}</div>}
+          <form onSubmit={handleSubmit}>
+            <Input
+              label="Worker Full Name"
+              required
+              placeholder="e.g. Master Jamal Hossain"
+              value={formData.workerName}
+              onChange={(e) => setFormData({ ...formData, workerName: e.target.value })}
+            />
 
-            <form onSubmit={handleSubmit} className="standard-form">
-              <div className="form-group">
-                <label>Worker Full Name *</label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. Master Jamal Hossain"
-                  value={formData.workerName}
-                  onChange={(e) => setFormData({ ...formData, workerName: e.target.value })}
-                />
-              </div>
+            <Input
+              label="Worker Phone Number"
+              type="tel"
+              required
+              placeholder="01xxxxxxxxx"
+              pattern="^(?:\+8801|01)[3-9]\d{8}$"
+              helperText="Enter a valid 11-digit Bangladeshi mobile number"
+              value={formData.phoneNumber}
+              onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
+            />
 
-              <div className="form-group">
-                <label>Worker Phone Number * (e.g. 01712345678)</label>
-                <input
-                  type="tel"
-                  required
-                  placeholder="01xxxxxxxxx"
-                  pattern="^(?:\+8801|01)[3-9]\d{8}$"
-                  title="Enter a valid Bangladeshi phone number"
-                  value={formData.phoneNumber}
-                  onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
-                />
-              </div>
+            <Select
+              label="Primary Trade Category"
+              required
+              value={formData.categoryId}
+              onChange={(e) => setFormData({ ...formData, categoryId: e.target.value })}
+            >
+              <option value="">Select Category</option>
+              {categories.map((c) => (
+                <option key={c.categoryId} value={c.categoryId}>
+                  {c.categoryName}
+                </option>
+              ))}
+            </Select>
 
-              <div className="form-group">
-                <label>Primary Service Skill Category *</label>
-                <select
-                  required
-                  value={formData.categoryId}
-                  onChange={(e) => setFormData({ ...formData, categoryId: e.target.value })}
-                >
-                  <option value="">Select Category</option>
-                  {categories.map((c) => (
-                    <option key={c.categoryId} value={c.categoryId}>
-                      {c.categoryName}
-                    </option>
-                  ))}
-                </select>
-              </div>
+            <div className="form-grid-2">
+              <Select
+                label="District"
+                required
+                value={formData.districtId}
+                onChange={handleDistrictChange}
+              >
+                <option value="">Select District</option>
+                {districts.map((d) => (
+                  <option key={d.districtId} value={d.districtId}>
+                    {d.districtName}
+                  </option>
+                ))}
+              </Select>
 
-              <div className="form-row-2">
-                <div className="form-group">
-                  <label>District *</label>
-                  <select
-                    required
-                    value={formData.districtId}
-                    onChange={handleDistrictChange}
-                  >
-                    <option value="">Select District</option>
-                    {districts.map((d) => (
-                      <option key={d.districtId} value={d.districtId}>
-                        {d.districtName}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+              <Select
+                label="Upazila / Sub-District"
+                required
+                value={formData.upazilaId}
+                onChange={(e) => setFormData({ ...formData, upazilaId: e.target.value })}
+                disabled={!formData.districtId}
+              >
+                <option value="">Select Upazila</option>
+                {availableUpazilas.map((u) => (
+                  <option key={u.upazilaId} value={u.upazilaId}>
+                    {u.upazilaName}
+                  </option>
+                ))}
+              </Select>
+            </div>
 
-                <div className="form-group">
-                  <label>Upazila / Sub-District *</label>
-                  <select
-                    required
-                    value={formData.upazilaId}
-                    onChange={(e) => setFormData({ ...formData, upazilaId: e.target.value })}
-                    disabled={!formData.districtId}
-                  >
-                    <option value="">Select Upazila</option>
-                    {availableUpazilas.map((u) => (
-                      <option key={u.upazilaId} value={u.upazilaId}>
-                        {u.upazilaName}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
+            <Textarea
+              label="Experience Notes & Workshop Details"
+              rows={3}
+              placeholder="Describe their reliability, workshop location, notable skills, or pricing reputation..."
+              value={formData.notes}
+              onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+              maxLength={1000}
+            />
 
-              <div className="form-group">
-                <label>Experience Notes & Recommendation Details</label>
-                <textarea
-                  rows="3"
-                  placeholder="Share details about their work quality, reliability, workshop location, or specific skills..."
-                  value={formData.notes}
-                  onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                  maxLength={1000}
-                />
-              </div>
-
-              <button type="submit" disabled={submitting || !isAuthenticated} className="btn-primary-block">
-                {submitting ? 'Submitting Recommendation...' : 'Submit Offline Worker Referral'}
-              </button>
-            </form>
-          </div>
+            <div style={{ marginTop: '1.25rem' }}>
+              <Button
+                type="submit"
+                variant="primary"
+                size="lg"
+                icon={Send}
+                loading={submitting}
+                disabled={!isAuthenticated}
+                style={{ width: '100%' }}
+              >
+                Submit Worker Referral
+              </Button>
+            </div>
+          </form>
         </div>
 
-        {/* Sidebar: User's previously submitted recommendations */}
-        <div className="recommend-history-column">
-          <div className="history-card">
-            <h3>My Submitted Recommendations</h3>
+        {/* History Column */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+          <div className="reviews-section-card">
+            <h3 style={{ fontSize: '1.15rem', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <History size={18} />
+              <span>My Submitted Referrals</span>
+            </h3>
+
             {!isAuthenticated ? (
-              <p className="history-empty">Login to track your offline worker referrals.</p>
+              <p style={{ color: 'var(--slate-500)', fontSize: '0.875rem' }}>
+                Sign in to view your past offline worker recommendations.
+              </p>
             ) : myRecommendations.length === 0 ? (
-              <p className="history-empty">You haven't recommended any workers yet. Use the form on the left to submit your first referral!</p>
+              <p style={{ color: 'var(--slate-500)', fontSize: '0.875rem', lineHeight: '1.5' }}>
+                You have not submitted any worker referrals yet. Fill out the form on the left to submit your first referral!
+              </p>
             ) : (
-              <div className="history-list">
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
                 {myRecommendations.map((r) => (
-                  <div key={r.recommendationId} className="history-item">
-                    <div className="history-top">
-                      <strong>{r.workerName}</strong>
-                      <span className={`status-badge-small ${r.status.toLowerCase()}`}>
+                  <div
+                    key={r.recommendationId}
+                    style={{
+                      padding: '0.85rem 1rem',
+                      background: 'var(--slate-50)',
+                      border: '1px solid var(--border)',
+                      borderRadius: 'var(--radius-md)'
+                    }}
+                  >
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                      <strong style={{ color: 'var(--slate-900)' }}>{r.workerName}</strong>
+                      <Badge
+                        variant={
+                          r.status === 'APPROVED' ? 'verified' :
+                          r.status === 'REJECTED' ? 'rejected' : 'pending'
+                        }
+                        size="sm"
+                      >
                         {r.status}
-                      </span>
+                      </Badge>
                     </div>
-                    <p className="history-meta">
+
+                    <div style={{ fontSize: '0.825rem', color: 'var(--slate-600)', marginBottom: '4px' }}>
                       {r.categoryName} • 📍 {r.upazilaName}, {r.districtName}
-                    </p>
-                    <p className="history-phone">📞 {r.phoneNumber}</p>
-                    {r.notes && <p className="history-notes">"{r.notes}"</p>}
-                    <span className="history-date">
-                      Submitted: {new Date(r.createdAt).toLocaleDateString()}
-                    </span>
+                    </div>
+
+                    <div style={{ fontSize: '0.825rem', color: 'var(--slate-700)', fontWeight: 600 }}>
+                      📞 {r.phoneNumber}
+                    </div>
+
+                    {r.notes && (
+                      <p style={{ fontSize: '0.8rem', color: 'var(--slate-500)', fontStyle: 'italic', marginTop: '4px' }}>
+                        "{r.notes}"
+                      </p>
+                    )}
+
+                    <div style={{ fontSize: '0.725rem', color: 'var(--slate-400)', marginTop: '6px' }}>
+                      Submitted on {new Date(r.createdAt).toLocaleDateString()}
+                    </div>
                   </div>
                 ))}
               </div>
             )}
+          </div>
+
+          <div className="reviews-section-card" style={{ background: 'var(--slate-50)' }}>
+            <h4 style={{ fontSize: '0.95rem', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <ShieldCheck size={18} color="var(--primary)" />
+              <span>Admin Verification Process</span>
+            </h4>
+            <p style={{ fontSize: '0.85rem', color: 'var(--slate-600)', lineHeight: '1.5' }}>
+              Our team verifies referral contact information directly before adding workers to the public directory. Once approved, the worker receives direct service inquiries from local customers.
+            </p>
           </div>
         </div>
       </div>
     </div>
   );
 };
+
+export default RecommendWorkerPage;

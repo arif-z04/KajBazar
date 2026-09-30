@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 import {
   getAdminStatsApi,
   getPendingWorkersApi,
@@ -12,26 +13,58 @@ import {
   getAuditLogsApi,
   createCategoryApi
 } from '../services/api';
+import {
+  Button,
+  Badge,
+  Input,
+  Select,
+  Textarea,
+  ConfirmDialog,
+  TableRowSkeleton,
+  EmptyState
+} from '../components/common';
+import {
+  ShieldCheck,
+  Users,
+  Briefcase,
+  CheckCircle2,
+  Clock,
+  AlertTriangle,
+  RotateCcw,
+  PlusCircle,
+  FileText,
+  User,
+  Phone,
+  Mail,
+  Lock,
+  Wrench,
+  Sparkles,
+  Inbox,
+  XCircle,
+  Check,
+  X
+} from 'lucide-react';
 
 // ==============================================================================
 // 1. LOGIN PAGE
 // ==============================================================================
 export const LoginPage = () => {
   const { login } = useContext(AuthContext);
+  const toast = useToast();
   const navigate = useNavigate();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError(null);
 
     try {
       const user = await login(email, password);
+      toast.success(`Welcome back, ${user.fullName}!`);
+
       if (user.role === 'Admin') {
         navigate('/admin');
       } else if (user.role === 'ServiceProvider') {
@@ -40,60 +73,91 @@ export const LoginPage = () => {
         navigate('/directory');
       }
     } catch (err) {
-      setError(err.response?.data?.message || 'Login failed. Please check your credentials.');
+      toast.error(err.response?.data?.message || 'Invalid email or password. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
+  const fillDemoAccount = (demoEmail) => {
+    setEmail(demoEmail);
+    setPassword('Password123#');
+  };
+
   return (
-    <div className="auth-page-wrapper">
-      <div className="auth-card">
-        <div className="auth-header">
+    <div className="auth-page-container">
+      <div className="auth-card-modern">
+        <div className="auth-header-box">
+          <div className="auth-logo-badge">
+            <Wrench size={24} />
+          </div>
           <h2>Sign In to KajBazar</h2>
-          <p>Access your consumer or service provider account</p>
+          <p>Access your consumer directory or service provider dashboard</p>
         </div>
 
-        {error && <div className="alert-danger">{error}</div>}
+        <form onSubmit={handleSubmit}>
+          <Input
+            label="Email Address"
+            type="email"
+            required
+            icon={Mail}
+            placeholder="e.g. leon@gmail.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
 
-        <form onSubmit={handleSubmit} className="auth-form-body">
-          <div className="form-group">
-            <label>Email Address</label>
-            <input
-              type="email"
-              required
-              placeholder="e.g. admin@kajbazar.com or user@gmail.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
+          <Input
+            label="Password"
+            type="password"
+            required
+            icon={Lock}
+            placeholder="Enter your password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+
+          <div style={{ marginTop: '1.5rem' }}>
+            <Button
+              type="submit"
+              variant="primary"
+              size="lg"
+              loading={loading}
+              style={{ width: '100%' }}
+            >
+              Sign In
+            </Button>
           </div>
-
-          <div className="form-group">
-            <label>Password</label>
-            <input
-              type="password"
-              required
-              placeholder="Enter your password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </div>
-
-          <button type="submit" disabled={loading} className="btn-auth-submit">
-            {loading ? 'Authenticating...' : 'Sign In'}
-          </button>
         </form>
 
-        <div className="auth-footer-links">
-          <p>
-            Don't have an account yet? <Link to="/register">Create one now</Link>
-          </p>
-          <div className="demo-credentials-box">
-            <small><strong>Demo Accounts (Password: Password123#):</strong></small>
-            <br />
-            <small>• Admin: <code>admin@kajbazar.com</code></small><br />
-            <small>• Consumer: <code>leon@gmail.com</code></small><br />
-            <small>• Worker: <code>karim@gmail.com</code></small>
+        <div style={{ textAlign: 'center', marginTop: '1.25rem', fontSize: '0.875rem', color: 'var(--slate-600)' }}>
+          Don't have an account? <Link to="/register" style={{ fontWeight: 600 }}>Create an account</Link>
+        </div>
+
+        {/* Demo Accounts Quick-Fill Card */}
+        <div className="demo-credentials-card">
+          <strong>⚡ Quick Demo Accounts (Click to test):</strong>
+          <div className="demo-accounts-grid">
+            <button
+              type="button"
+              className="btn-demo-quick"
+              onClick={() => fillDemoAccount('admin@kajbazar.com')}
+            >
+              🛡️ Admin
+            </button>
+            <button
+              type="button"
+              className="btn-demo-quick"
+              onClick={() => fillDemoAccount('leon@gmail.com')}
+            >
+              👤 Consumer
+            </button>
+            <button
+              type="button"
+              className="btn-demo-quick"
+              onClick={() => fillDemoAccount('karim@gmail.com')}
+            >
+              👷 Worker
+            </button>
           </div>
         </div>
       </div>
@@ -106,6 +170,7 @@ export const LoginPage = () => {
 // ==============================================================================
 export const RegisterPage = () => {
   const { register } = useContext(AuthContext);
+  const toast = useToast();
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -118,19 +183,21 @@ export const RegisterPage = () => {
   });
 
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-    setError(null);
 
     if (formData.password !== formData.confirmPassword) {
-      setError("Passwords do not match.");
-      setLoading(false);
+      toast.error("Passwords do not match. Please verify.");
       return;
     }
 
+    if (formData.password.length < 6) {
+      toast.error("Password must be at least 6 characters long.");
+      return;
+    }
+
+    setLoading(true);
     try {
       const user = await register({
         fullName: formData.fullName.trim(),
@@ -140,132 +207,130 @@ export const RegisterPage = () => {
         role: formData.role
       });
 
+      toast.success("Account created successfully! Welcome to KajBazar.");
+
       if (user.role === 'ServiceProvider') {
         navigate('/my-profile');
       } else {
         navigate('/directory');
       }
     } catch (err) {
-      setError(err.response?.data?.message || 'Registration failed. Please verify your details.');
+      toast.error(err.response?.data?.message || 'Registration failed. Please check your information.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="auth-page-wrapper">
-      <div className="auth-card">
-        <div className="auth-header">
-          <h2>Create a KajBazar Account</h2>
-          <p>Join our community directory as a consumer or skilled service provider</p>
+    <div className="auth-page-container">
+      <div className="auth-card-modern auth-card-large">
+        <div className="auth-header-box">
+          <div className="auth-logo-badge">
+            <Wrench size={24} />
+          </div>
+          <h2>Create Your KajBazar Account</h2>
+          <p>Join as a community member or register as a skilled service provider</p>
         </div>
 
-        {error && <div className="alert-danger">{error}</div>}
+        <form onSubmit={handleSubmit}>
+          {/* Role Selector Cards */}
+          <div className="role-selection-grid">
+            <label className={`role-radio-card ${formData.role === 'Consumer' ? 'active' : ''}`}>
+              <input
+                type="radio"
+                name="role"
+                value="Consumer"
+                checked={formData.role === 'Consumer'}
+                onChange={(e) => setFormData({ ...formData, role: e.target.value })}
+              />
+              <div className="role-icon-circle">
+                <User size={20} />
+              </div>
+              <span className="role-name">Consumer</span>
+              <span className="role-desc">Find and hire local skilled workers</span>
+            </label>
 
-        <form onSubmit={handleSubmit} className="auth-form-body">
-          <div className="form-group">
-            <label>I want to join as: *</label>
-            <div className="role-selector-grid">
-              <label className={`role-card ${formData.role === 'Consumer' ? 'selected' : ''}`}>
-                <input
-                  type="radio"
-                  name="role"
-                  value="Consumer"
-                  checked={formData.role === 'Consumer'}
-                  onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-                />
-                <span className="role-icon">👤</span>
-                <strong>Consumer</strong>
-                <small>Find & hire local workers</small>
-              </label>
-
-              <label className={`role-card ${formData.role === 'ServiceProvider' ? 'selected' : ''}`}>
-                <input
-                  type="radio"
-                  name="role"
-                  value="ServiceProvider"
-                  checked={formData.role === 'ServiceProvider'}
-                  onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-                />
-                <span className="role-icon">👷</span>
-                <strong>Service Provider</strong>
-                <small>Offer skilled services</small>
-              </label>
-            </div>
+            <label className={`role-radio-card ${formData.role === 'ServiceProvider' ? 'active' : ''}`}>
+              <input
+                type="radio"
+                name="role"
+                value="ServiceProvider"
+                checked={formData.role === 'ServiceProvider'}
+                onChange={(e) => setFormData({ ...formData, role: e.target.value })}
+              />
+              <div className="role-icon-circle">
+                <Briefcase size={20} />
+              </div>
+              <span className="role-name">Service Provider</span>
+              <span className="role-desc">Offer services and get customer calls</span>
+            </label>
           </div>
 
-          <div className="form-group">
-            <label>Full Name *</label>
-            <input
-              type="text"
+          <Input
+            label="Full Name"
+            required
+            placeholder="e.g. Md. Tanvir Ishrak"
+            value={formData.fullName}
+            onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+          />
+
+          <div className="form-grid-2">
+            <Input
+              label="Email Address"
+              type="email"
               required
-              placeholder="e.g. Md. Tanvir Ishrak"
-              value={formData.fullName}
-              onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+              placeholder="user@example.com"
+              value={formData.email}
+              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+            />
+
+            <Input
+              label="Phone Number"
+              type="tel"
+              required
+              placeholder="01xxxxxxxxx"
+              pattern="^(?:\+8801|01)[3-9]\d{8}$"
+              helperText="11-digit Bangladeshi number"
+              value={formData.phoneNumber}
+              onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
             />
           </div>
 
-          <div className="form-row-2">
-            <div className="form-group">
-              <label>Email Address *</label>
-              <input
-                type="email"
-                required
-                placeholder="user@example.com"
-                value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              />
-            </div>
+          <div className="form-grid-2">
+            <Input
+              label="Password (min 6 characters)"
+              type="password"
+              required
+              placeholder="Create secure password"
+              value={formData.password}
+              onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+            />
 
-            <div className="form-group">
-              <label>Phone Number * (e.g. 01712345678)</label>
-              <input
-                type="tel"
-                required
-                placeholder="01xxxxxxxxx"
-                pattern="^(?:\+8801|01)[3-9]\d{8}$"
-                title="Please enter a valid Bangladeshi phone number"
-                value={formData.phoneNumber}
-                onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
-              />
-            </div>
+            <Input
+              label="Confirm Password"
+              type="password"
+              required
+              placeholder="Re-enter password"
+              value={formData.confirmPassword}
+              onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+            />
           </div>
 
-          <div className="form-row-2">
-            <div className="form-group">
-              <label>Password (min 6 characters) *</label>
-              <input
-                type="password"
-                required
-                minLength={6}
-                placeholder="Create secure password"
-                value={formData.password}
-                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-              />
-            </div>
-
-            <div className="form-group">
-              <label>Confirm Password *</label>
-              <input
-                type="password"
-                required
-                minLength={6}
-                placeholder="Re-enter password"
-                value={formData.confirmPassword}
-                onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-              />
-            </div>
+          <div style={{ marginTop: '1.5rem' }}>
+            <Button
+              type="submit"
+              variant="primary"
+              size="lg"
+              loading={loading}
+              style={{ width: '100%' }}
+            >
+              Register Account
+            </Button>
           </div>
-
-          <button type="submit" disabled={loading} className="btn-auth-submit">
-            {loading ? 'Creating Account...' : 'Register Account'}
-          </button>
         </form>
 
-        <div className="auth-footer-links">
-          <p>
-            Already have an account? <Link to="/login">Sign In</Link>
-          </p>
+        <div style={{ textAlign: 'center', marginTop: '1.25rem', fontSize: '0.875rem', color: 'var(--slate-600)' }}>
+          Already have an account? <Link to="/login" style={{ fontWeight: 600 }}>Sign In</Link>
         </div>
       </div>
     </div>
@@ -273,9 +338,11 @@ export const RegisterPage = () => {
 };
 
 // ==============================================================================
-// 3. ADMIN DASHBOARD & MODERATION PAGE (BR-03, BR-10, BR-11, BR-14)
+// 3. ADMIN DASHBOARD & MODERATION
 // ==============================================================================
 export const AdminDashboardPage = () => {
+  const toast = useToast();
+
   const [activeTab, setActiveTab] = useState('metrics');
   const [stats, setStats] = useState(null);
   const [pendingWorkers, setPendingWorkers] = useState([]);
@@ -285,8 +352,17 @@ export const AdminDashboardPage = () => {
   const [newCatName, setNewCatName] = useState('');
   const [newCatDesc, setNewCatDesc] = useState('');
   const [loading, setLoading] = useState(true);
-  const [actionMsg, setActionMsg] = useState(null);
-  const [actionError, setActionError] = useState(null);
+  const [creatingCategory, setCreatingCategory] = useState(false);
+
+  // Modern Dialog State (replacing prompt)
+  const [dialogConfig, setDialogConfig] = useState({
+    isOpen: false,
+    title: '',
+    message: '',
+    variant: 'danger',
+    requireReason: false,
+    action: null
+  });
 
   const loadAdminData = async () => {
     setLoading(true);
@@ -295,7 +371,7 @@ export const AdminDashboardPage = () => {
         getAdminStatsApi(),
         getPendingWorkersApi(),
         getPendingRecommendationsApi(),
-        getAuditLogsApi(25)
+        getAuditLogsApi(50)
       ]);
       setStats(statsRes.data);
       setPendingWorkers(workersRes.data || []);
@@ -303,6 +379,7 @@ export const AdminDashboardPage = () => {
       setAuditLogs(logsRes.data || []);
     } catch (err) {
       console.error("Failed to load admin data:", err);
+      toast.error("Failed to load administrative records.");
     } finally {
       setLoading(false);
     }
@@ -312,178 +389,272 @@ export const AdminDashboardPage = () => {
     loadAdminData();
   }, []);
 
-  const handleVerifyWorker = async (profileId) => {
-    setActionMsg(null);
-    setActionError(null);
-    try {
-      const res = await verifyWorkerApi(profileId);
-      setActionMsg(res.data.message);
-      loadAdminData();
-    } catch (err) {
-      setActionError(err.response?.data?.message || "Failed to verify worker.");
-    }
+  const openConfirmDialog = (title, message, variant, requireReason, action) => {
+    setDialogConfig({
+      isOpen: true,
+      title,
+      message,
+      variant,
+      requireReason,
+      action
+    });
   };
 
-  const handleRejectWorker = async (profileId) => {
-    const reason = prompt("Enter rejection reason:");
-    if (reason === null) return;
-    setActionMsg(null);
-    setActionError(null);
-    try {
-      const res = await rejectWorkerApi(profileId, reason);
-      setActionMsg(res.data.message);
-      loadAdminData();
-    } catch (err) {
-      setActionError(err.response?.data?.message || "Failed to reject worker.");
-    }
+  const closeConfirmDialog = () => {
+    setDialogConfig(prev => ({ ...prev, isOpen: false }));
   };
 
-  const handleApproveRecommendation = async (id) => {
-    setActionMsg(null);
-    setActionError(null);
-    try {
-      const res = await approveRecommendationApi(id);
-      setActionMsg(res.data.message);
-      loadAdminData();
-    } catch (err) {
-      setActionError(err.response?.data?.message || "Failed to approve recommendation.");
+  const handleDialogConfirm = async (reasonOrResult) => {
+    if (dialogConfig.action) {
+      await dialogConfig.action(reasonOrResult);
     }
+    closeConfirmDialog();
   };
 
-  const handleRejectRecommendation = async (id) => {
-    const reason = prompt("Enter rejection reason:");
-    if (reason === null) return;
-    setActionMsg(null);
-    setActionError(null);
-    try {
-      const res = await rejectRecommendationApi(id, reason);
-      setActionMsg(res.data.message);
-      loadAdminData();
-    } catch (err) {
-      setActionError(err.response?.data?.message || "Failed to reject recommendation.");
-    }
+  // Actions
+  const handleVerifyWorker = (profileId, workerName) => {
+    openConfirmDialog(
+      "Approve Worker Verification",
+      `Are you sure you want to approve ${workerName}? Once approved, this profile will become publicly visible in the worker directory.`,
+      "primary",
+      false,
+      async () => {
+        try {
+          const res = await verifyWorkerApi(profileId);
+          toast.success(res.data.message || "Worker profile verified successfully!");
+          loadAdminData();
+        } catch (err) {
+          toast.error(err.response?.data?.message || "Failed to verify worker.");
+        }
+      }
+    );
+  };
+
+  const handleRejectWorker = (profileId, workerName) => {
+    openConfirmDialog(
+      "Reject Worker Verification",
+      `Please provide a reason for rejecting ${workerName}'s verification request:`,
+      "danger",
+      true,
+      async (reason) => {
+        try {
+          const res = await rejectWorkerApi(profileId, reason);
+          toast.info(res.data.message || "Worker profile rejected.");
+          loadAdminData();
+        } catch (err) {
+          toast.error(err.response?.data?.message || "Failed to reject worker.");
+        }
+      }
+    );
+  };
+
+  const handleApproveRecommendation = (id, workerName) => {
+    openConfirmDialog(
+      "Approve Community Referral",
+      `Approve the offline worker referral for "${workerName}"?`,
+      "primary",
+      false,
+      async () => {
+        try {
+          const res = await approveRecommendationApi(id);
+          toast.success(res.data.message || "Recommendation approved!");
+          loadAdminData();
+        } catch (err) {
+          toast.error(err.response?.data?.message || "Failed to approve recommendation.");
+        }
+      }
+    );
+  };
+
+  const handleRejectRecommendation = (id, workerName) => {
+    openConfirmDialog(
+      "Reject Community Referral",
+      `Please specify why referral for "${workerName}" is being rejected:`,
+      "danger",
+      true,
+      async (reason) => {
+        try {
+          const res = await rejectRecommendationApi(id, reason);
+          toast.info(res.data.message || "Recommendation rejected.");
+          loadAdminData();
+        } catch (err) {
+          toast.error(err.response?.data?.message || "Failed to reject recommendation.");
+        }
+      }
+    );
   };
 
   const handleCreateCategory = async (e) => {
     e.preventDefault();
     if (!newCatName.trim()) return;
-    setActionMsg(null);
-    setActionError(null);
+
+    setCreatingCategory(true);
     try {
       const res = await createCategoryApi({
         categoryName: newCatName.trim(),
         description: newCatDesc.trim() || null
       });
-      setActionMsg(res.data.message);
+      toast.success(res.data.message || "Service category created successfully!");
       setNewCatName('');
       setNewCatDesc('');
       loadAdminData();
     } catch (err) {
-      setActionError(err.response?.data?.message || "Failed to create category.");
+      toast.error(err.response?.data?.message || "Failed to create category.");
+    } finally {
+      setCreatingCategory(false);
     }
   };
 
   return (
     <div className="admin-page-container">
-      <div className="admin-header-bar">
+      {/* Top Header */}
+      <div className="admin-top-bar">
         <div>
-          <h2>🛡️ Platform Administrator Dashboard</h2>
-          <p>Oversee worker profile verification (BR-03), offline referrals (BR-09), service categories (BR-11), and audit logs (BR-14).</p>
+          <h1>Platform Administration</h1>
+          <p>Oversee worker profile verifications, offline referrals, service taxonomy, and audit logs.</p>
         </div>
-        <button onClick={loadAdminData} className="btn-refresh-data">
-          🔄 Refresh System Data
-        </button>
+        <Button
+          variant="outline"
+          size="sm"
+          icon={RotateCcw}
+          onClick={loadAdminData}
+        >
+          Refresh Data
+        </Button>
       </div>
-
-      {actionMsg && <div className="alert-success">{actionMsg}</div>}
-      {actionError && <div className="alert-danger">{actionError}</div>}
 
       {/* Admin Tabs */}
-      <div className="admin-tabs">
+      <div className="admin-tabs-nav" role="tablist">
         <button
-          className={`tab-btn ${activeTab === 'metrics' ? 'active' : ''}`}
+          type="button"
+          role="tab"
+          className={`admin-tab-btn ${activeTab === 'metrics' ? 'active' : ''}`}
           onClick={() => setActiveTab('metrics')}
         >
-          📊 System Metrics
+          <ShieldCheck size={16} />
+          <span>Overview</span>
         </button>
+
         <button
-          className={`tab-btn ${activeTab === 'workers' ? 'active' : ''}`}
+          type="button"
+          role="tab"
+          className={`admin-tab-btn ${activeTab === 'workers' ? 'active' : ''}`}
           onClick={() => setActiveTab('workers')}
         >
-          👷 Pending Worker Verifications ({pendingWorkers.length})
+          <Briefcase size={16} />
+          <span>Pending Workers</span>
+          {pendingWorkers.length > 0 && (
+            <span className="admin-tab-count">{pendingWorkers.length}</span>
+          )}
         </button>
+
         <button
-          className={`tab-btn ${activeTab === 'recommendations' ? 'active' : ''}`}
+          type="button"
+          role="tab"
+          className={`admin-tab-btn ${activeTab === 'recommendations' ? 'active' : ''}`}
           onClick={() => setActiveTab('recommendations')}
         >
-          🤝 Community Referrals ({pendingRecommendations.length})
+          <Users size={16} />
+          <span>Offline Referrals</span>
+          {pendingRecommendations.length > 0 && (
+            <span className="admin-tab-count">{pendingRecommendations.length}</span>
+          )}
         </button>
+
         <button
-          className={`tab-btn ${activeTab === 'categories' ? 'active' : ''}`}
+          type="button"
+          role="tab"
+          className={`admin-tab-btn ${activeTab === 'categories' ? 'active' : ''}`}
           onClick={() => setActiveTab('categories')}
         >
-          🏷️ Manage Categories
+          <PlusCircle size={16} />
+          <span>Categories</span>
         </button>
+
         <button
-          className={`tab-btn ${activeTab === 'logs' ? 'active' : ''}`}
+          type="button"
+          role="tab"
+          className={`admin-tab-btn ${activeTab === 'logs' ? 'active' : ''}`}
           onClick={() => setActiveTab('logs')}
         >
-          📜 Audit Trail Logs
+          <FileText size={16} />
+          <span>Audit Trail</span>
         </button>
       </div>
 
+      {/* Tab Panels */}
       {loading ? (
-        <div className="admin-loading">Loading administrative platform data...</div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', padding: '2rem 0' }}>
+          <div className="metrics-overview-grid">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="metric-widget">
+                <TableRowSkeleton columns={2} />
+              </div>
+            ))}
+          </div>
+        </div>
       ) : (
-        <div className="tab-content-panel">
+        <div>
           {/* TAB 1: METRICS */}
           {activeTab === 'metrics' && stats && (
-            <div className="metrics-dashboard">
-              <div className="metric-stat-card">
-                <span className="metric-icon">👥</span>
-                <div className="metric-details">
-                  <span className="metric-number">{stats.totalRegisteredUsers}</span>
-                  <span className="metric-title">Registered Accounts</span>
+            <div className="metrics-overview-grid">
+              <div className="metric-widget">
+                <div className="metric-widget-icon" style={{ background: 'var(--primary-light)', color: 'var(--primary)' }}>
+                  <Users size={24} />
+                </div>
+                <div>
+                  <div className="metric-widget-val">{stats.totalRegisteredUsers}</div>
+                  <div className="metric-widget-label">Registered Accounts</div>
                 </div>
               </div>
 
-              <div className="metric-stat-card">
-                <span className="metric-icon">👷</span>
-                <div className="metric-details">
-                  <span className="metric-number">{stats.totalWorkerProfiles}</span>
-                  <span className="metric-title">Total Worker Profiles</span>
+              <div className="metric-widget">
+                <div className="metric-widget-icon" style={{ background: '#ede9fe', color: '#6d28d9' }}>
+                  <Briefcase size={24} />
+                </div>
+                <div>
+                  <div className="metric-widget-val">{stats.totalWorkerProfiles}</div>
+                  <div className="metric-widget-label">Worker Profiles</div>
                 </div>
               </div>
 
-              <div className="metric-stat-card success">
-                <span className="metric-icon">✓</span>
-                <div className="metric-details">
-                  <span className="metric-number">{stats.verifiedWorkersCount}</span>
-                  <span className="metric-title">Verified & Public (BR-03)</span>
+              <div className="metric-widget">
+                <div className="metric-widget-icon" style={{ background: 'var(--secondary-light)', color: 'var(--secondary)' }}>
+                  <CheckCircle2 size={24} />
+                </div>
+                <div>
+                  <div className="metric-widget-val">{stats.verifiedWorkersCount}</div>
+                  <div className="metric-widget-label">Verified & Public</div>
                 </div>
               </div>
 
-              <div className="metric-stat-card warning">
-                <span className="metric-icon">⏳</span>
-                <div className="metric-details">
-                  <span className="metric-number">{stats.pendingVerificationCount}</span>
-                  <span className="metric-title">Pending Worker Approvals</span>
+              <div className="metric-widget">
+                <div className="metric-widget-icon" style={{ background: 'var(--accent-light)', color: 'var(--accent)' }}>
+                  <Clock size={24} />
+                </div>
+                <div>
+                  <div className="metric-widget-val">{stats.pendingVerificationCount}</div>
+                  <div className="metric-widget-label">Pending Verifications</div>
                 </div>
               </div>
 
-              <div className="metric-stat-card info">
-                <span className="metric-icon">🤝</span>
-                <div className="metric-details">
-                  <span className="metric-number">{stats.pendingRecommendationCount}</span>
-                  <span className="metric-title">Pending Offline Referrals</span>
+              <div className="metric-widget">
+                <div className="metric-widget-icon" style={{ background: 'var(--info-light)', color: 'var(--info)' }}>
+                  <Sparkles size={24} />
+                </div>
+                <div>
+                  <div className="metric-widget-val">{stats.pendingRecommendationCount}</div>
+                  <div className="metric-widget-label">Pending Referrals</div>
                 </div>
               </div>
 
-              <div className="metric-stat-card">
-                <span className="metric-icon">⭐</span>
-                <div className="metric-details">
-                  <span className="metric-number">{stats.totalReviewsSubmitted}</span>
-                  <span className="metric-title">Reviews Submitted</span>
+              <div className="metric-widget">
+                <div className="metric-widget-icon" style={{ background: '#fef3c7', color: '#b45309' }}>
+                  <FileText size={24} />
+                </div>
+                <div>
+                  <div className="metric-widget-val">{stats.totalReviewsSubmitted}</div>
+                  <div className="metric-widget-label">Customer Reviews</div>
                 </div>
               </div>
             </div>
@@ -491,18 +662,21 @@ export const AdminDashboardPage = () => {
 
           {/* TAB 2: PENDING WORKERS */}
           {activeTab === 'workers' && (
-            <div className="admin-table-wrapper">
-              <h3>Pending Worker Profile Verifications (BR-03, BR-10)</h3>
+            <div className="table-responsive-wrapper">
               {pendingWorkers.length === 0 ? (
-                <p className="table-empty-msg">No pending worker profile verifications at this time.</p>
+                <EmptyState
+                  icon={Inbox}
+                  title="No Pending Worker Verifications"
+                  description="All submitted service provider profiles have been reviewed and processed."
+                />
               ) : (
-                <table className="data-table">
+                <table className="modern-table">
                   <thead>
                     <tr>
                       <th>Worker Name</th>
-                      <th>Contact Info</th>
+                      <th>Contact Details</th>
                       <th>Location</th>
-                      <th>Categories</th>
+                      <th>Skills</th>
                       <th>Experience</th>
                       <th>Rate</th>
                       <th>Actions</th>
@@ -511,33 +685,46 @@ export const AdminDashboardPage = () => {
                   <tbody>
                     {pendingWorkers.map((w) => (
                       <tr key={w.profileId}>
-                        <td><strong>{w.workerName}</strong></td>
+                        <td>
+                          <strong>{w.workerName}</strong>
+                        </td>
                         <td>
                           <div>{w.phoneNumber}</div>
-                          <small>{w.email}</small>
+                          <small style={{ color: 'var(--slate-400)' }}>{w.email}</small>
                         </td>
-                        <td>{w.upazilaName}, {w.districtName}</td>
                         <td>
-                          {w.categories?.map((c, i) => (
-                            <span key={i} className="table-tag">{c}</span>
-                          ))}
+                          {w.upazilaName}, {w.districtName}
+                        </td>
+                        <td>
+                          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
+                            {w.categories?.map((c, i) => (
+                              <span key={i} className="category-tag-pill" style={{ fontSize: '0.725rem' }}>
+                                {c}
+                              </span>
+                            ))}
+                          </div>
                         </td>
                         <td>{w.experienceYears} Years</td>
                         <td>{w.hourlyRate ? `৳${w.hourlyRate}/hr` : 'Negotiable'}</td>
                         <td>
-                          <button
-                            onClick={() => handleVerifyWorker(w.profileId)}
-                            className="btn-action-approve"
-                            title="Approve profile for public directory listing"
-                          >
-                            Approve
-                          </button>
-                          <button
-                            onClick={() => handleRejectWorker(w.profileId)}
-                            className="btn-action-reject"
-                          >
-                            Reject
-                          </button>
+                          <div style={{ display: 'flex', gap: '6px' }}>
+                            <Button
+                              variant="success"
+                              size="sm"
+                              icon={Check}
+                              onClick={() => handleVerifyWorker(w.profileId, w.workerName)}
+                            >
+                              Approve
+                            </Button>
+                            <Button
+                              variant="danger"
+                              size="sm"
+                              icon={X}
+                              onClick={() => handleRejectWorker(w.profileId, w.workerName)}
+                            >
+                              Reject
+                            </Button>
+                          </div>
                         </td>
                       </tr>
                     ))}
@@ -547,19 +734,22 @@ export const AdminDashboardPage = () => {
             </div>
           )}
 
-          {/* TAB 3: COMMUNITY RECOMMENDATIONS */}
+          {/* TAB 3: PENDING RECOMMENDATIONS */}
           {activeTab === 'recommendations' && (
-            <div className="admin-table-wrapper">
-              <h3>Pending Community Offline Worker Referrals (BR-09)</h3>
+            <div className="table-responsive-wrapper">
               {pendingRecommendations.length === 0 ? (
-                <p className="table-empty-msg">No pending offline worker referrals.</p>
+                <EmptyState
+                  icon={Inbox}
+                  title="No Pending Referrals"
+                  description="All submitted offline worker recommendations have been processed."
+                />
               ) : (
-                <table className="data-table">
+                <table className="modern-table">
                   <thead>
                     <tr>
                       <th>Worker Name</th>
                       <th>Phone</th>
-                      <th>Category</th>
+                      <th>Trade Category</th>
                       <th>Location</th>
                       <th>Referred By</th>
                       <th>Notes</th>
@@ -571,23 +761,35 @@ export const AdminDashboardPage = () => {
                       <tr key={r.recommendationId}>
                         <td><strong>{r.workerName}</strong></td>
                         <td>{r.phoneNumber}</td>
-                        <td><span className="table-tag">{r.categoryName}</span></td>
+                        <td>
+                          <Badge variant="role" size="sm">{r.categoryName}</Badge>
+                        </td>
                         <td>{r.upazilaName}, {r.districtName}</td>
                         <td>{r.recommenderName}</td>
-                        <td><small>{r.notes || 'No notes'}</small></td>
                         <td>
-                          <button
-                            onClick={() => handleApproveRecommendation(r.recommendationId)}
-                            className="btn-action-approve"
-                          >
-                            Approve
-                          </button>
-                          <button
-                            onClick={() => handleRejectRecommendation(r.recommendationId)}
-                            className="btn-action-reject"
-                          >
-                            Reject
-                          </button>
+                          <small style={{ color: 'var(--slate-600)', maxWidth: '200px', display: 'inline-block' }}>
+                            {r.notes || '—'}
+                          </small>
+                        </td>
+                        <td>
+                          <div style={{ display: 'flex', gap: '6px' }}>
+                            <Button
+                              variant="success"
+                              size="sm"
+                              icon={Check}
+                              onClick={() => handleApproveRecommendation(r.recommendationId, r.workerName)}
+                            >
+                              Approve
+                            </Button>
+                            <Button
+                              variant="danger"
+                              size="sm"
+                              icon={X}
+                              onClick={() => handleRejectRecommendation(r.recommendationId, r.workerName)}
+                            >
+                              Reject
+                            </Button>
+                          </div>
                         </td>
                       </tr>
                     ))}
@@ -599,38 +801,47 @@ export const AdminDashboardPage = () => {
 
           {/* TAB 4: MANAGE CATEGORIES */}
           {activeTab === 'categories' && (
-            <div className="admin-category-management">
-              <h3>Add New Service Category (BR-11)</h3>
-              <form onSubmit={handleCreateCategory} className="standard-form">
-                <div className="form-group">
-                  <label>Category Name *</label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="e.g. Appliance Repair, Welder, Blacksmith..."
-                    value={newCatName}
-                    onChange={(e) => setNewCatName(e.target.value)}
-                  />
+            <div className="reviews-section-card" style={{ maxWidth: '640px' }}>
+              <h3 style={{ fontSize: '1.2rem', marginBottom: '1.25rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <PlusCircle size={20} />
+                <span>Add New Service Category</span>
+              </h3>
+
+              <form onSubmit={handleCreateCategory}>
+                <Input
+                  label="Category Name"
+                  required
+                  placeholder="e.g. Appliance Repair, Welder, Blacksmith..."
+                  value={newCatName}
+                  onChange={(e) => setNewCatName(e.target.value)}
+                />
+
+                <Textarea
+                  label="Description"
+                  rows={3}
+                  placeholder="Skills, scope of work, and common services encompassed..."
+                  value={newCatDesc}
+                  onChange={(e) => setNewCatDesc(e.target.value)}
+                />
+
+                <div style={{ marginTop: '1.25rem' }}>
+                  <Button
+                    type="submit"
+                    variant="primary"
+                    size="md"
+                    loading={creatingCategory}
+                  >
+                    Create Service Category
+                  </Button>
                 </div>
-                <div className="form-group">
-                  <label>Category Description</label>
-                  <textarea
-                    rows="3"
-                    placeholder="Brief description of skills and repair services encompassed..."
-                    value={newCatDesc}
-                    onChange={(e) => setNewCatDesc(e.target.value)}
-                  />
-                </div>
-                <button type="submit" className="btn-primary">Create Service Category</button>
               </form>
             </div>
           )}
 
-          {/* TAB 5: AUDIT LOGS */}
+          {/* TAB 5: AUDIT TRAIL LOGS */}
           {activeTab === 'logs' && (
-            <div className="admin-table-wrapper">
-              <h3>Administrative Action Audit Trail (BR-14)</h3>
-              <table className="data-table">
+            <div className="table-responsive-wrapper">
+              <table className="modern-table">
                 <thead>
                   <tr>
                     <th>Timestamp</th>
@@ -642,8 +853,14 @@ export const AdminDashboardPage = () => {
                 <tbody>
                   {auditLogs.map((log) => (
                     <tr key={log.logId}>
-                      <td><small>{new Date(log.timestamp).toLocaleString()}</small></td>
-                      <td><code>{log.action}</code></td>
+                      <td>
+                        <small style={{ color: 'var(--slate-500)' }}>
+                          {new Date(log.timestamp).toLocaleString()}
+                        </small>
+                      </td>
+                      <td>
+                        <Badge variant="neutral" size="sm">{log.action}</Badge>
+                      </td>
                       <td>{log.entityName}</td>
                       <td>{log.details || '—'}</td>
                     </tr>
@@ -654,6 +871,17 @@ export const AdminDashboardPage = () => {
           )}
         </div>
       )}
+
+      {/* Confirmation Dialog Component */}
+      <ConfirmDialog
+        isOpen={dialogConfig.isOpen}
+        onClose={closeConfirmDialog}
+        onConfirm={handleDialogConfirm}
+        title={dialogConfig.title}
+        message={dialogConfig.message}
+        variant={dialogConfig.variant}
+        requireReason={dialogConfig.requireReason}
+      />
     </div>
   );
 };
